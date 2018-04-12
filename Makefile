@@ -30,7 +30,7 @@ $(foreach m,$(MODULE),$(eval TARGET := $(m))$(eval DEP := $($(m)_src) $(inc))$(e
 define make_release
 	make NDK_BUILD=true --no-print-directory $(1)
 	@ mkdir -p release/$(dir $(2))
-	@ cp cheater release/$(2)
+	@ cp pvz_client release/$(2)
 	@ make clean
 endef
 .PHONY:release
