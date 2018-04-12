@@ -127,49 +127,13 @@ panic:
 out:
   return;
 }
-#undef CHECK
-#undef DIGIT
-void checkRootState() {
-  if (getuid() != 0 || getgid() != 0) {
-    printf("must run me under root mode\n");
-    exit(-1);
-  }
-}
-const char *readline(FILE *fp) {
+const char *to_string(const char *fmt, ...) {
   static BufferType buf;
-  if (fp == NULL)
-    return "";
-  if (fgets(buf, BUFSIZE, fp) == NULL) {
-    fclose(fp);
-    return "";
-  }
-  fclose(fp);
+  va_list va;
+  va_start(va, fmt);
+  vsprintf(buf, fmt, va);
+  va_end(va);
   return buf;
 }
-FILE *openProcFile(pid_t pid, const char *file) {
-  static Path path;
-  sprintf(path, "/proc/%d/%s", pid, file);
-  return fopen(path, "r");
-}
-FILE *openCmdline(const char *pid) {
-  return openProcFile(atoi(pid), "cmdline");
-}
-const char *getPackageName(const char *pid) {
-  return readline(openCmdline(pid));
-}
-pid_t findPVZProcess() {
-  DIR *dp = opendir("/proc");
-  struct dirent *dirHandle;
-  pid_t pid = -1;
-  while ((dirHandle = readdir(dp))) {
-    // 文件名第一个字符是数字
-    if (dirHandle->d_type & DT_DIR && isdigit(*dirHandle->d_name)) {
-      if (strcmp(getPackageName(dirHandle->d_name), SPECIFIC_PACKAGE) == 0) {
-        pid = atoi(dirHandle->d_name);
-        break;
-      }
-    }
-  }
-  closedir(dp);
-  return pid;
-}
+#undef CHECK
+#undef DIGIT

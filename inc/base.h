@@ -16,17 +16,13 @@
 #include "defs.h"
 #include "utils.h"
 struct {
-  char *base;
-  char *bss;
+  void *base;
+  void *bss;
+  int sock;
   int32_t val;
   pid_t pid;
   __task *task;
   __images *images;
 } baseInfo;
-void initBase() {
-  baseInfo.base = NULL;
-  baseInfo.bss = NULL;
-  baseInfo.task = NULL;
-  baseInfo.images = NULL;
-}
+void initBase();
 #endif //__BASE__H

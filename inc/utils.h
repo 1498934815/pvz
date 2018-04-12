@@ -40,8 +40,6 @@ extern void recover_images(__images *);
 extern void destroy(__list **, void (*)(void *));
 extern void *insert(__list **, size_t);
 extern void parseRowAndCol(const char *, __task **);
-extern void checkRootState();
-extern const char *readline(FILE *);
-extern pid_t findPVZProcess();
-extern FILE *openProcFile(pid_t, const char *);
+extern const char *__attribute__((format(printf, 1, 2)))
+to_string(const char *, ...);
 #endif //__UTILS__H

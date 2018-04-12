@@ -10,6 +10,9 @@
 #ifndef __DEFS__H
 #define __DEFS__H
 #include <limits.h>
+#define SERVER_ADDR "127.0.0.1"
+// 'ze' -> 0x7a65
+#define SERVER_PORT 0x7a65
 #define BUFSIZE 255
 #define IN_RANGE(obj, min, max) (obj >= min && obj <= max)
 #define SETJMP_RET 0xff

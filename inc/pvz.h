@@ -25,5 +25,16 @@ struct Hp {
   uint32_t totalHp;
   uint32_t armor;
 };
-jmp_buf env;
+extern jmp_buf env;
+void *getBase(const char *, int, void (*)(void *, void *), void **);
+void *getDynamicBase();
+void getBssBase();
+void pvz_write(void *, void *, size_t);
+void pvz_read(void *, void *, size_t);
+int32_t getI32(void *);
+void *getP32(void *);
+float getF32(void *);
+void setI32(void *, int32_t);
+void setF32(void *, float);
+void doInit();
 #endif //__PVZ__H

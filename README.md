@@ -7,13 +7,9 @@
 ## 使用步骤
   * **获取一个北美版的植物大战僵尸**
 
-    目前必须要使用我提供的pvz主程序，否则不保证功能能够正常使用
-
-    本人所使用的北美版:链接: https://pan.baidu.com/s/1d1T0K2 密码: y98i
-
-    本文档第一张图即是详细的版本信息，感谢植物大战僵尸吧@囧丫乙
-
     具体安装教程:http://lonelystar.org/ResDownload/1_Android_Na.htm
+
+    感谢植物大战僵尸吧@囧丫乙
 
   * 1.**使用直装版的修改器**
 
@@ -29,5 +25,3 @@
     ![cheater_suceess](images/cheater_success.png)
     否则，将会是
     ![cheater_failure](images/cheater_failure.png)
-
-REF:https://github.com/scanmem/scanmem

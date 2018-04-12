@@ -1,4 +1,5 @@
-/cheater
+/pvz_client
+/libpvz_server.so
 *.gch
 lib
 /old_cheater
