@@ -9,9 +9,15 @@ inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -std=c99
 ifeq ($(NDK_BUILD),true)
   NDK ?= $(HOME)/android-ndk-r14b
-	NDK_STANDALONE ?= $(HOME)/ndk/arm
-	NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
-	NDK_SYSROOT ?= $(NDK)/platforms/android-24/arch-arm
+  ifeq ($(ARM64),true)
+		NDK_STANDALONE ?= $(HOME)/ndk/arm64
+		NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/aarch64-linux-android
+		NDK_SYSROOT ?= $(NDK)/platforms/android-24/arch-arm64
+  else
+		NDK_STANDALONE ?= $(HOME)/ndk/arm
+		NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
+		NDK_SYSROOT ?= $(NDK)/platforms/android-24/arch-arm
+	endif
 	CC := $(NDK_TOOCHAIN)-gcc
 	STRIP := $(NDK_TOOCHAIN)-strip
 	CC_FLAG += -fPIC -pie --sysroot=$(NDK_SYSROOT)
@@ -29,7 +35,8 @@ define make_release
 endef
 .PHONY:release
 release:
-	$(call make_release,,pvz_client)
+	$(call make_release,,arm/pvz_client)
+	$(call make_release,ARM64=true,aarch64/pvz_client)
 .PHONY:clean
 clean:
 	-@ rm -rf $(MODULE)

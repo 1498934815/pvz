@@ -13,7 +13,6 @@
 #include <dirent.h>
 #include <unistd.h>
 #include "defs.h"
-#include "scanmem.h"
 #include "pvz.h"
 #include "utils.h"
 void *insert(__list **target, size_t len) {
