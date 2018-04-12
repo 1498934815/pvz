@@ -9,7 +9,7 @@
 #ifndef __UTILS__H
 #define __UTILS__H
 #include <stdint.h>
-#include <pthread.h>
+#include <unistd.h>
 #include "defs.h"
 #define PANIC                                                                  \
   do {                                                                         \

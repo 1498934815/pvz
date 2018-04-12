@@ -10,6 +10,7 @@
 #ifndef __SERVER__H
 #define __SERVER__H
 #include <pthread.h>
+#include <unistd.h>
 #include "base.h"
 #include "cheat.h"
 int executeCmd(int fd, size_t len, const char *cmd) {

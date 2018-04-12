@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <dirent.h>
-#include <unistd.h>
 #include "defs.h"
 #include "pvz.h"
 #include "utils.h"
@@ -64,7 +61,7 @@ void insert_images(__images **target, int value, void *remote) {
 void recover_images(__images *node) {
   while (node != NULL) {
     extern void pvz_write(void *, void *, size_t);
-    pvz_write(node->remote, &node->value, sizeof(node->value));
+    setI32(node->remote, node->value);
     node = next(node);
   }
 }

@@ -9,11 +9,7 @@
  */
 #ifndef __BASE__H
 #define __BASE__H
-#include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>
-#include <sys/cdefs.h>
-#include "defs.h"
 #include "utils.h"
 struct {
   void *base;
