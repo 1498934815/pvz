@@ -92,6 +92,7 @@ int main(int argc, char **argv) {
       doCmd(to_string("%d:%d", 15, baseInfo.val));
       break;
     case 18:
+      goto out;
       return 0;
     default:
       if (IN_RANGE(option, 1, 18)) {
@@ -101,6 +102,8 @@ int main(int argc, char **argv) {
       }
     }
   }
+out:
+  shutdown(getSock(), SHUT_RDWR);
   return 0;
 }
 #undef GETOPT

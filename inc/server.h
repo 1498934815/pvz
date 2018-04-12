@@ -12,12 +12,16 @@
 #include <pthread.h>
 #include "base.h"
 #include "cheat.h"
-void executeCmd(int fd, size_t len, const char *cmd) {
+int executeCmd(int fd, size_t len, const char *cmd) {
   static BufferType arg;
   int option;
   // 没有匹配到:会停止
   // 但在那之前option已经得到正确的值
   sscanf(cmd, "%d:%s", &option, arg);
+  // 这些是不需要游戏被初始化的选项
+  if (getStatus() == NULL && option != 3 && option != 4 && option != 13) {
+    return 1;
+  }
   switch (option) {
   case 1:
     sscanf(arg, "%d", &baseInfo.val);
@@ -82,6 +86,7 @@ void executeCmd(int fd, size_t len, const char *cmd) {
     doLimits();
     break;
   }
+  return 0;
 }
 void processCmd(int fd, size_t len, const char *cmd) {
 #define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
@@ -93,8 +98,11 @@ void processCmd(int fd, size_t len, const char *cmd) {
   } else if (is_cmd("getstatus")) {
     do_send(to_string("%p", getStatus()));
   } else {
-    executeCmd(fd, len, cmd);
-    do_send("success");
+    if (executeCmd(fd, len, cmd)) {
+      do_send("uninitialized");
+    } else {
+      do_send("success");
+    }
   }
 }
 void *doProcessClient(void *arg) {
@@ -110,7 +118,7 @@ void *doProcessClient(void *arg) {
     cmd[clen] = 0;
     processCmd(csock, clen, cmd);
   }
-  close(csock);
+  shutdown(csock, SHUT_RDWR);
   pthread_exit(NULL);
 }
 #endif //__SERVER__H

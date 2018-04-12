@@ -170,9 +170,7 @@ void callLadder() {
     ++zom;
   }
 }
-void freePlants() {
-  setI32(getField() + getOffset("free_plants"), 1);
-}
+void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
 #undef ROW
 #undef COL
 #undef HP

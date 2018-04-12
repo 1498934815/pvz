@@ -16,9 +16,11 @@
 #include "../inc/pvz.h"
 #include "../inc/defs.h"
 #include "../inc/server.h"
+int sockfd;
 void *initServer(void *unused) {
   (void)unused;
-  int sockfd = socket(AF_INET, SOCK_STREAM, 0), csock;
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  int csock;
   struct sockaddr_in sin, cl;
   memset(&sin, 0, sizeof(sin));
   memset(&cl, 0, sizeof(cl));
@@ -42,4 +44,8 @@ void *initServer(void *unused) {
 void __attribute__((constructor)) doInitServer() {
   pthread_t tid;
   pthread_create(&tid, NULL, initServer, NULL);
+  pthread_detach(tid);
+}
+void __attribute__((destructor)) doDestroyServer() {
+  shutdown(sockfd, SHUT_RDWR);
 }

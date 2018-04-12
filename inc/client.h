@@ -35,8 +35,15 @@ const char *doCmd(const char *cmd) {
   static BufferType snd;
   size_t len = strlen(cmd);
   sprintf(snd, "%zu:%s", len, cmd);
-  send(getSock(), snd, strlen(snd), 0);
-  recv(getSock(), rec, BUFSIZE, 0);
+  if (send(getSock(), snd, strlen(snd), 0) == -1 ||
+      recv(getSock(), rec, BUFSIZE, 0) <= 0) {
+    printf("也许您已经退出了PVZ,请重启PVZ后重新开启本程序\n");
+    close(getSock());
+    exit(-1);
+  }
+  if (strcmp(rec, "uninitialized") == 0) {
+    printf("您所选的选项'%s' 需要先开始游戏\n", cmd);
+  }
   return rec;
 }
 void parseAddr(const char *rec, void **out) { sscanf(rec, "%p", out); }
