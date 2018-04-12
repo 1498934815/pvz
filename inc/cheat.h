@@ -9,7 +9,6 @@
  */
 #ifndef __CHEAT__H
 #define __CHEAT__H
-void removeColdDown();
 void letZombiesFragile(void *);
 void coverZombies(void *);
 void increaseZombies(void *);
@@ -28,6 +27,7 @@ void pass();
 void setFlags();
 void doLimits();
 void callLadder();
+void freePlants();
 void *getField();
 void *getStatus();
 #endif //__CHEAT__H

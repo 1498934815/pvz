@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     puts("1.改阳光");
     puts("2.僵尸秒杀");
     puts("3.卷心菜投手加强");
-    puts("4.无冷却");
+    puts("4.免费植物");
     puts("5.黄油糊脸");
     puts("6.僵尸加强二倍");
     puts("7.植物血量增加二倍");

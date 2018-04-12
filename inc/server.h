@@ -30,7 +30,7 @@ void executeCmd(int fd, size_t len, const char *cmd) {
     increaseCabbagePult();
     break;
   case 4:
-    removeColdDown();
+    freePlants();
     break;
   case 5:
     forEachZombies(coverZombies);

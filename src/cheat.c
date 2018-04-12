@@ -19,14 +19,6 @@
 #include "../inc/pvz_offset.h"
 #include "../inc/base.h"
 
-void removeColdDown() {
-  char *base = baseInfo.base;
-  int32_t *p = (int32_t *)(base + getOffset("cannon"));
-  for (size_t i = 0; i < 48; ++i) {
-    setI32(p, 0);
-    p -= 9;
-  }
-}
 void letZombiesFragile(void *rp) {
   struct Hp hp = {
       .curHp = 10,
@@ -177,6 +169,9 @@ void callLadder() {
     setI32(zom, 0x15);
     ++zom;
   }
+}
+void freePlants() {
+  setI32(getField() + getOffset("free_plants"), 1);
 }
 #undef ROW
 #undef COL
