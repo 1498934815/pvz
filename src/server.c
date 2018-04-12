@@ -1,6 +1,6 @@
 /*
  * File    : src/server.c
- * Project :
+ * Project : PVZ
  * Author  : ze00
  * Email   : zerozakiGeek@gmail.com
  * Date    : 2018-04-12

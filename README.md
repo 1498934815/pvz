@@ -3,11 +3,14 @@
     ![pvz](images/pvz.png)
   * 效果
     ![effect](images/effect.png)
-  * 需要Root权限
 ## 使用步骤
   * **获取一个北美版的植物大战僵尸**
 
-    具体安装教程:http://lonelystar.org/ResDownload/1_Android_Na.htm
+    链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
+
+    请使用文件中的com.popcap.pvz_na.apk
+
+    数据包、存档的处理教程:http://lonelystar.org/ResDownload/1_Android_Na.htm
 
     感谢植物大战僵尸吧@囧丫乙
 
@@ -18,8 +21,6 @@
     基于NeoTerm(https://github.com/NeoTerm/NeoTerm)
 
     感谢@imkiva
-
-    打开修改器，会请求您给予ROOT权限，允许即可
 
     如果您已经启动了植物大战僵尸，则应该是
     ![cheater_suceess](images/cheater_success.png)
