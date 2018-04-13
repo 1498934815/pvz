@@ -54,6 +54,7 @@ struct pvz_offset pvz_off_tbl[] = {
     // field + 0x...
     {"status", 0x7c8},
     {"free_plants", 0x854},
+    {"mode", 0x838},
     // status + ...
     {"zombies_entry", 0xb4},
     {"zombies_count", 0xc4},

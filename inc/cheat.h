@@ -29,6 +29,7 @@ void setFlags();
 void doLimits();
 void callLadder();
 void freePlants();
+void switchMode();
 void *getField();
 void *getStatus();
 #endif //__CHEAT__H

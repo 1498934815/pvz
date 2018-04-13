@@ -90,6 +90,9 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   case 17:
     doLimits();
     break;
+  case 18:
+    sscanf(arg, "%d", &baseInfo.val);
+    switchMode();
   }
   return 0;
 }

@@ -49,7 +49,8 @@ int main(int argc, char **argv) {
     puts("15.修改当前无尽轮数");
     puts("16.只出梯子僵尸");
     puts("17.阵型压力测试");
-    puts("18.退出");
+    puts("18.跳关");
+    puts("19.退出");
 
 #define GETOPT(mess, opt)                                                      \
   printf(mess);                                                                \
@@ -85,13 +86,19 @@ int main(int argc, char **argv) {
       doCmd(to_string("%d:%s", 10, buf));
     } break;
     case 13:
-      printf("状态与信息:%p 基址:%p\n", getStatus(), getField());
+      printf("PID:%d 状态与信息:%p 基址:%p\n", baseInfo.pid, getStatus(),
+             getField());
       break;
     case 15:
       GETOPT("更改为?", baseInfo.val);
       doCmd(to_string("%d:%d", 15, baseInfo.val));
       break;
     case 18:
+      printf("请看https://github.com/ze00/pvz/blob/client/doc/code.txt\n");
+      GETOPT("请输入场景代码:", baseInfo.val);
+      doCmd(to_string("%d:%d", 18, baseInfo.val));
+      break;
+    case 19:
       goto out;
       return 0;
     default:

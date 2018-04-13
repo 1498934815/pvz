@@ -171,6 +171,7 @@ void callLadder() {
   }
 }
 void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
+void switchMode() { setI32(getField() + getOffset("mode"), baseInfo.val); }
 #undef ROW
 #undef COL
 #undef HP
