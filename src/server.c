@@ -21,16 +21,14 @@ void *initServer(void *unused) {
   (void)unused;
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   int csock;
-  struct sockaddr_in sin, cl;
+  struct sockaddr_in sin;
   memset(&sin, 0, sizeof(sin));
-  memset(&cl, 0, sizeof(cl));
   sin.sin_family = AF_INET;
   sin.sin_port = htons(SERVER_PORT);
   sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
   bind(sockfd, (struct sockaddr *)&sin, sizeof(sin));
   listen(sockfd, 1024);
-  socklen_t socklen = sizeof(cl);
-#define doAccept() (accept(sockfd, (struct sockaddr *)&cl, &socklen))
+#define doAccept() (accept(sockfd, NULL, NULL))
   doInit();
   while ((csock = doAccept())) {
     pthread_t tid;
@@ -46,6 +44,4 @@ void __attribute__((constructor)) doInitServer() {
   pthread_create(&tid, NULL, initServer, NULL);
   pthread_detach(tid);
 }
-void __attribute__((destructor)) doDestroyServer() {
-  shutdown(sockfd, SHUT_RDWR);
-}
+void __attribute__((destructor)) doDestroyServer() { close(sockfd); }

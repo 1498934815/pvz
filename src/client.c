@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
     }
   }
 out:
-  shutdown(getSock(), SHUT_RDWR);
+  close(getSock());
   return 0;
 }
 #undef GETOPT

@@ -25,7 +25,7 @@ void initConnection() {
   sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
   if (connect(sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     printf("也许您并没有启动PVZ?\n");
-    shutdown(sockfd, SHUT_RDWR);
+    close(sockfd);
     exit(-1);
   }
   baseInfo.sock = sockfd;
@@ -41,7 +41,7 @@ const char *doCmd(const char *cmd) {
   if (send(getSock(), snd, strlen(snd), 0) == -1 ||
       recv(getSock(), rec, BUFSIZE, 0) <= 0) {
     printf("也许您已经退出了PVZ,请重启PVZ后重新开启本程序\n");
-    shutdown(getSock(), SHUT_RDWR);
+    close(getSock());
     exit(-1);
   }
   if (strcmp(rec, "uninitialized") == 0) {

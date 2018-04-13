@@ -35,12 +35,12 @@ struct pvz_offset pvz_off_tbl[] = {
     {"zombies_row", 0x1c},
     // 僵尸雪亮
     {"zombies_hp", 0xd4},
-    // 植物的列
-    {"plants_col", 0x34},
     // 植物是否可见
     {"plants_vis", 0x18},
+    // 植物的列
+    {"plants_col", 0x34},
     // 植物的行
-    {"plants_row", 0x2c},
+    {"plants_row", 0x1c},
     // 植物类型代码
     {"plants_type", 0x30},
     // 植物血量

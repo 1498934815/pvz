@@ -122,7 +122,7 @@ void *doProcessClient(void *arg) {
     sscanf(buf, "%zu:%s", &clen, cmd);
     processCmd(csock, clen, cmd);
   }
-  shutdown(csock, SHUT_RDWR);
+  close(csock);
   pthread_exit(NULL);
 }
 #endif //__SERVER__H

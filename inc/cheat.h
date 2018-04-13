@@ -19,6 +19,7 @@ void increasePlants(void *);
 void increasePlantsAttack(void *);
 void putLadder(void *remote);
 void reportPlants(void *);
+void reportZombies(void *rp);
 void fuck_LilyPad_Pumpkin(void *);
 void plants_freeze(void *);
 void plants_attack(void *);

@@ -9,6 +9,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+// #include <android/log.h>
 #include "../inc/base.h"
 #include "../inc/pvz.h"
 jmp_buf env;
@@ -36,8 +37,16 @@ void *getDynamicBase() {
 void getBssBase() {
   getBase(SPECIFIC_DYNAMIC_LIBRARIES, 0, NULL, (void **)&baseInfo.bss);
 }
-void pvz_write(void *lp, void *buf, size_t len) { memcpy(lp, buf, len); }
-void pvz_read(void *lp, void *buf, size_t len) { memcpy(buf, lp, len); }
+void pvz_write(void *lp, void *buf, size_t len) {
+  // __android_log_print(ANDROID_LOG_FATAL, "PvzWrite", "At : %p - %zu", lp,
+  // len);
+  memmove(lp, buf, len);
+}
+void pvz_read(void *lp, void *buf, size_t len) {
+  // __android_log_print(ANDROID_LOG_FATAL, "PvzRead", "At : %p - %zu", lp,
+  // len);
+  memmove(buf, lp, len);
+}
 int32_t getI32(void *rp) {
   static int32_t val;
   pvz_read(rp, &val, sizeof(val));
