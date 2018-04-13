@@ -13,8 +13,12 @@
 #include <unistd.h>
 #include "base.h"
 #include "cheat.h"
+#define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
+#define do_send(str) send(fd, str, strlen(str), 0)
+
 int executeCmd(int fd, size_t len, const char *cmd) {
   static BufferType arg;
+  memset(arg, 0, sizeof(arg));
   int option;
   // 没有匹配到:会停止
   // 但在那之前option已经得到正确的值
@@ -90,8 +94,6 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   return 0;
 }
 void processCmd(int fd, size_t len, const char *cmd) {
-#define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
-#define do_send(str) send(fd, str, strlen(str), 0)
   if (is_cmd("getpid")) {
     do_send(to_string("%d", getpid()));
   } else if (is_cmd("getbase")) {
@@ -111,12 +113,13 @@ void *doProcessClient(void *arg) {
   size_t rlen, clen;
   static BufferType buf;
   static BufferType cmd;
+  // 非'\0'结尾
+  // 可能有魔法加成
+  memset(cmd, 0, sizeof(cmd));
+  memset(buf, 0, sizeof(buf));
   // 失败时会返回-1或者0
   while ((rlen = recv(csock, buf, BUFSIZE, 0)) > 0) {
     sscanf(buf, "%zu:%s", &clen, cmd);
-    // 非'\0'结尾
-    // 可能有魔法加成
-    cmd[clen] = 0;
     processCmd(csock, clen, cmd);
   }
   shutdown(csock, SHUT_RDWR);

@@ -77,12 +77,12 @@ void parseRowAndCol(const char *buf, __task **task) {
 parse:
 #define CHECK(stmt)                                                            \
   if (!(stmt)) {                                                               \
-    printf("%s", buf);                                                         \
+    printf("%s\n", buf);                                                       \
     printf("%*s\n", (int)((val - buf) + 1), "^");                              \
     goto panic;                                                                \
   }
 #define DIGIT() (*val - '0')
-  if (*val == '\n') {
+  if (*val == '\n' || *val == '\0') {
     if (status != NEED_COMMA) {
       --val;
       CHECK(0);
