@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "defs.h"
 #include "pvz.h"
 #include "utils.h"
