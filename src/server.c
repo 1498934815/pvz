@@ -26,9 +26,9 @@ void *initServer(void *unused) {
   sin.sin_family = AF_INET;
   sin.sin_port = htons(SERVER_PORT);
   sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
-  bind(sockfd, (struct sockaddr *)&sin, sizeof(sin));
   int reuseaddr = 1;
   setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(reuseaddr));
+  bind(sockfd, (struct sockaddr *)&sin, sizeof(sin));
   listen(sockfd, 1024);
 #define doAccept() (accept(sockfd, NULL, NULL))
   doInit();
