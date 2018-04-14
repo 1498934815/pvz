@@ -123,6 +123,7 @@ void *doProcessClient(void *arg) {
   // 失败时会返回-1或者0
   while ((rlen = recv(csock, buf, BUFSIZE, 0)) > 0) {
     sscanf(buf, "%zu:%s", &clen, cmd);
+    cmd[clen] = 0;
     processCmd(csock, clen, cmd);
   }
   close(csock);
