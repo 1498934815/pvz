@@ -9,15 +9,9 @@ inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -std=c99
 ifeq ($(NDK_BUILD),true)
   NDK ?= $(HOME)/android-ndk-r14b
-  ifeq ($(ARM64),true)
-		NDK_STANDALONE ?= $(HOME)/ndk/arm64
-		NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/aarch64-linux-android
-		NDK_SYSROOT ?= $(NDK)/platforms/android-24/arch-arm64
-  else
-		NDK_STANDALONE ?= $(HOME)/ndk/arm
-		NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
-		NDK_SYSROOT ?= $(NDK)/platforms/android-24/arch-arm
-	endif
+	NDK_STANDALONE ?= $(HOME)/ndk/arm
+	NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
+	NDK_SYSROOT ?= $(NDK)/platforms/android-12/arch-arm
 	CC := $(NDK_TOOCHAIN)-gcc
 	STRIP := $(NDK_TOOCHAIN)-strip
 	CC_FLAG += -fPIC -pie --sysroot=$(NDK_SYSROOT)
@@ -29,14 +23,13 @@ all:$(MODULE)
 $(foreach m,$(MODULE),$(eval TARGET := $(m))$(eval DEP := $($(m)_src) $(inc))$(eval include build/reg_rule.mk))
 define make_release
 	make NDK_BUILD=true --no-print-directory $(1)
-	@ mkdir -p release/$(dir $(2))
+	@ mkdir -p release
 	@ cp pvz_client release/$(2)
 	@ make clean
 endef
 .PHONY:release
 release:
-	$(call make_release,,arm/pvz_client)
-	$(call make_release,ARM64=true,aarch64/pvz_client)
+	$(call make_release,,pvz_client)
 .PHONY:clean
 clean:
 	-@ rm -rf $(MODULE)
