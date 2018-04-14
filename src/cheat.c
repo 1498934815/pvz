@@ -151,13 +151,17 @@ void setFlags() {
 }
 void doLimits() {
   uint32_t *zom = getStatus() + getOffset("zombies_list");
-  // 普僵 红眼 小丑 气球 冰车 舞王 海豚
-  static uint32_t candidate[] = {0, 0x20, 0x10, 0xf, 0xc, 0x8, 0xe};
+  // 普僵 红眼 小丑 气球 冰车 舞王 海豚 橄榄
+  static uint32_t candidate[] = {0, 0x20, 0x10, 0xf, 0xc, 0x8, 0xe, 0x7};
   static uint32_t which;
   srand(time(NULL));
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
-      which = rand() % 7;
+      do {
+        which = rand() % 7;
+        // 如果在非泳池模式得到海豚
+        // 重新生成一次
+      } while(which == 6 && getI32(getStatus() + getOffset("mode")) == 13);
       setI32(zom, candidate[which]);
       ++zom;
     }
