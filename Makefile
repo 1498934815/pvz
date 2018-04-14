@@ -22,14 +22,11 @@ endif
 all:$(MODULE)
 $(foreach m,$(MODULE),$(eval TARGET := $(m))$(eval DEP := $($(m)_src) $(inc))$(eval include build/reg_rule.mk))
 define make_release
-	make NDK_BUILD=true --no-print-directory $(1)
-	@ mkdir -p release
-	@ cp pvz_client release/$(2)
-	@ make clean
+	make NDK_BUILD=true --no-print-directory
 endef
 .PHONY:release
 release:
-	$(call make_release,,pvz_client)
+	$(call make_release)
 .PHONY:clean
 clean:
 	-@ rm -rf $(MODULE)
