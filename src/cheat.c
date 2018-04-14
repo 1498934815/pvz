@@ -158,7 +158,7 @@ void doLimits() {
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
       do {
-        which = rand() % 7;
+        which = rand() % 8;
         // 如果在非泳池模式得到海豚
         // 重新生成一次
       } while(which == 6 && getI32(getStatus() + getOffset("mode")) != 13);
