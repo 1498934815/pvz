@@ -163,7 +163,7 @@ void doLimits() {
         which = rand() % 8;
         // 如果在非泳池模式得到海豚
         // 重新生成一次
-      } while(which == 6 && !IN_RANGE(mode, 13, 14));
+      } while (which == 6 && !IN_RANGE(mode, 13, 14));
       setI32(zom, candidate[which]);
       ++zom;
     }

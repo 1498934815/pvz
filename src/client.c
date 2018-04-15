@@ -58,10 +58,11 @@ int main(int argc, char **argv) {
     PANIC;                                                                     \
   }
     GETOPT("请输入:", option);
+#define sendV(fmt, ...) doCmd(to_string("%d:" fmt, option, __VA_ARGS__))
     switch (option) {
     case 1:
       GETOPT("更改为?", baseInfo.val);
-      doCmd(to_string("%d:%d", 1, baseInfo.val));
+      sendV("%d", baseInfo.val);
       break;
     case 9: {
       printf("要将梯子僵尸放于何列?\n例如:1.2,1.3,(行与列以英文句号分隔,"
@@ -73,7 +74,7 @@ int main(int argc, char **argv) {
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &baseInfo.task);
       destroy((__list **)&baseInfo.task, NULL);
-      doCmd(to_string("%d:%s", 9, buf));
+      sendV("%s", buf);
     } break;
     case 10: {
       printf("要去除何处的莲叶或破坏何处的南瓜?(行与列以英文句号分隔,"
@@ -83,7 +84,7 @@ int main(int argc, char **argv) {
         PANIC;
       parseRowAndCol(buf, &baseInfo.task);
       destroy((__list **)&baseInfo.task, NULL);
-      doCmd(to_string("%d:%s", 10, buf));
+      sendV("%s", buf);
     } break;
     case 13:
       printf("PID:%d 状态与信息:%p 基址:%p\n", baseInfo.pid, getStatus(),
@@ -91,16 +92,15 @@ int main(int argc, char **argv) {
       break;
     case 15:
       GETOPT("更改为?", baseInfo.val);
-      doCmd(to_string("%d:%d", 15, baseInfo.val));
+      sendV("%d", baseInfo.val);
       break;
     case 18:
       printf("请看https://github.com/ze00/pvz/blob/client/doc/code.txt\n");
       GETOPT("请输入场景代码:", baseInfo.val);
-      doCmd(to_string("%d:%d", 18, baseInfo.val));
+      sendV("%d", baseInfo.val);
       break;
     case 19:
       goto out;
-      return 0;
     default:
       if (IN_RANGE(option, 1, 18)) {
         doCmd(to_string("%d", option));
