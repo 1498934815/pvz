@@ -54,18 +54,6 @@ int has(__task *target, int row, int col) {
   }
   return 0;
 }
-void insert_images(__images **target, int value, void *remote) {
-  __images *node = insert((__list **)target, sizeof(__images));
-  node->value = value;
-  node->remote = remote;
-}
-void recover_images(__images *node) {
-  while (node != NULL) {
-    extern void pvz_write(void *, void *, size_t);
-    setI32(node->remote, node->value);
-    node = next(node);
-  }
-}
 void parseRowAndCol(const char *buf, __task **task) {
   const char *val = buf;
   int row, col;

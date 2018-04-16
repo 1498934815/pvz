@@ -67,7 +67,6 @@ void setF32(void *rp, float v) { pvz_write(rp, &v, sizeof(v)); }
 void initBase() {
   baseInfo.base = NULL;
   baseInfo.task = NULL;
-  baseInfo.images = NULL;
 }
 void doInit() {
   baseInfo.base = getDynamicBase();

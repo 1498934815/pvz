@@ -18,7 +18,6 @@ struct {
   int32_t val;
   pid_t pid;
   __task *task;
-  __images *images;
 } baseInfo;
 void initBase();
 #endif //__BASE__H
