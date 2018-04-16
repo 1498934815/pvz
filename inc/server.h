@@ -66,10 +66,10 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     destroy((__list **)&baseInfo.task, NULL);
   } break;
   case 11:
-    forEachPlants(plants_freeze);
+    forEachPlants(autoPao);
     break;
   case 12:
-    forEachPlants(plants_attack);
+    forEachPlants(shutdownPao);
     break;
     // 在processCmd中会处理
     // getStatus

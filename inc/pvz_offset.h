@@ -47,6 +47,9 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_hp", 0x4c},
     // 植物攻击力
     {"plants_attack", 0x54},
+    // 炮弹掉落坐标
+    {"drop_x", 0x8C},
+    {"drop_y", 0x90},
     // bss + base
     {"base", 0x5138c8},
     // *base + 0x2dfa0

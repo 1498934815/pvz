@@ -22,6 +22,7 @@ void doClientInit() {
   detectPVZ();
   getRemoteBase();
   printf("PID:%d 基址:%p\n", baseInfo.pid, baseInfo.base);
+  printf("注意:请勿使用非1/4/9/16/17的项\n");
 }
 int main(int argc, char **argv) {
   doClientInit();
@@ -39,11 +40,11 @@ int main(int argc, char **argv) {
     puts("5.黄油糊脸");
     puts("6.僵尸加强二倍");
     puts("7.植物血量增加二倍");
-    puts("8.植物攻速增加二倍");
+    puts("8.植物攻速极限");
     puts("9.搭梯");
     puts("10.炸荷叶烂南瓜");
-    puts("11.所有植物不攻击");
-    puts("12.恢复攻击");
+    puts("11.自动发炮");
+    puts("12.不自动发炮");
     puts("13.输出调试信息");
     puts("14.过关");
     puts("15.修改当前无尽轮数");

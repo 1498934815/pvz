@@ -93,7 +93,8 @@ void increasePlants(void *remote) {
   setI32(remote + PLAN_HP_OFF, getI32(remote + PLAN_HP_OFF) * 2);
 }
 void increasePlantsAttack(void *remote) {
-  setI32(remote + PLAN_ATT_TOTAL_OFF, getI32(remote + PLAN_ATT_TOTAL_OFF) / 2);
+  // 应该是极限了
+  setI32(remote + PLAN_ATT_TOTAL_OFF, 45);
 }
 void putLadder(void *remote) {
 
@@ -132,16 +133,45 @@ void fuck_LilyPad_Pumpkin(void *remote) {
     }
   }
 }
-void plants_freeze(void *remote) {
-  if (ATTACK(remote) == 0)
+void autoPao(void *remote) {
+  static uint32_t x = 700, y = 200, lv = 1;
+  if (CODE(remote) != 47)
     return;
-  insert_images(&baseInfo.images, ATTACK(remote),
-                remote + getOffset("plants_attack"));
-  setI32(remote + getOffset("plants_attack"), 0);
+  setI32(remote + getOffset("drop_x"), x);
+  setI32(remote + getOffset("drop_y"), y);
+  setI32(remote + getOffset("plants_attack"), 1);
+  switch (lv % 6) {
+  case 1:
+    x = 750;
+    y = 500;
+    break;
+  case 2:
+    x = 650;
+    y = 500;
+    break;
+  case 3:
+    x = 750;
+    y = 200;
+    break;
+  case 4:
+    x = 650;
+    y = 200;
+    break;
+  case 5:
+    x = 400;
+    y = 200;
+    break;
+  case 0:
+    x = 400;
+    y = 500;
+    break;
+  }
+  ++lv;
 }
-void plants_attack(void *remote) {
-  recover_images(baseInfo.images);
-  destroy((__list **)&baseInfo.images, NULL);
+void shutdownPao(void *remote) {
+  if (CODE(remote) != 47)
+    return;
+  setI32(remote + getOffset("plants_attack"), 0);
 }
 void setSun() { setI32(getStatus() + getOffset("sun"), baseInfo.val); }
 void pass() { setI32(getStatus() + getOffset("pass"), 1); }
