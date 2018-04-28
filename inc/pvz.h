@@ -19,6 +19,7 @@
 #endif
 #define PUMPKIN_CODE (30)
 #define LILYPAD_CODE (16)
+#define LADDER_CODE (21)
 struct Hp {
   uint32_t curHp;
   uint32_t totalHp;
