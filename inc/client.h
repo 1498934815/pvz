@@ -28,9 +28,9 @@ void initConnection() {
     close(sockfd);
     exit(-1);
   }
-  baseInfo.sock = sockfd;
+  info.sock = sockfd;
 }
-int getSock() { return baseInfo.sock; }
+int getSock() { return info.sock; }
 const char *doCmd(const char *cmd) {
   static BufferType rec;
   static BufferType snd;
@@ -43,17 +43,16 @@ const char *doCmd(const char *cmd) {
     printf("也许您已经退出了PVZ,请重启PVZ后重新开启本程序\n");
     close(getSock());
     exit(-1);
-  }
-  if (strcmp(rec, "uninitialized") == 0) {
+  } else if (strcmp(rec, "uninitialized") == 0) {
     printf("您所选的选项'%s' 需要先开始游戏\n", cmd);
   }
   return rec;
 }
 void parseAddr(const char *rec, void **out) { sscanf(rec, "%p", out); }
 void parseInt(const char *rec, int *out) { sscanf(rec, "%d", out); }
-void getRemoteBase() { parseAddr(doCmd("getbase"), &baseInfo.base); }
-void detectPVZ() { parseInt(doCmd("getpid"), &baseInfo.pid); }
-void *getField() { return baseInfo.base; }
+void getRemoteBase() { parseAddr(doCmd("getbase"), &info.base); }
+void detectPVZ() { parseInt(doCmd("getpid"), &info.pid); }
+void *getField() { return info.base; }
 void *getStatus() {
   void *v;
   parseAddr(doCmd("getstatus"), &v);
@@ -62,7 +61,7 @@ void *getStatus() {
 void catchSIGINT() {
   fflush(stdout);
   setbuf(stdin, NULL);
-  destroy((__list **)&baseInfo.task, NULL);
+  destroy((__list **)&info.task, NULL);
   longjmp(env, SETJMP_RET);
 }
 void registeSigHandle() { signal(SIGINT, catchSIGINT); }

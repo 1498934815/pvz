@@ -29,7 +29,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   }
   switch (option) {
   case 1:
-    sscanf(arg, "%d", &baseInfo.val);
+    sscanf(arg, "%d", &info.val);
     setSun();
     break;
   case 2:
@@ -54,16 +54,16 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     forEachPlants(increasePlantsAttack);
     break;
   case 9: {
-    parseRowAndCol(arg, &baseInfo.task);
-    while (baseInfo.task != NULL) {
+    parseRowAndCol(arg, &info.task);
+    while (info.task != NULL) {
       forEachZombies(putLadder);
       usleep(WAIT_USECONDS);
     }
   } break;
   case 10: {
-    parseRowAndCol(arg, &baseInfo.task);
+    parseRowAndCol(arg, &info.task);
     forEachPlants(fuck_LilyPad_Pumpkin);
-    destroy((__list **)&baseInfo.task, NULL);
+    destroy((__list **)&info.task, NULL);
   } break;
   case 11:
     forEachPlants(autoPao);
@@ -81,7 +81,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     pass();
     break;
   case 15:
-    sscanf(arg, "%d", &baseInfo.val);
+    sscanf(arg, "%d", &info.val);
     setFlags();
     break;
   case 16:
@@ -91,7 +91,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     doLimits();
     break;
   case 18:
-    sscanf(arg, "%d", &baseInfo.val);
+    sscanf(arg, "%d", &info.val);
     switchMode();
   }
   return 0;

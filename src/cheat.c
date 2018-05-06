@@ -65,17 +65,17 @@ void increaseZombies(void *rp) {
 
 void putLadder(void *remote) {
 
-  if (baseInfo.task != NULL) {
+  if (info.task != NULL) {
     if (CODE(remote) == LADDER_CODE) {
-      float f = baseInfo.task->col * 100;
-      int32_t row = baseInfo.task->row - 1;
+      float f = info.task->col * 100;
+      int32_t row = info.task->row - 1;
       if (f > getF32(remote + getOffset("zombies_pos_x")))
         return;
       setI32(remote + getOffset("zombies_row"), row);
       setF32(remote + getOffset("zombies_pos_x"), f);
       setF32(remote + getOffset("zombies_pos_y"), f);
-      printf("put ladder on %d:%d\n", baseInfo.task->row, baseInfo.task->col);
-      pop(&baseInfo.task);
+      printf("put ladder on %d:%d\n", info.task->row, info.task->col);
+      pop(&info.task);
     }
   }
 }
@@ -139,12 +139,12 @@ void reportPlants(void *remote) {
 }
 
 void increaseCabbagePult() {
-  char *p = baseInfo.base + getOffset("cabbage");
+  char *p = info.base + getOffset("cabbage");
   setI32(p + 8, 45);
 }
 
 void fuck_LilyPad_Pumpkin(void *remote) {
-  if (has(baseInfo.task, ROW(remote), COL(remote))) {
+  if (has(info.task, ROW(remote), COL(remote))) {
     switch (CODE(remote)) {
     case LILYPAD_CODE:
       setI32(remote + getOffset("plants_vis"), 0);
@@ -213,18 +213,18 @@ void increasePlantsAttack(void *remote) {
 #undef ATTACK
 
 void *getField() {
-  void *helper = getP32(baseInfo.bss + getOffset("base"));
+  void *helper = getP32(info.bss + getOffset("base"));
   return getOffset("field") + helper;
 }
 void *getStatus() {
   void *status = getP32(getField() + getOffset("status"));
   return status;
 }
-void switchMode() { setI32(getField() + getOffset("mode"), baseInfo.val); }
-void setSun() { setI32(getStatus() + getOffset("sun"), baseInfo.val); }
+void switchMode() { setI32(getField() + getOffset("mode"), info.val); }
+void setSun() { setI32(getStatus() + getOffset("sun"), info.val); }
 void pass() { setI32(getStatus() + getOffset("pass"), 1); }
 void setFlags() {
   setI32(getP32(getStatus() + getOffset("flags_helper")) + getOffset("flags"),
-         baseInfo.val);
+         info.val);
 }
 #endif //__CHEATER__H

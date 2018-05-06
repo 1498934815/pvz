@@ -11,23 +11,21 @@
 #define __PVZ__H
 #include <sys/cdefs.h>
 #include <setjmp.h>
-#ifndef SPECIFIC_PACKAGE
 #define SPECIFIC_PACKAGE "com.popcap.pvz_na"
-#endif
-#ifndef SPECIFIC_DYNAMIC_LIBRARIES
 #define SPECIFIC_DYNAMIC_LIBRARIES "libpvz.so"
-#endif
+#define LIBPVZ_BASE_HELPER "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
+#define LIBPVZ_BSS_OFF (0xc5d860)
 #define PUMPKIN_CODE (30)
 #define LILYPAD_CODE (16)
 #define LADDER_CODE (21)
+
 struct Hp {
   uint32_t curHp;
   uint32_t totalHp;
   uint32_t armor;
 };
 extern jmp_buf env;
-void *getBase(const char *, int, void (*)(void *, void *), void **);
-void *getDynamicBase();
+void getDynamicBase();
 void getBssBase();
 void pvz_write(void *, void *, size_t);
 void pvz_read(void *, void *, size_t);

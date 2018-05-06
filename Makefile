@@ -1,10 +1,13 @@
 MODULE := \
 	pvz_client \
 	libpvz_server.so
+
 common := src/utils.c src/pvz.c
 pvz_client_src := src/client.c $(common)
+
 libpvz_server.so_src := src/server.c src/cheat.c $(common)
-libpvz_server.so_flag := -shared -fPIC
+libpvz_server.so_flag := -shared -fPIC -ldl
+
 inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -std=c99
 ifeq ($(NDK_BUILD),true)

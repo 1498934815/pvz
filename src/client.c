@@ -21,7 +21,7 @@ void doClientInit() {
   initConnection();
   detectPVZ();
   getRemoteBase();
-  printf("PID:%d 基址:%p\n", baseInfo.pid, baseInfo.base);
+  printf("PID:%d 基址:%p\n", info.pid, info.base);
   printf("注意:请勿使用非1/4/9/16/17的项\n");
 }
 int main(int argc, char **argv) {
@@ -62,8 +62,8 @@ int main(int argc, char **argv) {
 #define sendV(fmt, ...) doCmd(to_string("%d:" fmt, option, __VA_ARGS__))
     switch (option) {
     case 1:
-      GETOPT("更改为?", baseInfo.val);
-      sendV("%d", baseInfo.val);
+      GETOPT("更改为?", info.val);
+      sendV("%d", info.val);
       break;
     case 9: {
       printf("要将梯子僵尸放于何列?\n例如:1.2,1.3,(行与列以英文句号分隔,"
@@ -73,8 +73,8 @@ int main(int argc, char **argv) {
         PANIC;
       // 作形式检查
       // 如果失败会引发SIGINT
-      parseRowAndCol(buf, &baseInfo.task);
-      destroy((__list **)&baseInfo.task, NULL);
+      parseRowAndCol(buf, &info.task);
+      destroy((__list **)&info.task, NULL);
       sendV("%s", buf);
     } break;
     case 10: {
@@ -83,22 +83,22 @@ int main(int argc, char **argv) {
       setbuf(stdin, NULL);
       if (fgets(buf, sizeof(buf), stdin) == NULL)
         PANIC;
-      parseRowAndCol(buf, &baseInfo.task);
-      destroy((__list **)&baseInfo.task, NULL);
+      parseRowAndCol(buf, &info.task);
+      destroy((__list **)&info.task, NULL);
       sendV("%s", buf);
     } break;
     case 13:
-      printf("PID:%d 状态与信息:%p 基址:%p\n", baseInfo.pid, getStatus(),
+      printf("PID:%d 状态与信息:%p 基址:%p\n", info.pid, getStatus(),
              getField());
       break;
     case 15:
-      GETOPT("更改为?", baseInfo.val);
-      sendV("%d", baseInfo.val);
+      GETOPT("更改为?", info.val);
+      sendV("%d", info.val);
       break;
     case 18:
       printf("请看https://github.com/ze00/pvz/blob/client/doc/code.txt\n");
-      GETOPT("请输入场景代码:", baseInfo.val);
-      sendV("%d", baseInfo.val);
+      GETOPT("请输入场景代码:", info.val);
+      sendV("%d", info.val);
       break;
     case 19:
       goto out;

@@ -17,6 +17,10 @@
 #define IN_RANGE(obj, min, max) (obj >= min && obj <= max)
 #define SETJMP_RET 0xff
 #define WAIT_USECONDS (500000)
+
+#define PAGE_START(x) ((x)&PAGE_MASK)
+#define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
+
 typedef char BufferType[BUFSIZE];
 typedef char Path[PATH_MAX];
 #endif //__DEFS__H
