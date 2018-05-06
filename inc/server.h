@@ -33,64 +33,43 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     setSun();
     break;
   case 2:
-    forEachZombies(letZombiesFragile);
-    break;
-  case 3:
-    increaseCabbagePult();
-    break;
-  case 4:
     freePlants();
     break;
-  case 5:
+  case 3:
     forEachZombies(coverZombies);
     break;
-  case 6:
-    forEachZombies(increaseZombies);
-    break;
-  case 7:
-    forEachPlants(increasePlants);
-    break;
-  case 8:
-    forEachPlants(increasePlantsAttack);
-    break;
-  case 9: {
+  case 4: {
     parseRowAndCol(arg, &info.task);
     while (info.task != NULL) {
       forEachZombies(putLadder);
       usleep(WAIT_USECONDS);
     }
   } break;
-  case 10: {
+  case 5: {
     parseRowAndCol(arg, &info.task);
     forEachPlants(fuck_LilyPad_Pumpkin);
     destroy((__list **)&info.task, NULL);
   } break;
-  case 11:
-    forEachPlants(autoPao);
-    break;
-  case 12:
-    forEachPlants(shutdownPao);
-    break;
-    // 在processCmd中会处理
-    // getStatus
+  // 在processCmd中会处理
+  // getStatus
 #if 0
-  case 13:
+  case 6:
     break;
 #endif
-  case 14:
+  case 7:
     pass();
     break;
-  case 15:
+  case 8:
     sscanf(arg, "%d", &info.val);
     setFlags();
     break;
-  case 16:
+  case 9:
     callLadder();
     break;
-  case 17:
+  case 10:
     doLimits();
     break;
-  case 18:
+  case 11:
     sscanf(arg, "%d", &info.val);
     switchMode();
   }

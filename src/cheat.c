@@ -48,20 +48,7 @@ void reportZombies(void *rp) {
          COL(rp), HP(rp), CODE(rp));
 }
 
-void letZombiesFragile(void *rp) {
-  struct Hp hp = {
-      .curHp = 10,
-      .totalHp = 10,
-      .armor = 0,
-  };
-  pvz_write(rp + ZOM_HP_OFF, &hp, sizeof(hp));
-}
-
 void coverZombies(void *rp) { setI32(rp + 0xbc, 5000); }
-
-void increaseZombies(void *rp) {
-  setI32(rp + ZOM_HP_OFF, getI32(rp + ZOM_HP_OFF) * 2);
-}
 
 void putLadder(void *remote) {
 
@@ -138,11 +125,6 @@ void reportPlants(void *remote) {
          COL(remote), HP(remote), CODE(remote));
 }
 
-void increaseCabbagePult() {
-  char *p = info.base + getOffset("cabbage");
-  setI32(p + 8, 45);
-}
-
 void fuck_LilyPad_Pumpkin(void *remote) {
   if (has(info.task, ROW(remote), COL(remote))) {
     switch (CODE(remote)) {
@@ -155,56 +137,9 @@ void fuck_LilyPad_Pumpkin(void *remote) {
   }
 }
 
-void autoPao(void *remote) {
-  static uint32_t x = 700, y = 200, lv = 1;
-  if (CODE(remote) != 47)
-    return;
-  setI32(remote + getOffset("drop_x"), x);
-  setI32(remote + getOffset("drop_y"), y);
-  setI32(remote + getOffset("plants_attack"), 1);
-  switch (lv % 6) {
-  case 1:
-    x = 750;
-    y = 500;
-    break;
-  case 2:
-    x = 650;
-    y = 500;
-    break;
-  case 3:
-    x = 750;
-    y = 200;
-    break;
-  case 4:
-    x = 650;
-    y = 200;
-    break;
-  case 5:
-    x = 400;
-    y = 200;
-    break;
-  case 0:
-    x = 400;
-    y = 500;
-    break;
-  }
-  ++lv;
-}
-
-void shutdownPao(void *remote) {
-  if (CODE(remote) != 47)
-    return;
-  setI32(remote + getOffset("plants_attack"), 0);
-}
-
 void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
 void increasePlants(void *remote) {
   setI32(remote + PLAN_HP_OFF, getI32(remote + PLAN_HP_OFF) * 2);
-}
-
-void increasePlantsAttack(void *remote) {
-  // 应该是极限了
-  setI32(remote + PLAN_ATT_TOTAL_OFF, 45);
 }
 #undef ROW
 #undef COL
