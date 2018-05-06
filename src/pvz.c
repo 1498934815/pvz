@@ -17,7 +17,7 @@ jmp_buf env;
 void getDynamicBase() {
   Dl_info dl;
   // 得到进程空间中的SPECIFIC_DYNAMIC_LIBRARIES
-  void *handle = dlopen(SPECIFIC_DYNAMIC_LIBRARIES, RTLD_NOLOAD);
+  void *handle = dlopen(SPECIFIC_DYNAMIC_LIBRARIES, RTLD_NOW);
   // 获取SPECIFIC_DYNAMIC_LIBRARIES的映射地址
   dladdr(dlsym(handle, LIBPVZ_BASE_HELPER), &dl);
 
