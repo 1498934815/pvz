@@ -13,8 +13,6 @@ void coverZombies(void *);
 void forEachPlants(void (*)(void *));
 void forEachZombies(void (*)(void *));
 void putLadder(void *remote);
-void reportPlants(void *);
-void reportZombies(void *rp);
 void fuck_LilyPad_Pumpkin(void *);
 void setSun();
 void pass();

@@ -19,11 +19,6 @@
 #define LILYPAD_CODE (16)
 #define LADDER_CODE (21)
 
-struct Hp {
-  uint32_t curHp;
-  uint32_t totalHp;
-  uint32_t armor;
-};
 extern jmp_buf env;
 void getDynamicBase();
 void getBssBase();

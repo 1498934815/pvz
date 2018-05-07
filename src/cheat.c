@@ -43,12 +43,7 @@ void forEachZombies(void (*op)(void *)) {
   }
 }
 
-void reportZombies(void *rp) {
-  printf("Found at %p(row@%d x pos_y@%f)(hp:%d code:%d)\n", rp, ROW(rp),
-         COL(rp), HP(rp), CODE(rp));
-}
-
-void coverZombies(void *rp) { setI32(rp + 0xbc, 5000); }
+void coverZombies(void *remote) { setI32(remote + 0xbc, 5000); }
 
 void putLadder(void *remote) {
 
@@ -118,11 +113,6 @@ void forEachPlants(void (*op)(void *)) {
     }
     entry++;
   }
-}
-
-void reportPlants(void *remote) {
-  printf("Found at %p (row@%d x col@%d)(hp:%d code:%d)\n", remote, ROW(remote),
-         COL(remote), HP(remote), CODE(remote));
 }
 
 void fuck_LilyPad_Pumpkin(void *remote) {

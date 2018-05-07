@@ -22,5 +22,4 @@
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 
 typedef char BufferType[BUFSIZE];
-typedef char Path[PATH_MAX];
 #endif //__DEFS__H

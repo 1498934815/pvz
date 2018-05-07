@@ -27,7 +27,6 @@ typedef struct __task {
 } __task;
 #define next(x) ((x)->list.next)
 #define real(x) ((x)->list.real)
-#define back(x) ((__typeof__((x)))(x)->list.real)
 extern void pop(__task **);
 extern int has(__task *, int, int);
 extern void destroy(__list **, void (*)(void *));
