@@ -24,7 +24,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   // 但在那之前option已经得到正确的值
   sscanf(cmd, "%d:%s", &option, arg);
   // 这些是不需要游戏被初始化的选项
-  if (getStatus() == NULL && option != 3 && option != 4 && option != 13) {
+  if (getStatus() == NULL && option != 2 && option != 6) {
     return 1;
   }
   switch (option) {
