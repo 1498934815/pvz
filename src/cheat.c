@@ -21,7 +21,6 @@
 
 #define ROW(lp) (getI32(lp + getOffset("zombies_row")) + 1)
 #define COL(lp) (getF32(lp + getOffset("zombies_pos_y")))
-#define HP(lp) (getI32(lp + ZOM_HP_OFF))
 #define CODE(lp) (getI32(lp + getOffset("zombies_type")))
 void forEachZombies(void (*op)(void *)) {
   size_t zcnt = getI32(getStatus() + getOffset("zombies_count"));
@@ -92,14 +91,11 @@ void callLadder() {
 }
 #undef ROW
 #undef COL
-#undef HP
 #undef CODE
 
 #define ROW(lp) (getI32(lp + getOffset("plants_row")) + 1)
 #define COL(lp) (getI32(lp + getOffset("plants_col")) + 1)
-#define HP(lp) (getI32(lp + PLAN_HP_OFF))
 #define CODE(lp) (getI32(lp + getOffset("plants_type")))
-#define ATTACK(lp) (getI32(lp + getOffset("plants_attack")))
 void forEachPlants(void (*op)(void *)) {
   size_t pcnt = getI32(getStatus() + getOffset("plants_count"));
   int32_t *entry = getP32(getStatus() + getOffset("plants_entry"));
@@ -128,14 +124,9 @@ void fuck_LilyPad_Pumpkin(void *remote) {
 }
 
 void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
-void increasePlants(void *remote) {
-  setI32(remote + PLAN_HP_OFF, getI32(remote + PLAN_HP_OFF) * 2);
-}
 #undef ROW
 #undef COL
-#undef HP
 #undef CODE
-#undef ATTACK
 
 void *getField() {
   void *helper = getP32(info.bss + getOffset("base"));

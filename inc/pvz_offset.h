@@ -11,19 +11,12 @@
 #define __PVZ_OFFSET__H
 #include <string.h>
 #include <sys/cdefs.h>
-#define ZOM_HP_OFF 0xd4
-#define PLAN_HP_OFF 0x4c
-#define PLAN_ATT_TOTAL_OFF 0x68
 struct pvz_offset {
   const char *name;
   off_t offset;
 };
 struct pvz_offset pvz_off_tbl[] = {
     {"sun", 0x56bc},
-    // 卷心菜头手的射速
-    {"cabbage", 0xc44460},
-    // 炮的冷却偏移
-    {"cannon", 0xc4467c},
     // 僵尸类型代码
     {"zombies_type", 0x30},
     // 僵尸x坐标
@@ -47,9 +40,6 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_hp", 0x4c},
     // 植物攻击力
     {"plants_attack", 0x54},
-    // 炮弹掉落坐标
-    {"drop_x", 0x8C},
-    {"drop_y", 0x90},
     // bss + base
     {"base", 0x5138c8},
     // *base + 0x2dfa0

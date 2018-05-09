@@ -48,7 +48,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   case 5: {
     parseRowAndCol(arg, &info.task);
     forEachPlants(fuck_LilyPad_Pumpkin);
-    destroy((__list **)&info.task, NULL);
+    destroy((__list **)&info.task);
   } break;
   // 在processCmd中会处理
   // getStatus

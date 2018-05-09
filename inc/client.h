@@ -61,7 +61,7 @@ void *getStatus() {
 void catchSIGINT() {
   fflush(stdout);
   setbuf(stdin, NULL);
-  destroy((__list **)&info.task, NULL);
+  destroy((__list **)&info.task);
   longjmp(env, SETJMP_RET);
 }
 void registeSigHandle() { signal(SIGINT, catchSIGINT); }

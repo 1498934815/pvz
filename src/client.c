@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
       // 作形式检查
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &info.task);
-      destroy((__list **)&info.task, NULL);
+      destroy((__list **)&info.task);
       sendV("%s", buf);
     } break;
     case 5: {
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
       if (fgets(buf, sizeof(buf), stdin) == NULL)
         PANIC;
       parseRowAndCol(buf, &info.task);
-      destroy((__list **)&info.task, NULL);
+      destroy((__list **)&info.task);
       sendV("%s", buf);
     } break;
     case 6:

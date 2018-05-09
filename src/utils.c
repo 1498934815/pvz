@@ -25,12 +25,10 @@ void *insert(__list **target, size_t len) {
   (*target)->real = node;
   return node;
 }
-void destroy(__list **node, void (*op)(void *)) {
+void destroy(__list **node) {
   __list *helper;
   while (*node != NULL) {
     helper = (*node)->next;
-    if (op != NULL)
-      op(*node);
     free(*node);
     *node = helper;
   }
