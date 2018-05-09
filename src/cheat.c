@@ -68,7 +68,7 @@ void doLimits() {
   static uint32_t candidate[] = {0, 0x20, 0x10, 0xf, 0xc, 0x8, 0xe, 0x7};
   static uint32_t which;
   static uint32_t mode;
-  mode = getI32(getStatus() + getOffset("mode"));
+  lawnType = getI32(getStatus() + getOffset("lawn_type"));
   srand(time(NULL));
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
@@ -76,7 +76,7 @@ void doLimits() {
         which = rand() % 8;
         // 如果在非泳池模式得到海豚
         // 重新生成一次
-      } while (which == 6 && !IN_RANGE(mode, 13, 14));
+      } while (which == 6 && !IN_RANGE(LawnType, 2, 3)); // 白天泳池/雾夜
       setI32(zom, candidate[which]);
       ++zom;
     }

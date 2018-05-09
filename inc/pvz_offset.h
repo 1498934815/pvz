@@ -57,6 +57,7 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_count", 0xe0},
     {"pass", 0x5760},
     {"flags_helper", 0x294},
+    {"lawn_type", 0x56a8},
     // *flags_helper + 0x6c
     {"flags", 0x6c},
 };
