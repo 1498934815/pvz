@@ -43,7 +43,8 @@ int main(int argc, char **argv) {
     puts("9.只出梯子僵尸");
     puts("10.阵型压力测试");
     puts("11.跳关");
-    puts("12.退出");
+    puts("12.混乱存档");
+    puts("13.退出");
 
 #define GETOPT(mess, opt)                                                      \
   printf(mess);                                                                \
@@ -94,6 +95,13 @@ int main(int argc, char **argv) {
       sendV("%d", info.val);
       break;
     case 12:
+      printf("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在\n");
+      printf(
+          "见https://github.com/ze00/pvz/blob/client/doc/code.txt底部的说明\n");
+      GETOPT("请输入欲混乱的模式的代码:", info.val);
+      sendV("%d", info.val);
+      break;
+    case 13:
       goto out;
     default:
       if (IN_RANGE(option, 1, 18)) {

@@ -30,7 +30,7 @@ typedef struct __task {
 extern void pop(__task **);
 extern int has(__task *, int, int);
 extern void insert_task(__task **, int, int);
-extern void destroy(__list **, void (*)(void *));
+extern void destroy(__list **);
 extern void *insert(__list **, size_t);
 extern void parseRowAndCol(const char *, __task **);
 extern const char *__attribute__((format(printf, 1, 2)))

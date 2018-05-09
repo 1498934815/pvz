@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 #include <time.h>
 #include "../inc/pvz.h"
 #include "../inc/cheat.h"
@@ -142,5 +143,11 @@ void pass() { setI32(getStatus() + getOffset("pass"), 1); }
 void setFlags() {
   setI32(getP32(getStatus() + getOffset("flags_helper")) + getOffset("flags"),
          info.val);
+}
+void moveSaves() {
+  // 形如/storage/emulated/0/Android/data/com.popcap.pvz_na/files/userdata/users.dat
+  void *helper = getField() + getOffset("saves_helper");
+  const char *locs = dirname(helper);
+  system(to_string("cd %s ; cp game1_%d.dat game1_13.dat", locs, info.val));
 }
 #endif //__CHEATER__H

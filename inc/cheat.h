@@ -21,6 +21,7 @@ void doLimits();
 void callLadder();
 void freePlants();
 void switchMode();
+void moveSaves();
 void *getField();
 void *getStatus();
 #endif //__CHEAT__H

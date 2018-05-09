@@ -40,8 +40,9 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_hp", 0x4c},
     // 植物攻击力
     {"plants_attack", 0x54},
-    // bss + base
+    // bss + 0x...
     {"base", 0x5138c8},
+    {"saves_helper", 0x7a9fcc},
     // *base + 0x2dfa0
     {"field", 0x2dfa0},
     // field + 0x...
