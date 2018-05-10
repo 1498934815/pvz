@@ -41,10 +41,10 @@ struct pvz_offset pvz_off_tbl[] = {
     // 植物攻击力
     {"plants_attack", 0x54},
     // bss + 0x...
-    {"base", 0x5138c8},
+    {"heap", 0x5138c8},
     {"saves_helper", 0x7a9fcc},
-    // *base + 0x2dfa0
-    {"field", 0x2dfa0},
+    // *(*heap + field_offset)
+    {"field_offset", 0x2dfa0},
     // field + 0x...
     {"status", 0x7c8},
     {"free_plants", 0x854},
@@ -61,18 +61,17 @@ struct pvz_offset pvz_off_tbl[] = {
     // *flags_helper + 0x6c
     {"flags", 0x6c},
 };
-off_t getOffset(const char *name) {
-  off_t off = -1;
+struct pvz_offset *__getOffset(const char *name) {
   struct pvz_offset *pf;
   for (size_t i = 0; i < sizeof(pvz_off_tbl) / sizeof(pvz_off_tbl[0]); ++i) {
     pf = &pvz_off_tbl[i];
     if (strcmp(name, pf->name) == 0) {
-      off = pf->offset;
       break;
     }
   }
-  if (off == -1)
-    printf("offset of '%s' not found!\n", name);
-  return off;
+  return pf;
+}
+off_t getOffset(const char *name) {
+  return __getOffset(name)->offset;
 }
 #endif //__PVZ_OFFSET__H

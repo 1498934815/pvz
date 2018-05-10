@@ -130,8 +130,12 @@ void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
 #undef CODE
 
 void *getField() {
-  void *helper = getP32(info.bss + getOffset("base"));
-  return getOffset("field") + helper;
+  void *heap = getP32(info.bss + getOffset("heap"));
+  struct pvz_offset *off = __getOffset("field_offset");
+  if(getI32(heap + off->offset - 0x8) != 0) {
+    off->offset -= 0x8;
+  }
+  return heap + off->offset;
 }
 void *getStatus() {
   void *status = getP32(getField() + getOffset("status"));
