@@ -129,13 +129,39 @@ void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
 #undef COL
 #undef CODE
 
-void *getField() {
+void *__getField() {
   void *heap = getP32(info.bss + getOffset("heap"));
   struct pvz_offset *off = __getOffset("field_offset");
-  if(getI32(heap + off->offset - 0x8) != 0) {
-    off->offset -= 0x8;
+  enum {
+    NEED_ZERO,
+    NEED_EIGHTY_ONE,
+    NEED_ADDRESS,
+  } state = NEED_ZERO;
+  union {
+    int v;
+    void *p;
+  } aux;
+  // 0 + 81 + base
+  for (int i = -0x20; i <= 0x20; ++i) {
+    aux.v = getI32(heap + off->offset + i);
+    if (aux.v == 0 && state == NEED_ZERO) {
+      state = NEED_EIGHTY_ONE;
+    } else if (aux.v == 81 && state == NEED_EIGHTY_ONE) {
+      state = NEED_ADDRESS;
+    } else if (aux.p > heap && state == NEED_ADDRESS) {
+      off->offset += i;
+      break;
+    } else {
+      state = NEED_ZERO;
+    }
   }
   return heap + off->offset;
+}
+void *getField() {
+  static void *field = 0;
+  if (field == 0)
+    field = __getField();
+  return field;
 }
 void *getStatus() {
   void *status = getP32(getField() + getOffset("status"));
