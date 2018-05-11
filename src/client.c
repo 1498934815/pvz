@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <setjmp.h>
+#include <signal.h>
 #include <strings.h>
 #include "../inc/defs.h"
 #include "../inc/utils.h"

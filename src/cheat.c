@@ -134,21 +134,18 @@ void *__getField() {
   struct pvz_offset *off = __getOffset("field_offset");
   enum {
     NEED_ZERO,
-    NEED_EIGHTY_ONE,
+    NEED_DD81,
     NEED_ADDRESS,
   } state = NEED_ZERO;
-  union {
-    int v;
-    void *p;
-  } aux;
-  // 0 + 81 + base
-  for (int i = -0x20; i <= 0x20; ++i) {
-    aux.v = getI32(heap + off->offset + i);
-    if (aux.v == 0 && state == NEED_ZERO) {
-      state = NEED_EIGHTY_ONE;
-    } else if (aux.v == 81 && state == NEED_EIGHTY_ONE) {
+  int v;
+  // [0,0xdd81,base]
+  for (int i = -0x20; i <= 0x20; i += sizeof(int32_t)) {
+    v = getI32(heap + off->offset + i);
+    if (v == 0) {
+      state = NEED_DD81;
+    } else if (v == 0xdd81 && state == NEED_DD81) {
       state = NEED_ADDRESS;
-    } else if (aux.p > heap && state == NEED_ADDRESS) {
+    } else if (state == NEED_ADDRESS) {
       off->offset += i;
       break;
     } else {

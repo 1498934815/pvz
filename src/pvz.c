@@ -9,8 +9,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <dlfcn.h>
-// #include <android/log.h>
 #include "../inc/base.h"
 #include "../inc/pvz.h"
 jmp_buf env;

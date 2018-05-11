@@ -10,6 +10,7 @@
 #ifndef __BASE__H
 #define __BASE__H
 #include <stdint.h>
+#include <unistd.h>
 #include "utils.h"
 struct {
   void *base;

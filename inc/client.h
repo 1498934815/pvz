@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "base.h"
