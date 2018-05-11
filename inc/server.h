@@ -24,7 +24,8 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   // 但在那之前option已经得到正确的值
   sscanf(cmd, "%d:%s", &option, arg);
   // 这些是不需要游戏被初始化的选项
-  if (getStatus() == NULL && option != 2 && option != 6 && option != 12) {
+  if (getStatus() == NULL && option != 2 && option != 6 &&
+      !IN_RANGE(option, 12, 14)) {
     return 1;
   }
   switch (option) {
@@ -76,6 +77,14 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   case 12:
     sscanf(arg, "%d", &info.val);
     moveSaves();
+    break;
+  case 13:
+    sscanf(arg, "%d", &info.val);
+    jump();
+    break;
+  case 14:
+    sscanf(arg, "%d", &info.val);
+    changeCoins();
     break;
   }
   return 0;

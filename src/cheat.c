@@ -171,10 +171,16 @@ void setFlags() {
   setI32(getP32(getStatus() + getOffset("flags_helper")) + getOffset("flags"),
          info.val);
 }
+int32_t __getUserId() { return getI32(getSaves() + getOffset("user_id")); }
 void moveSaves() {
   // 形如/storage/emulated/0/Android/data/com.popcap.pvz_na/files/userdata/users.dat
-  void *helper = getField() + getOffset("saves_helper");
+  void *helper = getField() + getOffset("userloc_helper");
   const char *locs = dirname(helper);
-  system(to_string("cd %s ; cp game1_%d.dat game1_13.dat", locs, info.val));
+  int32_t uid = __getUserId();
+  system(to_string("cd %s ; cp game%d_%d.dat game%d_13.dat", locs, uid,
+                   info.val, uid));
 }
+void *getSaves() { return getP32(getField() + getOffset("saves_entry")); }
+void changeCoins() { setI32(getSaves() + getOffset("coins"), info.val); }
+void jump() { setI32(getSaves() + getOffset("adventure_level"), info.val); }
 #endif //__CHEATER__H

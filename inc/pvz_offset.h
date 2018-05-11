@@ -42,11 +42,12 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_attack", 0x54},
     // bss + 0x...
     {"heap", 0x5138c8},
-    {"saves_helper", 0x7a9fcc},
+    {"userloc_helper", 0x7a9fcc},
     // *(*heap + field_offset)
     {"field_offset", 0x2dfa0},
     // field + 0x...
     {"status", 0x7c8},
+    {"saves_entry", 0x868},
     {"free_plants", 0x854},
     {"mode", 0x838},
     // status + ...
@@ -60,6 +61,10 @@ struct pvz_offset pvz_off_tbl[] = {
     {"lawn_type", 0x56a8},
     // *flags_helper + 0x6c
     {"flags", 0x6c},
+    // *saves_entry + ...
+    {"coins", 0x4},
+    {"user_id", 0x20},
+    {"adventure_level", 0x28},
 };
 struct pvz_offset *__getOffset(const char *name) {
   struct pvz_offset *pf;

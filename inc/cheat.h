@@ -22,6 +22,9 @@ void callLadder();
 void freePlants();
 void switchMode();
 void moveSaves();
+void changeCoins();
+void jump();
+void *getSaves();
 void *getField();
 void *getStatus();
 #endif //__CHEAT__H

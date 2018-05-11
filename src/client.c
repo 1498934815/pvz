@@ -45,7 +45,9 @@ int main(int argc, char **argv) {
     puts("10.阵型压力测试");
     puts("11.跳关");
     puts("12.混乱存档");
-    puts("13.退出");
+    puts("13.冒险跳关");
+    puts("14.改金币");
+    puts("15.退出");
 
 #define GETOPT(mess, opt)                                                      \
   printf(mess);                                                                \
@@ -56,6 +58,9 @@ int main(int argc, char **argv) {
 #define sendV(fmt, ...) doCmd(to_string("%d:" fmt, option, __VA_ARGS__))
     switch (option) {
     case 1:
+    case 8:
+    case 13:
+    case 14:
       GETOPT("更改为?", info.val);
       sendV("%d", info.val);
       break;
@@ -85,10 +90,6 @@ int main(int argc, char **argv) {
       printf("PID:%d 状态与信息:%p 基址:%p\n", info.pid, getStatus(),
              getField());
       break;
-    case 8:
-      GETOPT("更改为?", info.val);
-      sendV("%d", info.val);
-      break;
     case 11:
       printf(
           "部分代码见https://github.com/ze00/pvz/blob/client/doc/code.txt\n");
@@ -102,7 +103,7 @@ int main(int argc, char **argv) {
       GETOPT("请输入欲混乱的模式的代码:", info.val);
       sendV("%d", info.val);
       break;
-    case 13:
+    case 15:
       goto out;
     default:
       if (IN_RANGE(option, 1, 18)) {
