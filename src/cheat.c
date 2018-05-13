@@ -20,12 +20,21 @@
 #include "../inc/pvz_offset.h"
 #include "../inc/base.h"
 
+void *by_field(const char *name) {
+  return getField() + getOffset(name);
+}
+void *by_status(const char *name) {
+  return getStatus() + getOffset(name);
+}
+void *by_saves(const char *name) {
+  return getSaves() + getOffset(name);
+}
 #define ROW(lp) (getI32(lp + getOffset("zombies_row")) + 1)
 #define COL(lp) (getF32(lp + getOffset("zombies_pos_y")))
 #define CODE(lp) (getI32(lp + getOffset("zombies_type")))
 void forEachZombies(void (*op)(void *)) {
-  size_t zcnt = getI32(getStatus() + getOffset("zombies_count"));
-  int32_t *entry = getP32(getStatus() + getOffset("zombies_entry"));
+  size_t zcnt = getI32(by_status("zombies_count"));
+  int32_t *entry = getP32(by_status("zombies_entry"));
   void *zp;
   for (size_t idx = 0; idx < zcnt;) {
     // 在僵尸地址前
@@ -63,12 +72,12 @@ void putLadder(void *remote) {
 }
 
 void doLimits() {
-  uint32_t *zom = getStatus() + getOffset("zombies_list");
+  uint32_t *zom = by_status("zombies_list");
   // 普僵 红眼 小丑 气球 冰车 舞王 海豚 橄榄
   static uint32_t candidate[] = {0, 0x20, 0x10, 0xf, 0xc, 0x8, 0xe, 0x7};
   static uint32_t which;
   static uint32_t lawnType;
-  lawnType = getI32(getStatus() + getOffset("lawn_type"));
+  lawnType = getI32(by_status("lawn_type"));
   srand(time(NULL));
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
@@ -84,7 +93,7 @@ void doLimits() {
 }
 
 void callLadder() {
-  uint32_t *zom = getStatus() + getOffset("zombies_list");
+  uint32_t *zom = by_status("zombies_list");
   for (size_t idx = 0; idx < 2000; ++idx) {
     setI32(zom, 0x15);
     ++zom;
@@ -98,8 +107,8 @@ void callLadder() {
 #define COL(lp) (getI32(lp + getOffset("plants_col")) + 1)
 #define CODE(lp) (getI32(lp + getOffset("plants_type")))
 void forEachPlants(void (*op)(void *)) {
-  size_t pcnt = getI32(getStatus() + getOffset("plants_count"));
-  int32_t *entry = getP32(getStatus() + getOffset("plants_entry"));
+  size_t pcnt = getI32(by_status("plants_count"));
+  int32_t *entry = getP32(by_status("plants_entry"));
   void *pp;
   for (size_t idx = 0; idx < pcnt;) {
     pp = getP32(entry);
@@ -124,7 +133,7 @@ void fuck_LilyPad_Pumpkin(void *remote) {
   }
 }
 
-void freePlants() { setI32(getField() + getOffset("free_plants"), 1); }
+void freePlants() { setI32(by_field("free_plants"), 1); }
 #undef ROW
 #undef COL
 #undef CODE
@@ -139,7 +148,8 @@ void *__getField() {
   } state = NEED_ZERO;
   int v;
   // [0,0xdd81,base]
-  for (int i = -0x20; i <= 0x20; i += sizeof(int32_t)) {
+#define round 0x30
+  for (int i = -round; i <= round; i += sizeof(int32_t)) {
     v = getI32(heap + off->offset + i);
     if (v == 0) {
       state = NEED_DD81;
@@ -161,26 +171,31 @@ void *getField() {
   return field;
 }
 void *getStatus() {
-  void *status = getP32(getField() + getOffset("status"));
+  void *status = getP32(by_field("status"));
   return status;
 }
-void switchMode() { setI32(getField() + getOffset("mode"), info.val); }
-void setSun() { setI32(getStatus() + getOffset("sun"), info.val); }
-void pass() { setI32(getStatus() + getOffset("pass"), 1); }
+#define set_by_val(p) setI32((p), info.val)
+void switchMode() { set_by_val(by_field("mode")); }
+
+void setSun() { set_by_val(by_status("sun")); }
+
 void setFlags() {
-  setI32(getP32(getStatus() + getOffset("flags_helper")) + getOffset("flags"),
-         info.val);
+  set_by_val(getP32(by_status("flags_helper")) +
+             getOffset("flags"));
 }
-int32_t __getUserId() { return getI32(getSaves() + getOffset("user_id")); }
+
+void pass() { setI32(by_status("pass"), 1); }
+
+void *getSaves() { return getP32(by_field("saves_entry")); }
+
+int32_t __getUserId() { return getI32(by_saves("user_id")); }
+
 void moveSaves() {
   // 形如/storage/emulated/0/Android/data/com.popcap.pvz_na/files/userdata/users.dat
-  void *helper = getField() + getOffset("userloc_helper");
+  void *helper = by_field("userloc_helper");
   const char *locs = dirname(helper);
   int32_t uid = __getUserId();
   system(to_string("cd %s ; cp game%d_%d.dat game%d_13.dat", locs, uid,
                    info.val, uid));
 }
-void *getSaves() { return getP32(getField() + getOffset("saves_entry")); }
-void changeCoins() { setI32(getSaves() + getOffset("coins"), info.val); }
-void jump() { setI32(getSaves() + getOffset("adventure_level"), info.val); }
 #endif //__CHEATER__H
