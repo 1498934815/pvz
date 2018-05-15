@@ -23,6 +23,7 @@ void doClientInit() {
   detectPVZ();
   getRemoteBase();
   printf("PID:%d 基址:%p\n", info.pid, info.base);
+  printf("部分功能的解释见https://github.com/ze00/ pvz/blob/client/doc/help.txt\n");
 }
 int main(int argc, char **argv) {
   doClientInit();
