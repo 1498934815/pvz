@@ -23,7 +23,8 @@ void doClientInit() {
   detectPVZ();
   getRemoteBase();
   printf("PID:%d 基址:%p\n", info.pid, info.base);
-  printf("部分功能的解释见https://github.com/ze00/ pvz/blob/client/doc/help.txt\n");
+  printf("部分功能的解释见https://github.com/ze00/ "
+         "pvz/blob/client/doc/help.txt\n");
 }
 int main(int argc, char **argv) {
   doClientInit();
@@ -99,8 +100,8 @@ int main(int argc, char **argv) {
       break;
     case 12:
       printf("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在\n");
-      printf(
-          "见https://github.com/ze00/pvz/blob/client/doc/code.txt底部的说明\n");
+      printf("见https://github.com/ze00/pvz/blob/client/doc/"
+             "code.txt底部的说明\n");
       GETOPT("请输入欲混乱的模式的代码:", info.val);
       sendV("%d", info.val);
       break;

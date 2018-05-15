@@ -20,15 +20,9 @@
 #include "../inc/pvz_offset.h"
 #include "../inc/base.h"
 
-void *by_field(const char *name) {
-  return getField() + getOffset(name);
-}
-void *by_status(const char *name) {
-  return getStatus() + getOffset(name);
-}
-void *by_saves(const char *name) {
-  return getSaves() + getOffset(name);
-}
+void *by_field(const char *name) { return getField() + getOffset(name); }
+void *by_status(const char *name) { return getStatus() + getOffset(name); }
+void *by_saves(const char *name) { return getSaves() + getOffset(name); }
 #define ROW(lp) (getI32(lp + getOffset("zombies_row")) + 1)
 #define COL(lp) (getF32(lp + getOffset("zombies_pos_y")))
 #define CODE(lp) (getI32(lp + getOffset("zombies_type")))
@@ -55,7 +49,6 @@ void forEachZombies(void (*op)(void *)) {
 void coverZombies(void *remote) { setI32(remote + 0xbc, 5000); }
 
 void putLadder(void *remote) {
-
   if (info.task != NULL) {
     if (CODE(remote) == LADDER_CODE) {
       float f = info.task->col * 100;
@@ -82,10 +75,11 @@ void doLimits() {
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
       do {
-        which = rand() % 8;
+        which = rand() % ARRAY_SIZE(candidate);
         // 如果在非泳池模式得到海豚
         // 重新生成一次
-      } while (which == 6 && !IN_RANGE(lawnType, 2, 3)); // 白天泳池/雾夜
+      } while (candidate[which] == 0xe &&
+               !IN_RANGE(lawnType, 2, 3)); // 白天泳池/雾夜
       setI32(zom, candidate[which]);
       ++zom;
     }
@@ -180,8 +174,7 @@ void switchMode() { set_by_val(by_field("mode")); }
 void setSun() { set_by_val(by_status("sun")); }
 
 void setFlags() {
-  set_by_val(getP32(by_status("flags_helper")) +
-             getOffset("flags"));
+  set_by_val(getP32(by_status("flags_helper")) + getOffset("flags"));
 }
 
 void pass() { setI32(by_status("pass"), 1); }

@@ -21,5 +21,7 @@
 #define PAGE_START(x) ((x)&PAGE_MASK)
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 
+#define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+
 typedef char BufferType[BUFSIZE];
 #endif //__DEFS__H
