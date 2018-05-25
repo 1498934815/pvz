@@ -142,8 +142,8 @@ void *__getField() {
   } state = NEED_ZERO;
   int v;
   // [0,0xdd81,base]
-#define round 0x30
-  for (int i = -round; i <= round; i += sizeof(int32_t)) {
+#define bound 0x30
+  for (int i = -bound; i <= bound; i += sizeof(int32_t)) {
     v = getI32(heap + off->offset + i);
     if (v == 0) {
       state = NEED_DD81;
