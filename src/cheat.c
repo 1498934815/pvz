@@ -195,4 +195,11 @@ void moveSaves() {
   system(to_string("cd %s ; cp game%d_%d.dat game%d_13.dat", locs, uid,
                    info.val, uid));
 }
+
+void changeCardCode() {
+  void *card = getP32(by_status("cards_entry"));
+#define first_card_code 0x74
+  set_by_val(card + first_card_code);
+#undef first_card_code
+}
 #endif //__CHEATER__H

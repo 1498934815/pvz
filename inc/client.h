@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "base.h"
-void initConnection() {
+int initConnection() {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in sin;
   memset(&sin, 0, sizeof(sin));
@@ -25,11 +25,21 @@ void initConnection() {
   sin.sin_port = htons(SERVER_PORT);
   sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
   if (connect(sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
-    printf("也许您并没有启动PVZ?\n");
     close(sockfd);
-    exit(-1);
+    return 1;
   }
   info.sock = sockfd;
+  return 0;
+}
+void initClientCore() {
+  if (initConnection()) {
+    printf("也许您已经退出或者并没有启动Pvz?\n");
+    exit(-1);
+  }
+  extern void detectPVZ();
+  extern void getRemoteBase();
+  detectPVZ();
+  getRemoteBase();
 }
 int getSock() { return info.sock; }
 const char *doCmd(const char *cmd) {
@@ -41,9 +51,9 @@ const char *doCmd(const char *cmd) {
   sprintf(snd, "%zu:%s", len, cmd);
   if (send(getSock(), snd, strlen(snd), 0) == -1 ||
       recv(getSock(), rec, BUFSIZE, 0) <= 0) {
-    printf("也许您已经退出了PVZ,请重启PVZ后重新开启本程序\n");
     close(getSock());
-    exit(-1);
+    // 重试
+    initClientCore();
   } else if (strcmp(rec, "uninitialized") == 0) {
     printf("您所选的选项'%s' 需要先开始游戏\n", cmd);
   }

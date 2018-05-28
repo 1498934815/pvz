@@ -28,9 +28,10 @@ int executeCmd(int fd, size_t len, const char *cmd) {
       !IN_RANGE(option, 12, 14)) {
     return 1;
   }
+#define getV() sscanf(arg, "%d", &info.val)
   switch (option) {
   case 1:
-    sscanf(arg, "%d", &info.val);
+    getV();
     setSun();
     break;
   case 2:
@@ -61,7 +62,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     pass();
     break;
   case 8:
-    sscanf(arg, "%d", &info.val);
+    getV();
     setFlags();
     break;
   case 9:
@@ -71,20 +72,24 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     doLimits();
     break;
   case 11:
-    sscanf(arg, "%d", &info.val);
+    getV();
     switchMode();
     break;
   case 12:
-    sscanf(arg, "%d", &info.val);
+    getV();
     moveSaves();
     break;
   case 13:
-    sscanf(arg, "%d", &info.val);
+    getV();
     jump();
     break;
   case 14:
-    sscanf(arg, "%d", &info.val);
+    getV();
     changeCoins();
+    break;
+  case 15:
+    getV();
+    changeCardCode();
     break;
   }
   return 0;
@@ -122,4 +127,7 @@ void *doProcessClient(void *arg) {
   close(csock);
   pthread_exit(NULL);
 }
+#undef is_cmd
+#undef do_send
+#undef getV
 #endif //__SERVER__H
