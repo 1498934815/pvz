@@ -115,4 +115,4 @@
 
     z = bss + 0x5138c8
     y = *z
-    x = y + 0x2dfa0
+    x = y + [0x2df70, 0x2dfa0]
