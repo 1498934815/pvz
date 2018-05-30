@@ -11,7 +11,7 @@ libpvz_server.so_flag := -shared -fPIC -ldl
 inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -std=c99
 ifeq ($(NDK_BUILD),true)
-  NDK ?= $(HOME)/android-ndk-r14b
+	NDK ?= $(HOME)/android-ndk-r14b
 	NDK_STANDALONE ?= $(HOME)/ndk/arm
 	NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
 	NDK_SYSROOT ?= $(NDK)/platforms/android-12/arch-arm
