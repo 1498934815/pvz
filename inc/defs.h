@@ -18,6 +18,11 @@
 #define SETJMP_RET 0xff
 #define WAIT_USECONDS (500000)
 
+#define GITHUB "https://github.com/ze00/pvz"
+#define BRANCH "client"
+#define CODE_TXT GITHUB "/blob/" BRANCH "/doc/code.txt"
+#define HELP_TXT GITHUB "/blob/" BRANCH "/doc/help.txt"
+
 #define PAGE_START(x) ((x)&PAGE_MASK)
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 

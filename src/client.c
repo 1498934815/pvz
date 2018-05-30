@@ -21,8 +21,8 @@
 void doClientInit() {
   initClientCore();
   printf("PID:%d 基址:%p\n", info.pid, info.base);
-  printf("部分功能的解释见https://github.com/ze00/ "
-         "pvz/blob/client/doc/help.txt\n");
+  printf("部分功能的解释见 " HELP_TXT "\n");
+  printf("关于进入其他无尽 " CODE_TXT "\n");
 }
 int main(int argc, char **argv) {
   doClientInit();
@@ -94,15 +94,13 @@ int main(int argc, char **argv) {
              getField());
       break;
     case 11:
-      printf(
-          "部分代码见https://github.com/ze00/pvz/blob/client/doc/code.txt\n");
+      printf("部分代码见" CODE_TXT "\n");
       GETOPT_V("请输入场景代码:");
       sendV();
       break;
     case 12:
       printf("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在\n");
-      printf("见https://github.com/ze00/pvz/blob/client/doc/"
-             "code.txt底部的说明\n");
+      printf("见" CODE_TXT "底部的说明\n");
       GETOPT_V("请输入欲混乱的模式的代码:");
       sendV();
       break;
