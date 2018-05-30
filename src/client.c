@@ -21,8 +21,8 @@
 void doClientInit() {
   initClientCore();
   printf("PID:%d 基址:%p\n", info.pid, info.base);
-  printf("部分功能的解释见 " HELP_TXT "\n");
-  printf("关于进入其他无尽 " CODE_TXT "\n");
+  puts("部分功能的解释见 " HELP_TXT);
+  puts("关于进入其他无尽 " CODE_TXT);
 }
 int main(int argc, char **argv) {
   doClientInit();
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   BufferType buf;
   registeSigHandle();
   if (setjmp(env) == SETJMP_RET) {
-    puts("");
+    puts("\033[31;1m[NOTICE]\033[0m 无效输入");
   }
   while (1) {
     puts("1.改阳光");
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
       sendV();
       break;
     case 4: {
-      printf("要将梯子僵尸放于何列?\n例如:1.2,1.3,(行与列以英文句号分隔,"
+      printf("要将梯子僵尸放于何列?\n例如:1.2,1.3(行与列以英文句号分隔,"
              "多个行列以英文逗号分隔)");
       setbuf(stdin, NULL);
       if (fgets(buf, sizeof(buf), stdin) == NULL)
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     } break;
     case 5: {
       printf("要去除何处的莲叶或破坏何处的南瓜?(行与列以英文句号分隔,"
-             "多个行列以英文逗号分隔");
+             "多个行列以英文逗号分隔)");
       setbuf(stdin, NULL);
       if (fgets(buf, sizeof(buf), stdin) == NULL)
         PANIC;
@@ -94,13 +94,13 @@ int main(int argc, char **argv) {
              getField());
       break;
     case 11:
-      printf("部分代码见" CODE_TXT "\n");
+      puts("部分代码见" CODE_TXT);
       GETOPT_V("请输入场景代码:");
       sendV();
       break;
     case 12:
-      printf("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在\n");
-      printf("见" CODE_TXT "底部的说明\n");
+      puts("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在");
+      puts("见" CODE_TXT "底部的说明");
       GETOPT_V("请输入欲混乱的模式的代码:");
       sendV();
       break;
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
       if (IN_RANGE(option, 1, 18)) {
         doCmd(to_string("%d", option));
       } else {
-        printf("输入错误...\n");
+        puts("输入错误...");
       }
     }
   }

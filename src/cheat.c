@@ -58,7 +58,7 @@ void putLadder(void *remote) {
       setI32(remote + getOffset("zombies_row"), row);
       setF32(remote + getOffset("zombies_pos_x"), f);
       setF32(remote + getOffset("zombies_pos_y"), f);
-      printf("put ladder on %d:%d\n", info.task->row, info.task->col);
+      // printf("put ladder on %d:%d\n", info.task->row, info.task->col);
       pop(&info.task);
     }
   }

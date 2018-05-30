@@ -13,7 +13,6 @@
 #include "defs.h"
 #define PANIC                                                                  \
   do {                                                                         \
-    printf("无效输入\n");                                                      \
     raise(SIGINT);                                                             \
   } while (0)
 typedef struct __list {

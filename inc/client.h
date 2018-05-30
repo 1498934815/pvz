@@ -70,7 +70,6 @@ void *getStatus() {
   return v;
 }
 void catchSIGINT() {
-  fflush(stdout);
   setbuf(stdin, NULL);
   destroy((__list **)&info.task);
   longjmp(env, SETJMP_RET);

@@ -52,7 +52,13 @@ int has(__task *target, int row, int col) {
   }
   return 0;
 }
+void strip(const char *buf) {
+  char *temp;
+  if ((temp = strchr(buf, '\n')))
+    *temp = 0;
+}
 void parseRowAndCol(const char *buf, __task **task) {
+  strip(buf);
   const char *val = buf;
   int row, col;
   enum statusMachine {
@@ -69,7 +75,7 @@ parse:
     goto panic;                                                                \
   }
 #define DIGIT() (*val - '0')
-  if (*val == '\n' || *val == '\0') {
+  if (*val == '\0') {
     if (status != NEED_COMMA) {
       --val;
       CHECK(0);
