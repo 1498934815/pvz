@@ -23,6 +23,13 @@
 #define CODE_TXT GITHUB "/blob/" BRANCH "/doc/code.txt"
 #define HELP_TXT GITHUB "/blob/" BRANCH "/doc/help.txt"
 
+#define NOTICE "\033[33;1m[NOTICE]\033[0m "
+#define ERR "\033[31;1m[ERR]\033[0m "
+
+#define UN_INIT "uninitialized"
+#define GETSTATUS "getstatus"
+#define GETBASE "getbase"
+#define GETPID "getpid"
 #define PAGE_START(x) ((x)&PAGE_MASK)
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 

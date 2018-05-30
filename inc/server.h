@@ -95,15 +95,15 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   return 0;
 }
 void processCmd(int fd, size_t len, const char *cmd) {
-  if (is_cmd("getpid")) {
+  if (is_cmd(GETPID)) {
     do_send(to_string("%d", getpid()));
-  } else if (is_cmd("getbase")) {
+  } else if (is_cmd(GETBASE)) {
     do_send(to_string("%p", getField()));
-  } else if (is_cmd("getstatus")) {
+  } else if (is_cmd(GETSTATUS)) {
     do_send(to_string("%p", getStatus()));
   } else {
     if (executeCmd(fd, len, cmd)) {
-      do_send("uninitialized");
+      do_send(UN_INIT);
     } else {
       do_send("success");
     }

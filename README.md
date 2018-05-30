@@ -21,7 +21,6 @@
     14.改金币
     15.修改第一个卡槽
 
-
 ```
 ## 使用步骤
   * **获取一个北美版的植物大战僵尸**
@@ -40,7 +39,7 @@
 
     基于JackpalTerminal(https://github.com/jackpal/Android-Terminal-Emulator)
 
-    如果您已经启动了植物大战僵尸，则应该是
+    如果您已经启动了植物大战僵尸，则应该类似于
     ![cheater_suceess](images/cheater_success.png)
     否则，将会是
     ![cheater_failure](images/cheater_failure.png)

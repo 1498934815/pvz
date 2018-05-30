@@ -21,8 +21,8 @@
 void doClientInit() {
   initClientCore();
   printf("PID:%d 基址:%p\n", info.pid, info.base);
-  puts("部分功能的解释见 " HELP_TXT);
-  puts("关于进入其他无尽 " CODE_TXT);
+  puts(NOTICE "部分功能的解释见 " HELP_TXT);
+  puts(NOTICE "关于进入其他无尽 " CODE_TXT);
 }
 int main(int argc, char **argv) {
   doClientInit();
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   BufferType buf;
   registeSigHandle();
   if (setjmp(env) == SETJMP_RET) {
-    puts("\033[31;1m[NOTICE]\033[0m 无效输入");
+    puts(ERR "无效输入");
   }
   while (1) {
     puts("1.改阳光");
@@ -111,10 +111,11 @@ int main(int argc, char **argv) {
     case 16:
       goto out;
     default:
-      if (IN_RANGE(option, 1, 18)) {
+      // FIXME:ugly code
+      if (IN_RANGE(option, 1, 16)) {
         doCmd(to_string("%d", option));
       } else {
-        puts("输入错误...");
+        puts(ERR "输入错误...");
       }
     }
   }

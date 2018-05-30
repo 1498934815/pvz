@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __CHEATER__H
-#define __CHEATER__H
+#ifndef __CLIENT__H
+#define __CLIENT__H
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -54,19 +54,19 @@ const char *doCmd(const char *cmd) {
     close(getSock());
     // 重试
     initClientCore();
-  } else if (strcmp(rec, "uninitialized") == 0) {
-    printf("您所选的选项'%s' 需要先开始游戏\n", cmd);
+  } else if (strcmp(rec, UN_INIT) == 0) {
+    printf(ERR "您所选的选项'%s' 需要先开始游戏\n", cmd);
   }
   return rec;
 }
 void parseAddr(const char *rec, void **out) { sscanf(rec, "%p", out); }
 void parseInt(const char *rec, int *out) { sscanf(rec, "%d", out); }
-void getRemoteBase() { parseAddr(doCmd("getbase"), &info.base); }
-void detectPVZ() { parseInt(doCmd("getpid"), &info.pid); }
+void getRemoteBase() { parseAddr(doCmd(GETBASE), &info.base); }
+void detectPVZ() { parseInt(doCmd(GETPID), &info.pid); }
 void *getField() { return info.base; }
 void *getStatus() {
   void *v;
-  parseAddr(doCmd("getstatus"), &v);
+  parseAddr(doCmd(GETSTATUS), &v);
   return v;
 }
 void catchSIGINT() {
@@ -75,4 +75,4 @@ void catchSIGINT() {
   longjmp(env, SETJMP_RET);
 }
 void registeSigHandle() { signal(SIGINT, catchSIGINT); }
-#endif //__CHEATER__H
+#endif //__CLIENT__H

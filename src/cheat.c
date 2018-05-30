@@ -7,8 +7,6 @@
  * Module  :
  * License : MIT
  */
-#ifndef __CHEATER__H
-#define __CHEATER__H
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -202,4 +200,3 @@ void changeCardCode() {
   set_by_val(card + first_card_code);
 #undef first_card_code
 }
-#endif //__CHEATER__H
