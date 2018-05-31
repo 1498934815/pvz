@@ -17,13 +17,13 @@
 #include "../inc/cheat.h"
 #include "../inc/pvz_offset.h"
 #include "../inc/base.h"
-
-void *by_field(const char *name) { return getField() + getOffset(name); }
-void *by_status(const char *name) { return getStatus() + getOffset(name); }
-void *by_saves(const char *name) { return getSaves() + getOffset(name); }
-#define ROW(lp) (getI32(lp + getOffset("zombies_row")) + 1)
-#define COL(lp) (getF32(lp + getOffset("zombies_pos_y")))
-#define CODE(lp) (getI32(lp + getOffset("zombies_type")))
+void *by_ptr(void *ptr, const char *name) { return ptr + getOffset(name); }
+void *by_field(const char *name) { return by_ptr(getField(), name); }
+void *by_status(const char *name) { return by_ptr(getStatus, name); }
+void *by_saves(const char *name) { return by_ptr(getSaves(), name); }
+#define ROW(remote) (getI32(by_ptr(remote, "zombies_row")) + 1)
+#define COL(remote) (getF32(by_ptr(remote, "zombies_pos_y")))
+#define CODE(remote) (getI32(by_ptr(remote, "zombies_type")))
 void forEachZombies(void (*op)(void *)) {
   size_t zcnt = getI32(by_status("zombies_count"));
   int32_t *entry = getP32(by_status("zombies_entry"));
@@ -51,11 +51,11 @@ void putLadder(void *remote) {
     if (CODE(remote) == LADDER_CODE) {
       float f = info.task->col * 100;
       int32_t row = info.task->row - 1;
-      if (f > getF32(remote + getOffset("zombies_pos_x")))
+      if (f > getF32(by_ptr(remote, "zombies_pos_x")))
         return;
-      setI32(remote + getOffset("zombies_row"), row);
-      setF32(remote + getOffset("zombies_pos_x"), f);
-      setF32(remote + getOffset("zombies_pos_y"), f);
+      setI32(by_ptr(remote, "zombies_row"), row);
+      setF32(by_ptr(remote, "zombies_pos_x"), f);
+      setF32(by_ptr(remote, "zombies_pos_y"), f);
       // printf("put ladder on %d:%d\n", info.task->row, info.task->col);
       pop(&info.task);
     }
@@ -95,9 +95,9 @@ void callLadder() {
 #undef COL
 #undef CODE
 
-#define ROW(lp) (getI32(lp + getOffset("plants_row")) + 1)
-#define COL(lp) (getI32(lp + getOffset("plants_col")) + 1)
-#define CODE(lp) (getI32(lp + getOffset("plants_type")))
+#define ROW(remote) (getI32(by_ptr(remote, "plants_row")) + 1)
+#define COL(remote) (getI32(by_ptr(remote, "plants_col")) + 1)
+#define CODE(remote) (getI32(by_ptr(remote, "plants_type")))
 void forEachPlants(void (*op)(void *)) {
   size_t pcnt = getI32(by_status("plants_count"));
   int32_t *entry = getP32(by_status("plants_entry"));
@@ -117,10 +117,10 @@ void fuck_LilyPad_Pumpkin(void *remote) {
   if (has(info.task, ROW(remote), COL(remote))) {
     switch (CODE(remote)) {
     case LILYPAD_CODE:
-      setI32(remote + getOffset("plants_vis"), 0);
+      setI32(by_ptr(remote, "plants_vis"), 0);
       break;
     case PUMPKIN_CODE:
-      setI32(remote + getOffset("plants_hp"), 1332);
+      setI32(by_ptr(remote, "plants_hp"), 1332);
     }
   }
 }
@@ -172,7 +172,12 @@ void switchMode() { set_by_val(by_field("mode")); }
 void setSun() { set_by_val(by_status("sun")); }
 
 void setFlags() {
-  set_by_val(getP32(by_status("flags_helper")) + getOffset("flags"));
+  // clang-format off
+  set_by_val(getP32(
+        by_ptr(by_status("flags_helper"),
+          "flags")
+        ));
+  // clang-format on
 }
 
 void pass() { setI32(by_status("pass"), 1); }
