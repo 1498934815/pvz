@@ -19,7 +19,7 @@
 #include "../inc/base.h"
 void *by_ptr(void *ptr, const char *name) { return ptr + getOffset(name); }
 void *by_field(const char *name) { return by_ptr(getField(), name); }
-void *by_status(const char *name) { return by_ptr(getStatus, name); }
+void *by_status(const char *name) { return by_ptr(getStatus(), name); }
 void *by_saves(const char *name) { return by_ptr(getSaves(), name); }
 #define ROW(remote) (getI32(by_ptr(remote, "zombies_row")) + 1)
 #define COL(remote) (getF32(by_ptr(remote, "zombies_pos_y")))
@@ -64,8 +64,9 @@ void putLadder(void *remote) {
 
 void doLimits() {
   uint32_t *zom = by_status("zombies_list");
-  // 普僵 红眼 小丑 气球 冰车 舞王 海豚 橄榄
-  static uint32_t candidate[] = {0, 0x20, 0x10, 0xf, 0xc, 0x8, 0xe, 0x7};
+  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水
+  static uint32_t candidate[] = {0,   0x4, 0x20, 0x10, 0xf, 0xc,
+                                 0x8, 0xe, 0x7,  0x16, 0xb};
   static uint32_t which;
   static uint32_t lawnType;
   lawnType = getI32(by_status("lawn_type"));
@@ -74,10 +75,10 @@ void doLimits() {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
       do {
         which = rand() % ARRAY_SIZE(candidate);
-        // 如果在非泳池模式得到海豚
+        // 如果在非泳池模式得到海豚、潜水
         // 重新生成一次
-      } while (candidate[which] == 0xe &&
-               !IN_RANGE(lawnType, 2, 3)); // 白天泳池/雾夜
+      } while ((candidate[which] == 0xe || candidate[which] == 0xb) &&
+               !IN_RANGE(lawnType, 2, 3));
       setI32(zom, candidate[which]);
       ++zom;
     }
