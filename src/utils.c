@@ -10,9 +10,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "defs.h"
-#include "pvz.h"
-#include "utils.h"
+#include "../inc/defs.h"
+#include "../inc/pvz.h"
+#include "../inc/utils.h"
 void *insert(__list **target, size_t len) {
   __list *node = malloc(len);
   node->next = NULL;

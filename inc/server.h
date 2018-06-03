@@ -11,8 +11,8 @@
 #define __SERVER__H
 #include <pthread.h>
 #include <unistd.h>
-#include "base.h"
-#include "cheat.h"
+#include "../inc/base.h"
+#include "../inc/cheat.h"
 #define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
 #define do_send(str) send(fd, str, strlen(str), 0)
 
