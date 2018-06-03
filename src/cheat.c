@@ -78,7 +78,7 @@ void doLimits() {
         // 如果在非泳池模式得到海豚、潜水
         // 重新生成一次
       } while ((candidate[which] == 0xe || candidate[which] == 0xb) &&
-               !IN_RANGE(lawnType, 2, 3));
+               !IN_RANGE(lawnType, 2, 3)); // 白天泳池/雾夜
       setI32(zom, candidate[which]);
       ++zom;
     }
@@ -155,6 +155,7 @@ void *__getField() {
       state = NEED_ZERO;
     }
   }
+#undef bound
   return heap + off->offset;
 }
 void *getField() {
@@ -205,3 +206,4 @@ void changeCardCode() {
   set_by_val(card + first_card_code);
 #undef first_card_code
 }
+#undef set_by_val
