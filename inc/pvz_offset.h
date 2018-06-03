@@ -16,7 +16,6 @@ struct pvz_offset {
   off_t offset;
 };
 struct pvz_offset pvz_off_tbl[] = {
-    {"sun", 0x56bc},
     // 僵尸类型代码
     {"zombies_type", 0x30},
     // 僵尸x坐标
@@ -26,8 +25,10 @@ struct pvz_offset pvz_off_tbl[] = {
     {"zombies_pos_y", 0x3c},
     // 僵尸的行
     {"zombies_row", 0x1c},
-    // 僵尸雪亮
+    // 僵尸血量
     {"zombies_hp", 0xd4},
+    // 僵尸黄油
+    {"zombies_butter", 0xbc},
     // 植物是否可见
     {"plants_vis", 0x18},
     // 植物的列
@@ -56,6 +57,7 @@ struct pvz_offset pvz_off_tbl[] = {
     {"zombies_list", 0x810},
     {"plants_entry", 0xd0},
     {"plants_count", 0xe0},
+    {"sun", 0x56bc},
     {"pass", 0x5760},
     {"flags_helper", 0x294},
     {"cards_entry", 0x168},

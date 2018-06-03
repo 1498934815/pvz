@@ -44,7 +44,9 @@ void forEachZombies(void (*op)(void *)) {
   }
 }
 
-void coverZombies(void *remote) { setI32(remote + 0xbc, 5000); }
+void coverZombies(void *remote) {
+  setI32(by_ptr(remote, "zombies_butter"), 5000);
+}
 
 void putLadder(void *remote) {
   if (info.task != NULL) {
@@ -132,7 +134,7 @@ void freePlants() { setI32(by_field("free_plants"), 1); }
 #undef CODE
 
 void *__getField() {
-  void *heap = getP32(info.bss + getOffset("heap"));
+  void *heap = getP32(by_ptr(info.bss, "heap"));
   struct pvz_offset *off = __getOffset("field_offset");
   enum {
     NEED_ZERO,
