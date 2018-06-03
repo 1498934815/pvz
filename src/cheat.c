@@ -174,10 +174,9 @@ void setSun() { set_by_val(by_status("sun")); }
 
 void setFlags() {
   // clang-format off
-  set_by_val(getP32(
-        by_ptr(by_status("flags_helper"),
-          "flags")
-        ));
+  set_by_val(by_ptr(
+        getP32(by_status("flags_helper")),
+        "flags"));
   // clang-format on
 }
 
