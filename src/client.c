@@ -48,7 +48,8 @@ int main(int argc, char **argv) {
     puts("13.冒险跳关");
     puts("14.改金币");
     puts("15.修改第一个卡槽");
-    puts("16.退出");
+    puts("16.过第二周目");
+    puts("17.退出");
 
 #define GETOPT(mess, opt)                                                      \
   printf(mess);                                                                \
@@ -108,11 +109,11 @@ int main(int argc, char **argv) {
       GETOPT_V("请输入卡槽代码:");
       sendV();
       break;
-    case 16:
+    case 17:
       goto out;
     default:
       // FIXME:ugly code
-      if (IN_RANGE(option, 1, 16)) {
+      if (IN_RANGE(option, 1, 17)) {
         doCmd(to_string("%d", option));
       } else {
         puts(ERR "输入错误...");

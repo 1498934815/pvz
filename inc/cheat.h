@@ -25,6 +25,7 @@ void moveSaves();
 void changeCoins();
 void jump();
 void changeCardCode();
+void pass2life();
 void *getSaves();
 void *getField();
 void *getStatus();

@@ -68,6 +68,7 @@ struct pvz_offset pvz_off_tbl[] = {
     {"coins", 0x4},
     {"user_id", 0x20},
     {"adventure_level", 0x28},
+    {"2life", 0x2c},
 };
 struct pvz_offset *__getOffset(const char *name) {
   struct pvz_offset *pf;

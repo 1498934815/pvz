@@ -192,6 +192,7 @@ int32_t __getUserId() { return getI32(by_saves("user_id")); }
 void changeCoins() { set_by_val(by_saves("coins")); }
 
 void jump() { set_by_val(by_saves("adventure_level")); }
+void pass2life() { setI32(by_saves("2life"), 2); }
 
 void moveSaves() {
   // 形如/storage/emulated/0/Android/data/com.popcap.pvz_na/files/userdata/users.dat
