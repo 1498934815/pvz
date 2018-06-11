@@ -27,9 +27,9 @@
 #define ERR "\033[31;1m[ERR]\033[0m "
 
 #define UN_INIT "uninitialized"
-#define GETSTATUS "getstatus"
-#define GETBASE "getbase"
 #define GETPID "getpid"
+#define GETBASE "getbase"
+#define GETSTATUS "getstatus"
 #define PAGE_START(x) ((x)&PAGE_MASK)
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 

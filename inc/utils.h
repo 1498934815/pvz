@@ -34,4 +34,8 @@ extern void *insert(__list **, size_t);
 extern void parseRowAndCol(const char *, __task **);
 extern const char *__attribute__((format(printf, 1, 2)))
 to_string(const char *, ...);
+
+void parseAddr(const char *, void **);
+void parseInt(const char *, int *);
+
 #endif //__UTILS__H

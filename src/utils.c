@@ -124,5 +124,7 @@ const char *to_string(const char *fmt, ...) {
   va_end(va);
   return buf;
 }
+void parseAddr(const char *rec, void **out) { sscanf(rec, "%p", out); }
+void parseInt(const char *rec, int *out) { sscanf(rec, "%d", out); }
 #undef CHECK
 #undef DIGIT
