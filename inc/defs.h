@@ -23,11 +23,14 @@
 #define CODE_TXT GITHUB "/blob/" BRANCH "/doc/code.txt"
 #define HELP_TXT GITHUB "/blob/" BRANCH "/doc/help.txt"
 
+#define TIEBA_POST_URL "https://tieba.baidu.com/p/5645499737"
+
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
 #define ERR "\033[31;1m[ERR]\033[0m "
 
 #define UN_INIT "uninitialized"
 #define GETPID "getpid"
+#define GETHASH "gethash"
 #define GETBASE "getbase"
 #define GETSTATUS "getstatus"
 #define PAGE_START(x) ((x)&PAGE_MASK)

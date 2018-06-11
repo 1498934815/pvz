@@ -172,6 +172,7 @@ void *getStatus() {
 }
 #define set_by_val(p) setI32((p), info.val)
 void switchMode() { set_by_val(by_field("mode")); }
+void switchFieldType() { set_by_val(by_status("field_type")); }
 
 void setSun() { set_by_val(by_status("sun")); }
 

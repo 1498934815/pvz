@@ -126,6 +126,10 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   case 16:
     pass2life();
     break;
+  case 17:
+    getV();
+    switchFieldType();
+    break;
   }
   return 0;
 }
@@ -136,6 +140,8 @@ void processCmd(int fd, size_t len, const char *cmd) {
     do_send(to_string("%p", getField()));
   } else if (is_cmd(GETSTATUS)) {
     do_send(to_string("%p", getStatus()));
+  } else if (is_cmd(GETHASH)) {
+    do_send(PRIVATE_HASH);
   } else {
     if (executeCmd(fd, len, cmd)) {
       do_send(UN_INIT);

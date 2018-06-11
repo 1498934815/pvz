@@ -17,3 +17,6 @@
     那么,应输入``10(X-1) + Y``
     例如，第5-9关
     即是49(50 - 10 + 9)
+
+## 关于场景类型切换
+  见https://github.com/ze00/pvz/blob/client/doc/code.txt

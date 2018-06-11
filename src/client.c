@@ -19,6 +19,11 @@
 #include "../inc/defs.h"
 #include "../inc/utils.h"
 #include "../inc/base.h"
+
+#define notice(mess) puts(NOTICE mess)
+#define noticef(...) printf(NOTICE __VA_ARGS__)
+#define err(mess) puts(ERR mess)
+#define errf(...) printf(ERR __VA_ARGS__)
 int initConnection() {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in sin;
@@ -40,7 +45,9 @@ void initClientCore() {
   }
   extern void detectPVZ();
   extern void getRemoteBase();
+  extern void verifyVersion();
   detectPVZ();
+  verifyVersion();
   getRemoteBase();
 }
 int getSock() { return info.sock; }
@@ -57,12 +64,19 @@ const char *doCmd(const char *cmd) {
     // 重试
     initClientCore();
   } else if (strcmp(rec, UN_INIT) == 0) {
-    printf(ERR "您所选的选项'%s' 需要先开始游戏\n", cmd);
+    errf("您所选的选项'%s' 需要先开始游戏\n", cmd);
   }
   return rec;
 }
 void getRemoteBase() { parseAddr(doCmd(GETBASE), &info.base); }
 void detectPVZ() { parseInt(doCmd(GETPID), &info.pid); }
+void verifyVersion() {
+  if (strcmp(doCmd(GETHASH), PRIVATE_HASH) != 0) {
+    err("修改器与主程序版本不一致!");
+    err("请于" TIEBA_POST_URL "下载最新版本的主程序与修改器");
+    exit(-1);
+  }
+}
 void *getField() { return info.base; }
 void *getStatus() {
   void *v;
@@ -78,9 +92,12 @@ void registeSigHandle() { signal(SIGINT, catchSIGINT); }
 
 void doClientInit() {
   initClientCore();
-  printf("PID:%d 基址:%p\n", info.pid, info.base);
-  puts(NOTICE "部分功能的解释见 " HELP_TXT);
-  puts(NOTICE "关于进入其他无尽 " CODE_TXT);
+  notice("Github:" GITHUB);
+  notice("Tieba:" TIEBA_POST_URL);
+  notice("Commit Hash:" PRIVATE_HASH);
+  noticef("PID:%d 基址:%p\n", info.pid, info.base);
+  notice("部分功能的解释见 " HELP_TXT);
+  notice("关于进入其他无尽 " CODE_TXT);
 }
 int main(int argc, char **argv) {
   doClientInit();
@@ -88,7 +105,7 @@ int main(int argc, char **argv) {
   BufferType buf;
   registeSigHandle();
   if (setjmp(env) == SETJMP_RET) {
-    puts(ERR "无效输入");
+    err("无效输入");
   }
   while (1) {
     puts("1.改阳光");
@@ -107,7 +124,8 @@ int main(int argc, char **argv) {
     puts("14.改金币");
     puts("15.修改第一个卡槽");
     puts("16.过第二周目");
-    puts("17.退出");
+    puts("17.切换场景");
+    puts("18.退出");
 
 #define GETOPT(mess, opt)                                                      \
   printf(mess);                                                                \
@@ -128,7 +146,7 @@ int main(int argc, char **argv) {
       break;
     case 4: {
       printf("要将梯子僵尸放于何列?\n例如:1.2,1.3(行与列以英文句号分隔,"
-             "多个行列以英文逗号分隔)");
+             "多个行列以英文逗号分隔):");
       setbuf(stdin, NULL);
       if (fgets(buf, sizeof(buf), stdin) == NULL)
         PANIC;
@@ -140,7 +158,7 @@ int main(int argc, char **argv) {
     } break;
     case 5: {
       printf("要去除何处的莲叶或破坏何处的南瓜?(行与列以英文句号分隔,"
-             "多个行列以英文逗号分隔)");
+             "多个行列以英文逗号分隔):");
       setbuf(stdin, NULL);
       if (fgets(buf, sizeof(buf), stdin) == NULL)
         PANIC;
@@ -149,17 +167,17 @@ int main(int argc, char **argv) {
       do_send("%s", buf);
     } break;
     case 6:
-      printf("PID:%d 状态与信息:%p 基址:%p\n", info.pid, getStatus(),
-             getField());
+      noticef("PID:%d 状态与信息:%p 基址:%p\n", info.pid, getStatus(),
+              getField());
       break;
     case 11:
-      puts("部分代码见" CODE_TXT);
+      notice("部分代码见" CODE_TXT);
       GETOPT_V("请输入场景代码:");
       sendV();
       break;
     case 12:
-      puts("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在");
-      puts("见" CODE_TXT "底部的说明");
+      notice("请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在");
+      notice("见" CODE_TXT "底部的说明");
       GETOPT_V("请输入欲混乱的模式的代码:");
       sendV();
       break;
@@ -168,13 +186,21 @@ int main(int argc, char **argv) {
       sendV();
       break;
     case 17:
+      notice("场景代码见" CODE_TXT);
+      notice("请更改后重新进入当前关卡");
+      GETOPT_V("请输入场景类型代码(0-8):");
+      if (!IN_RANGE(info.val, 0, 8))
+        PANIC;
+      sendV();
+      break;
+    case 18:
       goto out;
     default:
       // FIXME:ugly code
-      if (IN_RANGE(option, 1, 17)) {
+      if (IN_RANGE(option, 1, 18)) {
         doCmd(to_string("%d", option));
       } else {
-        puts(ERR "输入错误...");
+        err("输入错误...");
       }
     }
   }

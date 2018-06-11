@@ -21,6 +21,7 @@ void doLimits();
 void callLadder();
 void freePlants();
 void switchMode();
+void switchFieldType();
 void moveSaves();
 void changeCoins();
 void jump();
