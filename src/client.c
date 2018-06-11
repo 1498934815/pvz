@@ -188,8 +188,8 @@ int main(int argc, char **argv) {
     case 17:
       notice("场景代码见" CODE_TXT);
       notice("请更改后重新进入当前关卡");
-      GETOPT_V("请输入场景类型代码(0-8):");
-      if (!IN_RANGE(info.val, 0, 8))
+      GETOPT_V("请输入场景类型代码(0-7):");
+      if (!IN_RANGE(info.val, 0, 7))
         PANIC;
       sendV();
       break;
