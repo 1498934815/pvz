@@ -42,7 +42,7 @@
 
     基于JackpalTerminal(https://github.com/jackpal/Android-Terminal-Emulator)
 
-    如果您已经启动了植物大战僵尸，则应该类似于
+    如果您正确的放置了数据包、使用了正确的主程序，则应该类似于
     ![cheater_suceess](images/cheater_success.png)
-    否则，将会是
+    否则，如果您没有使用正确的主程序或者没有先打开PvZ，则
     ![cheater_failure](images/cheater_failure.png)

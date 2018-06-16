@@ -22,6 +22,7 @@
 #define BRANCH "client"
 #define CODE_TXT GITHUB "/blob/" BRANCH "/doc/code.txt"
 #define HELP_TXT GITHUB "/blob/" BRANCH "/doc/help.txt"
+#define README_MD GITHUB "/blob/" BRANCH "/README.md"
 
 #define TIEBA_POST_URL "https://tieba.baidu.com/p/5645499737"
 

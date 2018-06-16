@@ -98,6 +98,7 @@ void doClientInit() {
   noticef("PID:%d 基址:%p\n", info.pid, info.base);
   notice("部分功能的解释见 " HELP_TXT);
   notice("关于进入其他无尽 " CODE_TXT);
+  notice("关于本程序的使用 " README_MD);
 }
 int main(int argc, char **argv) {
   doClientInit();
