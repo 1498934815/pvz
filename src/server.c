@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "../inc/pvz.h"
+#include "../inc/com.h"
 #include "../inc/defs.h"
 #include "../inc/base.h"
 #include "../inc/cheat.h"
@@ -34,6 +35,7 @@ void *initServer(void *unused) {
   listen(sockfd, 1024);
 #define doAccept() (accept(sockfd, NULL, NULL))
   doInit();
+  doInitOptions();
   while ((csock = doAccept())) {
     pthread_t tid;
     // 多个client时
@@ -50,86 +52,15 @@ void *initServer(void *unused) {
 int executeCmd(int fd, size_t len, const char *cmd) {
   static BufferType arg;
   memset(arg, 0, sizeof(arg));
-  int option;
+  unsigned id;
   // 没有匹配到:会停止
   // 但在那之前option已经得到正确的值
-  sscanf(cmd, "%d:%s", &option, arg);
-  // 这些是不需要游戏被初始化的选项
-  // FIXME:ugly code
-  if (getStatus() == NULL && option != 2 && option != 6 && option != 16 &&
-      !IN_RANGE(option, 12, 14)) {
+  sscanf(cmd, "%u:%s", &id, arg);
+  struct pvz_option *option = getOption(id);
+  if ((option->server_attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
     return 1;
-  }
 #define getV() sscanf(arg, "%d", &info.val)
-  switch (option) {
-  case 1:
-    getV();
-    setSun();
-    break;
-  case 2:
-    freePlants();
-    break;
-  case 3:
-    forEachZombies(coverZombies);
-    break;
-  case 4: {
-    parseRowAndCol(arg, &info.task);
-    while (info.task != NULL) {
-      forEachZombies(putLadder);
-      usleep(WAIT_USECONDS);
-    }
-  } break;
-  case 5: {
-    parseRowAndCol(arg, &info.task);
-    forEachPlants(fuck_LilyPad_Pumpkin);
-    destroy((__list **)&info.task);
-  } break;
-  // 在processCmd中会处理
-  // getStatus
-#if 0
-  case 6:
-    break;
-#endif
-  case 7:
-    pass();
-    break;
-  case 8:
-    getV();
-    setFlags();
-    break;
-  case 9:
-    callLadder();
-    break;
-  case 10:
-    doLimits();
-    break;
-  case 11:
-    getV();
-    switchMode();
-    break;
-  case 12:
-    getV();
-    moveSaves();
-    break;
-  case 13:
-    getV();
-    jump();
-    break;
-  case 14:
-    getV();
-    changeCoins();
-    break;
-  case 15:
-    getV();
-    changeCardCode();
-    break;
-  case 16:
-    pass2life();
-    break;
-  case 17:
-    getV();
-    switchFieldType();
-    break;
+  switch (id) {
   }
   return 0;
 }

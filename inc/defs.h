@@ -25,6 +25,7 @@
 #define README_MD GITHUB "/blob/" BRANCH "/README.md"
 
 #define TIEBA_POST_URL "https://tieba.baidu.com/p/5645499737"
+#define AUTHOR "AS魇梦蚀"
 
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
 #define ERR "\033[31;1m[ERR]\033[0m "
@@ -38,6 +39,11 @@
 #define PAGE_END(x) PAGE_START((x) + (PAGE_SIZE - 1))
 
 #define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+
+#define notice(mess) puts(NOTICE mess)
+#define noticef(...) printf(NOTICE __VA_ARGS__)
+#define err(mess) puts(ERR mess)
+#define errf(...) printf(ERR __VA_ARGS__)
 
 typedef char BufferType[BUFSIZE];
 #endif //__DEFS__H

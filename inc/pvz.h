@@ -18,6 +18,7 @@
 #define PUMPKIN_CODE (30)
 #define LILYPAD_CODE (16)
 #define LADDER_CODE (21)
+#define GARGANTUAR_CODE (23)
 
 extern jmp_buf env;
 void getDynamicBase();
