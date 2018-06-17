@@ -16,17 +16,19 @@ struct pvz_option pvz_options[] = {
 
     OPTION("免费植物", freePlants, NULL, SERVER_NOT_INGAME, USER_DONOTHING),
 
-    OPTION("黄油糊脸", coverZombies, NULL, SERVER_DONOTHING, USER_DONOTHING),
+    OPTION("黄油糊脸", coverZombies, NULL, SERVER_NEED_ZOMBIES, USER_DONOTHING),
 
     OPTION("搭梯", putLadder,
            "要将梯子僵尸放于何列?\n例如:1.2,1.3(行与列以英文句号分隔,"
            "多个行列以英文逗号分隔):",
-           SERVER_NEED_ZOMBIES, USER_GETSTRING | USER_GETCOLROW),
+           SERVER_NEED_ZOMBIES | SERVER_GETCOLROW,
+           USER_GETSTRING | USER_GETCOLROW),
 
     OPTION("炸荷叶烂南瓜", fuck_LilyPad_Pumpkin,
            "要去除何处的莲叶或破坏何处的南瓜?(行与列以英文句号分隔,"
            "多个行列以英文逗号分隔):",
-           SERVER_DONOTHING, USER_GETSTRING | USER_GETCOLROW),
+           SERVER_NEED_PLANTS | SERVER_GETCOLROW,
+           USER_GETSTRING | USER_GETCOLROW),
 
     OPTION("输出调试信息", NULL, NULL, SERVER_DONOTHING, USER_INFO),
 

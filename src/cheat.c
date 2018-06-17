@@ -71,7 +71,7 @@ int32_t __getUserId() { return getI32(by_saves("user_id")); }
 #define ROW(remote) (getI32(by_ptr(remote, "zombies_row")) + 1)
 #define COL(remote) (getF32(by_ptr(remote, "zombies_pos_y")))
 #define CODE(remote) (getI32(by_ptr(remote, "zombies_type")))
-void forEachZombies(void (*op)(void *)) {
+void forEachZombies(cheat_function callback) {
   size_t zcnt = getI32(by_status("zombies_count"));
   int32_t *entry = getP32(by_status("zombies_entry"));
   void *zp;
@@ -81,7 +81,7 @@ void forEachZombies(void (*op)(void *)) {
     // 不知道干嘛的
     zp = getP32(entry);
     if (zp > (void *)0x10000000) {
-      op(zp);
+      callback(NULL, zp);
       idx++;
       // 僵尸地址后面有一个指针
       // 同不知道干嘛的
@@ -155,14 +155,14 @@ pvz_cheat_decl(callGargantuar) {
 #define ROW(remote) (getI32(by_ptr(remote, "plants_row")) + 1)
 #define COL(remote) (getI32(by_ptr(remote, "plants_col")) + 1)
 #define CODE(remote) (getI32(by_ptr(remote, "plants_type")))
-void forEachPlants(void (*op)(void *)) {
+void forEachPlants(cheat_function callback) {
   size_t pcnt = getI32(by_status("plants_count"));
   int32_t *entry = getP32(by_status("plants_entry"));
   void *pp;
   for (size_t idx = 0; idx < pcnt;) {
     pp = getP32(entry);
     if (pp > (void *)0x10000000) {
-      op(pp);
+      callback(NULL, pp);
       entry++;
       idx++;
     }

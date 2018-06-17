@@ -8,8 +8,8 @@
  * License : MIT
  */
 #include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -57,11 +57,25 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   // 但在那之前option已经得到正确的值
   sscanf(cmd, "%u:%s", &id, arg);
   struct pvz_option *option = getOption(id);
-  if ((option->server_attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
+  enum server_attr attr = option->server_attr;
+  cheat_function function = option->callback;
+  if ((attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
     return 1;
 #define getV() sscanf(arg, "%d", &info.val)
-  switch (id) {
+  if (attr & SERVER_GETV) {
+    getV();
   }
+  if (attr & SERVER_GETCOLROW) {
+    parseRowAndCol(arg, &info.task);
+  }
+  if (attr & SERVER_NEED_ZOMBIES) {
+    forEachZombies(function);
+  } else if (attr & SERVER_NEED_PLANTS) {
+    forEachPlants(function);
+  } else {
+    function(arg, NULL);
+  }
+  destroy((__list **)&info.task);
   return 0;
 }
 void processCmd(int fd, size_t len, const char *cmd) {

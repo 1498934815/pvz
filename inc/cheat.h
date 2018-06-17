@@ -9,12 +9,6 @@
  */
 #ifndef __CHEAT__H
 #define __CHEAT__H
-void forEachPlants(void (*)(void *));
-void forEachZombies(void (*)(void *));
-void *getSaves();
-void *getField();
-void *getStatus();
-
 // for com.c
 #define __pvz_unused __attribute__((unused))
 #define __pvz_weak __attribute__((weak))
@@ -23,6 +17,12 @@ void *getStatus();
 #define pvz_cheat_decl(name) __pvz_cheat(name)
 
 typedef void (*cheat_function)(const char *, void *__pvz_unused);
+
+void forEachPlants(cheat_function);
+void forEachZombies(cheat_function);
+void *getSaves();
+void *getField();
+void *getStatus();
 
 pvz_cheat(coverZombies);
 pvz_cheat(putLadder);
