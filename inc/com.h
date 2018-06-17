@@ -1,0 +1,46 @@
+/*
+ * File    : inc/com.h
+ * Project :
+ * Author  : ze00
+ * Email   : zerozakiGeek@gmail.com
+ * Date    : 2018-06-17
+ * Module  :
+ * License : MIT
+ */
+#ifndef __COM__H
+#define __COM__H
+#include <stdlib.h>
+#include "../inc/defs.h"
+#include "../inc/cheat.h"
+enum server_attr {
+  SERVER_DONOTHING = 1,
+  SERVER_GETV = 2,
+  SERVER_NOT_INGAME = 4,
+  SERVER_NEED_ZOMBIES = 8,
+  SERVER_NEED_PLANTS = 16,
+  SERVER_GETCOLROW = 32,
+};
+enum user_attr {
+  USER_DONOTHING = 1,
+  USER_GETINT = 2,
+  USER_GETSTRING = 4,
+  USER_GETCOLROW = 8,
+  USER_INFO = 16,
+  USER_EXIT = 32,
+};
+struct pvz_option {
+  unsigned id;
+  const char *name;
+  const char *command;
+  const char *description;
+  cheat_function callback;
+  enum server_attr server_attr;
+  enum user_attr user_attr;
+};
+
+extern struct pvz_option pvz_options[];
+
+unsigned getOptionsLength();
+void doInitOptions();
+struct pvz_option *getOption(unsigned);
+#endif //__COM__H
