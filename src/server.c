@@ -62,7 +62,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   if ((attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
     return 1;
 #define getV() sscanf(arg, "%d", &info.val)
-  if (attr & SERVER_GETV) {
+  if (attr & SERVER_GETINT) {
     getV();
   }
   if (attr & SERVER_GETCOLROW) {

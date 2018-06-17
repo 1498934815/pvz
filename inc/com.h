@@ -14,7 +14,7 @@
 #include "../inc/cheat.h"
 enum server_attr {
   SERVER_DONOTHING = 1,
-  SERVER_GETV = 2,
+  SERVER_GETINT = 2,
   SERVER_NOT_INGAME = 4,
   SERVER_NEED_ZOMBIES = 8,
   SERVER_NEED_PLANTS = 16,
@@ -31,8 +31,7 @@ enum user_attr {
 struct pvz_option {
   unsigned id;
   const char *name;
-  const char *command;
-  const char *description;
+  const char *notice;
   cheat_function callback;
   enum server_attr server_attr;
   enum user_attr user_attr;

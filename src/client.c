@@ -120,8 +120,8 @@ void doDisplayUserInterface() {
 void doProcessUserOption(struct pvz_option *option) {
   static BufferType buf;
   enum user_attr attr = option->user_attr;
-  if (option->description != NULL)
-    printf("%s", option->description);
+  if (option->notice != NULL)
+    puts(option->notice);
   if (attr & USER_EXIT) {
     close(getSock());
     exit(0);

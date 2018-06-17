@@ -10,7 +10,7 @@
 #define __UTILS__H
 #include <stdint.h>
 #include <unistd.h>
-#include "defs.h"
+#include "../inc/defs.h"
 #define PANIC                                                                  \
   do {                                                                         \
     raise(SIGINT);                                                             \

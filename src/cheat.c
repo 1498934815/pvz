@@ -142,9 +142,16 @@ pvz_cheat_decl(callLadder) {
 
 pvz_cheat_decl(callGargantuar) {
   uint32_t *zom = by_status("zombies_list");
-  for (size_t idx = 0; idx < 2000; ++idx) {
-    setI32(zom, GARGANTUAR_CODE);
-    ++zom;
+  int32_t code;
+  for (size_t iidx = 0; iidx < 20; ++iidx) {
+    code = GARGANTUAR_CODE;
+    for (size_t jidx = 0; jidx < 50; ++jidx) {
+      // 每波十只
+      if (jidx == 10)
+        code = -1;
+      setI32(zom, code);
+      ++zom;
+    }
   }
 }
 
