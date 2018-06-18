@@ -64,7 +64,7 @@ struct pvz_option pvz_options[] = {
            "\n请更改后重新进入当前关卡\n请输入场景类型代码(0-7):",
            SERVER_GETINT, USER_GETINT),
 
-    OPTION("输出调试信息", NULL, NULL, SERVER_DONOTHING, USER_INFO),
+    OPTION("输出调试信息", NULL, NULL, SERVER_DONOTHING, USER_DEBUGINFO),
 
     OPTION("退出", NULL, NULL, SERVER_DONOTHING, USER_EXIT),
 };

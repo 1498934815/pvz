@@ -37,7 +37,9 @@ int initConnection() {
 }
 void initClientCore() {
   if (initConnection()) {
-    printf("也许您已经退出或者并没有启动Pvz?\n");
+    err("也许您没有启动PvZ或中途退出了?");
+    err("也可能...您启动的是不正确的PvZ");
+    err("请于 " TIEBA_POST_URL " 中下载正确的" SPECIFIC_PACKAGE "_V{版本}.apk");
     exit(-1);
   }
   extern void detectPVZ();
@@ -68,7 +70,7 @@ const char *doCmd(const char *cmd) {
 void getRemoteBase() { parseAddr(doCmd(GETBASE), &info.base); }
 void detectPVZ() { parseInt(doCmd(GETPID), &info.pid); }
 void verifyVersion() {
-  if (strcmp(doCmd(GETHASH), PRIVATE_HASH) != 0) {
+  if (strcmp(doCmd(GETHASH), GIT_HASH) != 0) {
     err("修改器与主程序版本不一致!");
     err("请于" TIEBA_POST_URL "下载最新版本的主程序与修改器");
     exit(-1);
@@ -90,16 +92,19 @@ void registerSigHandle() { signal(SIGINT, catchSIGINT); }
 void printInfo() {
   notice("Github:" GITHUB);
   notice("Tieba:" TIEBA_POST_URL);
-  notice("Commit Hash:" PRIVATE_HASH);
+  notice("Commit Hash:" GIT_HASH);
   notice("By 百度贴吧@" AUTHOR);
   notice("部分功能的解释见 " HELP_TXT);
   notice("关于进入其他无尽 " CODE_TXT);
   notice("关于本程序的使用 " README_MD);
+}
+void printDebugInfo() {
   noticef("PID:%d 基址:%p 状态与信息:%p\n", info.pid, info.base, getStatus());
 }
 void doInitClient() {
-  initClientCore();
   printInfo();
+  initClientCore();
+  printDebugInfo();
 }
 void doDisplayUserInterface() {
   const struct pvz_option *option;
@@ -126,8 +131,8 @@ void doProcessUserOption(struct pvz_option *option) {
     close(getSock());
     exit(0);
   }
-  if (attr & USER_INFO) {
-    printInfo();
+  if (attr & USER_DEBUGINFO) {
+    printDebugInfo();
   }
   if (attr & USER_DONOTHING) {
     sendV();

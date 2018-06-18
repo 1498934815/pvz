@@ -5,13 +5,13 @@ MODULE := \
 common := src/utils.c src/pvz.c src/com.c
 pvz_client_src := src/client.c $(common)
 
-hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
+git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 
 libpvz_server.so_src := src/server.c src/cheat.c $(common)
 libpvz_server.so_flag := -shared -fPIC -ldl
 
 inc := $(shell find inc)
-CC_FLAG := -Iinc -Wall -std=c99 -DPRIVATE_HASH=\"$(hash)\"
+CC_FLAG := -Iinc -Wall -std=c99 -DGIT_HASH=\"$(git_hash)\"
 ifeq ($(NDK_BUILD),true)
 	NDK ?= $(HOME)/android-ndk-r14b
 	NDK_STANDALONE ?= $(HOME)/ndk/arm

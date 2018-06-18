@@ -25,7 +25,7 @@ enum user_attr {
   USER_GETINT = 2,
   USER_GETSTRING = 4,
   USER_GETCOLROW = 8,
-  USER_INFO = 16,
+  USER_DEBUGINFO = 16,
   USER_EXIT = 32,
 };
 struct pvz_option {

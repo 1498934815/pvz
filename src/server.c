@@ -86,7 +86,7 @@ void processCmd(int fd, size_t len, const char *cmd) {
   } else if (is_cmd(GETSTATUS)) {
     do_send(to_string("%p", getStatus()));
   } else if (is_cmd(GETHASH)) {
-    do_send(PRIVATE_HASH);
+    do_send(GIT_HASH);
   } else {
     if (executeCmd(fd, len, cmd)) {
       do_send(UN_INIT);
