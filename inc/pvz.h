@@ -11,6 +11,7 @@
 #define __PVZ__H
 #include <sys/cdefs.h>
 #include <setjmp.h>
+#include "../inc/utils.h"
 #define SPECIFIC_PACKAGE "com.popcap.pvz_na"
 #define SPECIFIC_DYNAMIC_LIBRARIES "libpvz.so"
 #define LIBPVZ_BASE_HELPER "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
@@ -20,7 +21,17 @@
 #define LADDER_CODE (21)
 #define GARGANTUAR_CODE (23)
 
+struct {
+  void *base;
+  void *bss;
+  int sock;
+  int32_t val;
+  pid_t pid;
+  __task *task;
+} info;
 extern jmp_buf env;
+
+void initBase();
 void getDynamicBase();
 void getBssBase();
 void pvz_write(void *, void *, size_t);

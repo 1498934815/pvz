@@ -16,7 +16,6 @@
 #include "../inc/pvz.h"
 #include "../inc/com.h"
 #include "../inc/defs.h"
-#include "../inc/base.h"
 #include "../inc/cheat.h"
 
 int sockfd;

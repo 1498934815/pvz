@@ -16,7 +16,6 @@
 #include "../inc/pvz.h"
 #include "../inc/cheat.h"
 #include "../inc/pvz_offset.h"
-#include "../inc/base.h"
 
 void *by_ptr(void *ptr, const char *name) { return ptr + getOffset(name); }
 void *by_field(const char *name) { return by_ptr(getField(), name); }

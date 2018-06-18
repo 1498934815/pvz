@@ -16,10 +16,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "../inc/pvz.h"
+#include "../inc/com.h"
 #include "../inc/defs.h"
 #include "../inc/utils.h"
-#include "../inc/base.h"
-#include "../inc/com.h"
 
 int initConnection() {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
