@@ -119,14 +119,17 @@ void doDisplayUserInterface() {
     PANIC;                                                                     \
   }
 #define GETOPT_V(mess) GETOPT(mess, info.val)
-#define do_send(fmt, ...) doCmd(to_string("%d:" fmt, option->id, __VA_ARGS__))
-#define sendV() do_send("%d", info.val)
+#define do_cmd(fmt, ...) doCmd(to_string("%d" fmt, __VA_ARGS__))
+#define do_cmd_with_arg(fmt, ...) do_cmd(":" fmt, option->id, __VA_ARGS__)
+#define sendI(I) do_cmd_with_arg("%d", I)
+#define sendS(S) do_cmd_with_arg("%s", S)
 
 void doProcessUserOption(struct pvz_option *option) {
   static BufferType buf;
   enum user_attr attr = option->user_attr;
-  if (option->notice != NULL)
-    puts(option->notice);
+  if (option->notice != NULL) {
+    printf("%s", option->notice);
+  }
   if (attr & USER_EXIT) {
     close(getSock());
     exit(0);
@@ -135,11 +138,11 @@ void doProcessUserOption(struct pvz_option *option) {
     printDebugInfo();
   }
   if (attr & USER_DONOTHING) {
-    sendV();
+    do_cmd(, option->id);
   }
   if (attr & USER_GETINT) {
     GETOPT_V("?");
-    sendV();
+    sendI(info.val);
   }
   if (attr & USER_GETSTRING) {
     setbuf(stdin, NULL);
@@ -150,7 +153,7 @@ void doProcessUserOption(struct pvz_option *option) {
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &info.task);
       destroy((__list **)&info.task);
-      do_send("%s", buf);
+      sendS(buf);
     }
   }
 }
@@ -176,5 +179,7 @@ int main(int argc, char **argv) {
 }
 #undef GETOPT
 #undef GETOPT_V
-#undef do_send
-#undef sendV
+#undef do_cmd
+#undef do_cmd_with_arg
+#undef sendI
+#undef sendS
