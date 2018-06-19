@@ -123,7 +123,7 @@ void doDisplayUserInterface() {
 #define sendI(I) do_cmd_with_arg("%d", I)
 #define sendS(S) do_cmd_with_arg("%s", S)
 
-void doProcessUserOption(struct pvz_option *option) {
+void doHandleUserOption(struct pvz_option *option) {
   static BufferType buf;
   enum user_attr attr = option->user_attr;
   if (option->notice != NULL) {
@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
       err("输入错误...");
       continue;
     }
-    doProcessUserOption(option);
+    doHandleUserOption(option);
   }
   return 0;
 }

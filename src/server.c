@@ -39,8 +39,8 @@ void *initServer(void *unused) {
     pthread_t tid;
     // 多个client时
     // &csock应该换成在csock在堆的拷贝
-    extern void *doProcessClient(void *);
-    pthread_create(&tid, NULL, doProcessClient, &csock);
+    extern void *doHandleClient(void *);
+    pthread_create(&tid, NULL, doHandleClient, &csock);
     pthread_detach(tid);
   }
   pthread_exit(NULL);
@@ -77,7 +77,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   destroy((__list **)&info.task);
   return 0;
 }
-void processCmd(int fd, size_t len, const char *cmd) {
+void handleCmd(int fd, size_t len, const char *cmd) {
   if (is_cmd(GETPID)) {
     do_send(to_string("%d", getpid()));
   } else if (is_cmd(GETBASE)) {
@@ -94,7 +94,7 @@ void processCmd(int fd, size_t len, const char *cmd) {
     }
   }
 }
-void *doProcessClient(void *arg) {
+void *doHandleClient(void *arg) {
   int csock = *(int *)arg;
   size_t rlen, clen;
   static BufferType buf;
@@ -107,7 +107,7 @@ void *doProcessClient(void *arg) {
   while ((rlen = recv(csock, buf, BUFSIZE, 0)) > 0) {
     sscanf(buf, "%zu:%s", &clen, cmd);
     cmd[clen] = 0;
-    processCmd(csock, clen, cmd);
+    handleCmd(csock, clen, cmd);
   }
   close(csock);
   pthread_exit(NULL);
