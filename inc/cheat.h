@@ -12,11 +12,12 @@
 // for com.c
 #define __pvz_unused __attribute__((unused))
 #define __pvz_weak __attribute__((weak))
-#define __pvz_cheat(name) void name(const char *arg, void *__pvz_unused remote)
+#define __pvz_cheat(name)                                                      \
+  void name(const char *__pvz_unused arg, void *__pvz_unused remote)
 #define pvz_cheat(name) __pvz_cheat(name) __pvz_weak
 #define pvz_cheat_decl(name) __pvz_cheat(name)
 
-typedef void (*cheat_function)(const char *, void *__pvz_unused);
+typedef void (*cheat_function)(const char *__pvz_unused, void *__pvz_unused);
 
 void forEachPlants(cheat_function);
 void forEachZombies(cheat_function);
