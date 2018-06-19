@@ -62,7 +62,6 @@ struct pvz_offset pvz_off_tbl[] = {
     {"pass", 0x5760},
     {"flags_helper", 0x294},
     {"cards_entry", 0x168},
-    {"lawn_type", 0x56a8},
     // *flags_helper + 0x6c
     {"flags", 0x6c},
     // *saves_entry + ...

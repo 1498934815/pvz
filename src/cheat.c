@@ -107,24 +107,34 @@ pvz_cheat_decl(putLadder) {
     }
   }
 }
-
+int isProper(int code, int fieldType) {
+  switch (code) {
+  // 泳池模式得到海豚、潜水
+  case 0xe:
+  case 0xb:
+    return IN_RANGE(fieldType, 2, 3);
+  // 非屋顶、月夜得到舞王、矿工
+  case 0x8:
+  case 0x11:
+    return !IN_RANGE(fieldType, 4, 5);
+  }
+  return 1;
+}
 pvz_cheat_decl(doLimits) {
   uint32_t *zom = by_status("zombies_list");
-  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水
+  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工
   static uint32_t candidate[] = {0,   0x4, 0x20, 0x10, 0xf, 0xc,
-                                 0x8, 0xe, 0x7,  0x16, 0xb};
+                                 0x8, 0xe, 0x7,  0x16, 0xb, 0x11};
   static uint32_t which;
-  static uint32_t lawnType;
-  lawnType = getI32(by_status("lawn_type"));
+  static uint32_t fieldType;
+  fieldType = getI32(by_status("field_type"));
   srand(time(NULL));
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
       do {
         which = rand() % ARRAY_SIZE(candidate);
-        // 如果在非泳池模式得到海豚、潜水
-        // 重新生成一次
-      } while ((candidate[which] == 0xe || candidate[which] == 0xb) &&
-               !IN_RANGE(lawnType, 2, 3)); // 白天泳池/雾夜
+      } while (!isProper(candidate[which],
+                         fieldType)); // 如果得到的僵尸不合适,重新生成
       setI32(zom, candidate[which]);
       ++zom;
     }
