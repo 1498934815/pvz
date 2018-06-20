@@ -118,10 +118,11 @@ void doDisplayUserInterface() {
     PANIC;                                                                     \
   }
 #define GETOPT_V(mess) GETOPT(mess, info.val)
-#define do_cmd(fmt, ...) doCmd(to_string("%d" fmt, __VA_ARGS__))
-#define do_cmd_with_arg(fmt, ...) do_cmd(":" fmt, option->id, __VA_ARGS__)
-#define sendI(I) do_cmd_with_arg("%d", I)
-#define sendS(S) do_cmd_with_arg("%s", S)
+#define do_cmd(fmt, ...) doCmd(to_string("%d" fmt, option->id __VA_ARGS__))
+#define do_cmd_with_arg(fmt, ...) do_cmd(":" fmt, __VA_ARGS__)
+// XXX ','不可少
+#define sendI(I) do_cmd_with_arg("%d", , I)
+#define sendS(S) do_cmd_with_arg("%s", , S)
 
 void doHandleUserOption(struct pvz_option *option) {
   static BufferType buf;
@@ -137,7 +138,7 @@ void doHandleUserOption(struct pvz_option *option) {
     printDebugInfo();
   }
   if (attr & USER_DONOTHING) {
-    do_cmd(, option->id);
+    do_cmd(, );
   }
   if (attr & USER_GETINT) {
     GETOPT_V("?");
@@ -147,13 +148,13 @@ void doHandleUserOption(struct pvz_option *option) {
     setbuf(stdin, NULL);
     if (fgets(buf, sizeof(buf), stdin) == NULL)
       PANIC;
-    if (option->user_attr & USER_GETCOLROW) {
+    if (attr & USER_GETCOLROW) {
       // 作形式检查
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &info.task);
       destroy((__list **)&info.task);
-      sendS(buf);
     }
+    sendS(buf);
   }
 }
 int main(int argc, char **argv) {
