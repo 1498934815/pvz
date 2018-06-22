@@ -27,7 +27,7 @@ struct {
   int sock;
   int32_t val;
   pid_t pid;
-  __task *task;
+  struct task *task;
 } info;
 extern jmp_buf env;
 

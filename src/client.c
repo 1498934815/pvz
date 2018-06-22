@@ -83,7 +83,7 @@ void *getStatus() {
 }
 void catchSIGINT() {
   setbuf(stdin, NULL);
-  destroy((__list **)&info.task);
+  destroy(&info.task);
   longjmp(env, SETJMP_RET);
 }
 void registerSigHandle() { signal(SIGINT, catchSIGINT); }
@@ -152,7 +152,7 @@ void doHandleUserOption(struct pvz_option *option) {
       // 作形式检查
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &info.task);
-      destroy((__list **)&info.task);
+      destroy(&info.task);
     }
     sendS(buf);
   }

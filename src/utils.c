@@ -13,38 +13,40 @@
 #include "../inc/defs.h"
 #include "../inc/pvz.h"
 #include "../inc/utils.h"
-void *insert(__list **target, size_t len) {
-  __list *node = malloc(len);
-  node->next = NULL;
+void *insert(void *_Target, size_t len) {
+  struct list **target = _Target;
+  struct list *node = malloc(len);
+  next(node) = NULL;
   if (*target == NULL) {
     *target = node;
   } else {
     // real是当前链表的尾节点
-    ((__list *)(*target)->real)->next = node;
+    next(real(*target)) = node;
   }
-  (*target)->real = node;
+  real(*target) = node;
   return node;
 }
-void destroy(__list **node) {
-  __list *helper;
+void destroy(void *_Node) {
+  struct list **node = _Node;
+  struct list *helper;
   while (*node != NULL) {
-    helper = (*node)->next;
+    helper = next(*node);
     free(*node);
     *node = helper;
   }
   *node = NULL;
 }
-void insert_task(__task **target, int row, int col) {
-  __task *node = insert((__list **)target, sizeof(__task));
+void insert_task(struct task **target, int row, int col) {
+  struct task *node = insert((struct list **)target, sizeof(struct task));
   node->row = row;
   node->col = col;
 }
-void pop(__task **target) {
-  __task *helper = next(*target);
+void pop(struct task **target) {
+  struct task *helper = next(*target);
   free(*target);
   *target = helper;
 }
-int has(__task *target, int row, int col) {
+int has(struct task *target, int row, int col) {
   while (target != NULL) {
     if (target->row == row && target->col == col)
       return 1;
@@ -57,7 +59,7 @@ void strip(const char *buf) {
   if ((temp = strchr(buf, '\n')))
     *temp = 0;
 }
-void parseRowAndCol(const char *buf, __task **task) {
+void parseRowAndCol(const char *buf, struct task **task) {
   strip(buf);
   const char *val = buf;
   int row, col;

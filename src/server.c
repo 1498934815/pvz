@@ -57,7 +57,7 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   sscanf(cmd, "%u:%s", &id, arg);
   struct pvz_option *option = getOption(id);
   enum server_attr attr = option->server_attr;
-  cheat_function function = option->callback;
+  cheat_function callback = option->callback;
   if ((attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
     return 1;
 #define getV() sscanf(arg, "%d", &info.val)
@@ -68,13 +68,13 @@ int executeCmd(int fd, size_t len, const char *cmd) {
     parseRowAndCol(arg, &info.task);
   }
   if (attr & SERVER_NEED_ZOMBIES) {
-    forEachZombies(function);
+    forEachZombies(callback);
   } else if (attr & SERVER_NEED_PLANTS) {
-    forEachPlants(function);
+    forEachPlants(callback);
   } else {
-    function(arg, NULL);
+    callback(arg, NULL);
   }
-  destroy((__list **)&info.task);
+  destroy(&info.task);
   return 0;
 }
 void handleCmd(int fd, size_t len, const char *cmd) {
