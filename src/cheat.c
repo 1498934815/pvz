@@ -13,6 +13,7 @@
 #include <string.h>
 #include <libgen.h>
 #include <time.h>
+#include <pthread.h>
 #include "../inc/pvz.h"
 #include "../inc/cheat.h"
 #include "../inc/pvz_offset.h"
@@ -240,5 +241,46 @@ pvz_cheat_decl(changeCardCode) {
 #define first_card_code 0x74
   set_by_val(card + first_card_code);
 #undef first_card_code
+}
+pthread_t collectTid;
+int enableCollect;
+#define check_status()                                                         \
+  if (getStatus() == NULL)                                                     \
+    return 1;
+int __collect() {
+  check_status();
+  size_t gcnt = getI32(by_status("goods_count"));
+  int32_t *entry = getP32(by_status("goods_entry"));
+  void *gp;
+  for (size_t idx = 0; idx < gcnt;) {
+    gp = getP32(entry);
+    if (gp > (void *)0x10000000) {
+      setI32(by_ptr(gp, "good_collect"), 1);
+      idx++;
+      entry++;
+    }
+    entry++;
+  }
+  return 0;
+}
+void *__autoCollect(void *__pvz_unused p) {
+
+  while (enableCollect) {
+    if (__collect())
+      break;
+    usleep(WAIT_USECONDS);
+  }
+  pthread_exit(NULL);
+}
+pvz_cheat_decl(autoCollect) {
+  enableCollect = 1;
+  pthread_create(&collectTid, NULL, __autoCollect, NULL);
+}
+pvz_cheat_decl(cancelAutoCollect) {
+  enableCollect = 0;
+  if (collectTid) {
+    pthread_join(collectTid, NULL);
+    collectTid = 0;
+  }
 }
 #undef set_by_val

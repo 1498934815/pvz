@@ -42,4 +42,6 @@ pvz_cheat(changeCoins);
 pvz_cheat(jump);
 pvz_cheat(changeCardCode);
 pvz_cheat(pass2life);
+pvz_cheat(autoCollect);
+pvz_cheat(cancelAutoCollect);
 #endif //__CHEAT__H

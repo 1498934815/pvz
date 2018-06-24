@@ -41,6 +41,8 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_hp", 0x4c},
     // 植物攻击力
     {"plants_attack", 0x54},
+    // 物品
+    {"good_collect", 0x5c},
     // bss + 0x...
     {"heap", 0x5138c8},
     {"userloc_helper", 0x7a9fcc},
@@ -57,6 +59,8 @@ struct pvz_offset pvz_off_tbl[] = {
     {"zombies_list", 0x810},
     {"plants_entry", 0xd0},
     {"plants_count", 0xe0},
+    {"goods_entry", 0x108},
+    {"goods_count", 0x118},
     {"field_type", 0x56a8},
     {"sun", 0x56bc},
     {"pass", 0x5760},

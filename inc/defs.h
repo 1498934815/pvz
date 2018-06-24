@@ -16,6 +16,7 @@
 #define BUFSIZE 4096
 #define IN_RANGE(obj, min, max) (obj >= min && obj <= max)
 #define SETJMP_RET 0xff
+#define WAIT_USECONDS (500000)
 
 #define GITHUB "https://github.com/ze00/pvz"
 #define BRANCH "client"
