@@ -264,7 +264,6 @@ int __collect() {
   return 0;
 }
 void *__autoCollect(void *__pvz_unused p) {
-
   while (enableCollect) {
     if (__collect())
       break;
