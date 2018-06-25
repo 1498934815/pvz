@@ -43,6 +43,7 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_attack", 0x54},
     // 物品
     {"good_collect", 0x5c},
+    {"good_type", 0x64},
     // bss + 0x...
     {"heap", 0x5138c8},
     {"userloc_helper", 0x7a9fcc},

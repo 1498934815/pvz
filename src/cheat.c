@@ -246,8 +246,8 @@ pthread_t collectTid;
 int enableCollect;
 #define check_status()                                                         \
   if (getStatus() == NULL)                                                     \
-    return 1;
-int __collect() {
+    return;
+void __collect() {
   check_status();
   size_t gcnt = getI32(by_status("goods_count"));
   int32_t *entry = getP32(by_status("goods_entry"));
@@ -255,18 +255,18 @@ int __collect() {
   for (size_t idx = 0; idx < gcnt;) {
     gp = getP32(entry);
     if (gp > (void *)0x10000000) {
-      setI32(by_ptr(gp, "good_collect"), 1);
+      // 银币/金币/钻石/阳光
+      if (IN_RANGE(getI32(by_ptr(gp, "good_type")), 1, 4))
+        setI32(by_ptr(gp, "good_collect"), 1);
       idx++;
       entry++;
     }
     entry++;
   }
-  return 0;
 }
 void *__autoCollect(void *__pvz_unused p) {
   while (enableCollect) {
-    if (__collect())
-      break;
+    __collect();
     usleep(WAIT_USECONDS);
   }
   pthread_exit(NULL);

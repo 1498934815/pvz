@@ -63,9 +63,9 @@ struct pvz_option pvz_options[] = {
            "场景代码(0-7)见" CODE_TXT "\n请更改后重新进入当前关卡\n",
            SERVER_GETINT, USER_GETINT),
 
-    OPTION("自动收集", autoCollect, NULL, SERVER_DONOTHING, USER_DONOTHING),
+    OPTION("自动收集", autoCollect, NULL, SERVER_NOT_INGAME, USER_DONOTHING),
 
-    OPTION("取消自动收集", cancelAutoCollect, NULL, SERVER_DONOTHING,
+    OPTION("取消自动收集", cancelAutoCollect, NULL, SERVER_NOT_INGAME,
            USER_DONOTHING),
 
     OPTION("输出调试信息", NULL, NULL, SERVER_DONOTHING, USER_DEBUGINFO),
