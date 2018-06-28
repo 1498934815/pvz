@@ -34,11 +34,17 @@ int initConnection() {
   info.sock = sockfd;
   return 0;
 }
+int getSock() { return info.sock; }
 void initClientCore() {
   if (initConnection()) {
-    err("也许您没有启动PvZ或中途退出了?");
-    err("也可能...您启动的是不正确的PvZ");
-    err("请于 " TIEBA_POST_URL " 中下载正确的" SPECIFIC_PACKAGE "_V{版本}.apk");
+    if (getSock() == 0) {
+      err("也许您没有启动PvZ?");
+      err("也可能...您启动的是不正确的PvZ");
+      err("请于 " TIEBA_POST_URL " 中下载正确的" SPECIFIC_PACKAGE
+          "_V{版本}.apk");
+    } else {
+      err("您已退出PvZ, 请重新进入PvZ后再开启本程序");
+    }
     exit(-1);
   }
   extern void detectPVZ();
@@ -48,7 +54,6 @@ void initClientCore() {
   verifyVersion();
   getRemoteBase();
 }
-int getSock() { return info.sock; }
 const char *doCmd(const char *cmd) {
   static BufferType rec;
   static BufferType snd;
