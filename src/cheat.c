@@ -247,7 +247,7 @@ int enableCollect;
 #define check_status()                                                         \
   if (getStatus() == NULL)                                                     \
     return;
-void __collect() {
+inline void __collect() {
   check_status();
   size_t gcnt = getI32(by_status("goods_count"));
   int32_t *entry = getP32(by_status("goods_entry"));
