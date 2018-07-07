@@ -47,9 +47,12 @@ void setI32(void *rp, int32_t v) { pvz_write(rp, &v, sizeof(v)); }
 void setF32(void *rp, float v) { pvz_write(rp, &v, sizeof(v)); }
 void initBase() {
   info.base = NULL;
+  info.bss = NULL;
   info.task = NULL;
+  info.pid = 0;
 }
 void doInit() {
+  initBase();
   getDynamicBase();
   getBssBase();
 }
