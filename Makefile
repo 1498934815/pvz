@@ -1,14 +1,14 @@
 MODULE := \
 	pvz_client \
-	libpvz_server.so
+	libpvz_server
 
 common := src/utils.c src/pvz.c src/com.c
 pvz_client_src := src/client.c $(common)
 
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 
-libpvz_server.so_src := src/server.c src/cheat.c $(common)
-libpvz_server.so_flag := -shared -fPIC -ldl
+libpvz_server_src := src/server.c src/cheat.c $(common)
+libpvz_server_flag := -shared -fPIC -ldl
 
 inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -std=c99 -DGIT_HASH=\"$(git_hash)\"
