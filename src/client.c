@@ -94,9 +94,9 @@ void catchSIGINT() {
 void registerSigHandle() { signal(SIGINT, catchSIGINT); }
 
 void printInfo() {
-  notice("Github:" GITHUB);
-  notice("Tieba:" TIEBA_POST_URL);
-  notice("Commit Hash:" GIT_HASH);
+  notice("Github " GITHUB);
+  notice("Tieba " TIEBA_POST_URL);
+  notice("CommitHash " GIT_HASH);
   notice("By 百度贴吧@" AUTHOR);
   notice("部分功能的解释见 " HELP_TXT);
   notice("关于进入其他无尽 " CODE_TXT);
