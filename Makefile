@@ -24,17 +24,10 @@ else
 	CC := gcc
 	STRIP := strip
 endif
-all:$(MODULE)
-$(foreach m,$(MODULE), \
-	$(eval TARGET := $(m)) \
-	$(eval DEP := $($(m)_src) $(inc) $(MAKEFILE_LIST)) \
-	$(eval include build/reg_rule.mk))
+include build/build.mk
 define make_release
 	make NDK_BUILD=true --no-print-directory
 endef
 .PHONY:release
 release:
 	$(call make_release)
-.PHONY:clean
-clean:
-	-@ rm -rf $(MODULE)
