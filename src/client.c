@@ -40,8 +40,8 @@ void initClientCore() {
     if (getSock() == 0) {
       err("也许您没有启动PvZ?");
       err("也可能...您启动的是不正确的PvZ");
-      err("请于 " TIEBA_POST_URL " 中下载正确的" SPECIFIC_PACKAGE
-          "_V{版本}.apk");
+      err("请于 " TIEBA_POST_URL " 中下载对应的" SPECIFIC_PACKAGE
+          "_V{修改器版本}.apk");
     } else {
       err("您已退出PvZ, 请重新进入PvZ后再开启本程序");
     }
@@ -74,8 +74,9 @@ const char *doCmd(const char *cmd) {
 void getRemoteBase() { parseAddr(doCmd(GETBASE), &info.base); }
 void detectPVZ() { parseInt(doCmd(GETPID), &info.pid); }
 void verifyVersion() {
-  if (strcmp(doCmd(GETHASH), GIT_HASH) != 0) {
-    err("修改器与主程序版本不一致!");
+  const char *hash = doCmd(GETHASH);
+  if (strcmp(hash, GIT_HASH) != 0) {
+    errf("修改器(%s)与主程序(%s)版本不一致!\n", GIT_HASH, hash);
     err("请于" TIEBA_POST_URL "下载最新版本的主程序与修改器");
     exit(-1);
   }

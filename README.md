@@ -35,7 +35,7 @@
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-    请使用文件中的com.popcap.pvz_na_V{版本}.apk，每更新一次修改器就需要再安装一次
+    请使用文件中的com.popcap.pvz_na_V{修改器版本}.apk，每更新一次修改器就需要再安装一次
 
     数据包、存档的处理教程:http://lonelystar.org/ResDownload/1_Android_Na.htm
 
