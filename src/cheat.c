@@ -142,27 +142,27 @@ pvz_cheat_decl(doLimits) {
   }
 }
 
-pvz_cheat_decl(callLadder) {
+void put10(int32_t code) {
   uint32_t *zom = by_status("zombies_list");
-  for (size_t idx = 0; idx < 2000; ++idx) {
-    setI32(zom, LADDER_CODE);
-    ++zom;
-  }
-}
-
-pvz_cheat_decl(callGargantuar) {
-  uint32_t *zom = by_status("zombies_list");
-  int32_t code;
+  int32_t c;
   for (size_t iidx = 0; iidx < 20; ++iidx) {
-    code = GARGANTUAR_CODE;
+    c = code;
     for (size_t jidx = 0; jidx < 50; ++jidx) {
       // 每波十只
       if (jidx == 10)
-        code = -1;
-      setI32(zom, code);
+        c = -1;
+      setI32(zom, c);
       ++zom;
     }
   }
+}
+
+pvz_cheat_decl(callLadder) {
+  put10(LADDER_CODE);
+}
+
+pvz_cheat_decl(callGargantuar) {
+  put10(GARGANTUAR_CODE);
 }
 
 #undef ROW

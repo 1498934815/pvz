@@ -66,6 +66,8 @@ const char *doCmd(const char *cmd) {
     close(getSock());
     // 重试
     initClientCore();
+    // 重新连接到新的server后重新执行
+    doCmd(cmd);
   } else if (strcmp(rec, UN_INIT) == 0) {
     errf("您所选的选项'%s' 需要先开始游戏\n", cmd);
   }
@@ -104,7 +106,11 @@ void printInfo() {
   notice("关于本程序的使用 " README_MD);
 }
 void printDebugInfo() {
-  noticef("PID:%d 基址:%p 状态与信息:%p\n", info.pid, info.base, getStatus());
+  // XXX 游戏重新打开时
+  // getStatus() -> doCmd会重新得到PID/BASE
+  // 如果最后一个参数是getStatus() 那么打印的PID/BASE可能是之前client的PID/BASE
+  void *status = getStatus();
+  noticef("PID:%d 基址:%p 状态与信息:%p\n", info.pid, info.base, status);
 }
 void doInitClient() {
   printInfo();
