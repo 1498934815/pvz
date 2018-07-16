@@ -50,6 +50,8 @@
     如果您正确的放置了数据包、使用了正确的主程序，则应该类似于
 
     ![cheater_suceess](images/cheater_success.png)
-    否则，如果您没有使用正确的主程序或者没有先打开PvZ，则
+    如果您没有使用正确的主程序或者没有先打开PvZ，则
 
-    ![cheater_failure](images/cheater_failure.png)
+    ![cheater_wrong](images/cheater_wrong.png)
+    如果您使用的主程序版本与修改器版本不匹配，则
+    ![cheater_mismatch](images/cheater_mismatch.png)
