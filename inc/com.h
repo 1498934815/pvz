@@ -39,7 +39,7 @@ struct pvz_option {
 
 extern struct pvz_option pvz_options[];
 
-unsigned getOptionsLength();
-void doInitOptions();
+unsigned getOptionsLength(void);
+void doInitOptions(void);
 struct pvz_option *getOption(unsigned);
 #endif //__COM__H

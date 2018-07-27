@@ -31,9 +31,9 @@ struct {
 } info;
 extern jmp_buf env;
 
-void initBase();
-void getDynamicBase();
-void getBssBase();
+void initBase(void);
+void getDynamicBase(void);
+void getBssBase(void);
 void pvz_write(void *, void *, size_t);
 void pvz_read(void *, void *, size_t);
 int32_t getI32(void *);
@@ -41,5 +41,5 @@ void *getP32(void *);
 float getF32(void *);
 void setI32(void *, int32_t);
 void setF32(void *, float);
-void doInit();
+void doInit(void);
 #endif //__PVZ__H

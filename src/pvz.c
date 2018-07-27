@@ -13,7 +13,7 @@
 #include <dlfcn.h>
 #include "../inc/pvz.h"
 jmp_buf env;
-void getDynamicBase() {
+void getDynamicBase(void) {
   Dl_info dl;
   // 得到进程空间中的SPECIFIC_DYNAMIC_LIBRARIES
   void *handle = dlopen(SPECIFIC_DYNAMIC_LIBRARIES, RTLD_NOW);
@@ -22,7 +22,7 @@ void getDynamicBase() {
 
   info.base = dl.dli_fbase;
 }
-void getBssBase() {
+void getBssBase(void) {
   void *exec = info.base;
   info.bss = (void *)PAGE_END((uint32_t)(exec + LIBPVZ_BSS_OFF));
 }
@@ -45,13 +45,13 @@ float getF32(void *rp) {
 }
 void setI32(void *rp, int32_t v) { pvz_write(rp, &v, sizeof(v)); }
 void setF32(void *rp, float v) { pvz_write(rp, &v, sizeof(v)); }
-void initBase() {
+void initBase(void) {
   info.base = NULL;
   info.bss = NULL;
   info.task = NULL;
   info.pid = 0;
 }
-void doInit() {
+void doInit(void) {
   initBase();
   getDynamicBase();
   getBssBase();

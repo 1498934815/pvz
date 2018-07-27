@@ -72,9 +72,9 @@ struct pvz_option pvz_options[] = {
 
     OPTION("退出", NULL, NULL, SERVER_DONOTHING, USER_EXIT),
 };
-unsigned getOptionsLength() { return ARRAY_SIZE(pvz_options); }
+unsigned getOptionsLength(void) { return ARRAY_SIZE(pvz_options); }
 
-void doInitOptions() {
+void doInitOptions(void) {
   struct pvz_option *option;
   for (unsigned idx = 0; idx < getOptionsLength(); ++idx) {
     option = &pvz_options[idx];

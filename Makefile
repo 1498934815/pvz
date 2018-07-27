@@ -11,7 +11,7 @@ libpvz_server_src := src/server.c src/cheat.c $(common)
 libpvz_server_flag := -shared -fPIC -ldl
 
 inc := $(shell find inc)
-CC_FLAG := -Iinc -Wall -std=c99 -DGIT_HASH=\"$(git_hash)\"
+CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c99 -DGIT_HASH=\"$(git_hash)\"
 ifeq ($(NDK_BUILD),true)
 	NDK ?= $(HOME)/android-ndk-r14b
 	NDK_STANDALONE ?= $(HOME)/ndk/arm

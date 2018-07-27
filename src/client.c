@@ -20,7 +20,7 @@
 #include "../inc/defs.h"
 #include "../inc/utils.h"
 
-int initConnection() {
+int initConnection(void) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in sin;
   memset(&sin, 0, sizeof(sin));
@@ -34,8 +34,8 @@ int initConnection() {
   info.sock = sockfd;
   return 0;
 }
-int getSock() { return info.sock; }
-void initClientCore() {
+int getSock(void) { return info.sock; }
+void initClientCore(void) {
   if (initConnection()) {
     if (getSock() == 0) {
       err("也许您没有启动PvZ?");
@@ -47,9 +47,9 @@ void initClientCore() {
     }
     exit(-1);
   }
-  extern void detectPVZ();
-  extern void getRemoteBase();
-  extern void verifyVersion();
+  extern void detectPVZ(void);
+  extern void getRemoteBase(void);
+  extern void verifyVersion(void);
   detectPVZ();
   verifyVersion();
   getRemoteBase();
@@ -73,9 +73,9 @@ const char *doCmd(const char *cmd) {
   }
   return rec;
 }
-void getRemoteBase() { parseAddr(doCmd(GETBASE), &info.base); }
-void detectPVZ() { parseInt(doCmd(GETPID), &info.pid); }
-void verifyVersion() {
+void getRemoteBase(void) { parseAddr(doCmd(GETBASE), &info.base); }
+void detectPVZ(void) { parseInt(doCmd(GETPID), &info.pid); }
+void verifyVersion(void) {
   const char *hash = doCmd(GETHASH);
   if (strcmp(hash, GIT_HASH) != 0) {
     errf("修改器(%s)与主程序(%s)版本不一致!\n", GIT_HASH, hash);
@@ -83,20 +83,21 @@ void verifyVersion() {
     exit(-1);
   }
 }
-void *getField() { return info.base; }
-void *getStatus() {
+void *getField(void) { return info.base; }
+void *getStatus(void) {
   void *v;
   parseAddr(doCmd(GETSTATUS), &v);
   return v;
 }
-void catchSIGINT() {
+void catchSIGINT(int sig) {
+  (void)sig;
   setbuf(stdin, NULL);
   destroy(&info.task);
   longjmp(env, SETJMP_RET);
 }
-void registerSigHandle() { signal(SIGINT, catchSIGINT); }
+void registerSigHandle(void) { signal(SIGINT, catchSIGINT); }
 
-void printInfo() {
+void printInfo(void) {
   notice("Github " GITHUB);
   notice("Tieba " TIEBA_POST_URL);
   notice("CommitHash " GIT_HASH);
@@ -105,19 +106,19 @@ void printInfo() {
   notice("关于进入其他无尽 " CODE_TXT);
   notice("关于本程序的使用 " README_MD);
 }
-void printDebugInfo() {
+void printDebugInfo(void) {
   // XXX 游戏重新打开时
   // getStatus() -> doCmd会重新得到PID/BASE
   // 如果最后一个参数是getStatus() 那么打印的PID/BASE可能是之前client的PID/BASE
   void *status = getStatus();
   noticef("PID:%d 基址:%p 状态与信息:%p\n", info.pid, info.base, status);
 }
-void doInitClient() {
+void doInitClient(void) {
   printInfo();
   initClientCore();
   printDebugInfo();
 }
-void doDisplayUserInterface() {
+void doDisplayUserInterface(void) {
   const struct pvz_option *option;
   for (unsigned idx = 0; idx < getOptionsLength(); ++idx) {
     option = &pvz_options[idx];

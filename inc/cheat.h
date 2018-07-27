@@ -21,9 +21,9 @@ typedef void (*cheat_function)(const char *__pvz_unused, void *__pvz_unused);
 
 void forEachPlants(cheat_function);
 void forEachZombies(cheat_function);
-void *getSaves();
-void *getField();
-void *getStatus();
+void *getSaves(void);
+void *getField(void);
+void *getStatus(void);
 
 pvz_cheat(coverZombies);
 pvz_cheat(putLadder);

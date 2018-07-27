@@ -23,7 +23,7 @@ void *by_field(const char *name) { return by_ptr(getField(), name); }
 void *by_status(const char *name) { return by_ptr(getStatus(), name); }
 void *by_saves(const char *name) { return by_ptr(getSaves(), name); }
 
-void *__getField() {
+void *__getField(void) {
   void *heap = getP32(by_ptr(info.bss, "heap"));
   struct pvz_offset *off = __getOffset("field_offset");
   enum {
@@ -51,44 +51,48 @@ void *__getField() {
   return heap + off->offset;
 }
 
-void *getField() {
+void *getField(void) {
   static void *field = 0;
   if (field == 0)
     field = __getField();
   return field;
 }
 
-void *getStatus() {
+void *getStatus(void) {
   void *status = getP32(by_field("status"));
   return status;
 }
 
-void *getSaves() { return getP32(by_field("saves_entry")); }
+void *getSaves(void) { return getP32(by_field("saves_entry")); }
 
-int32_t __getUserId() { return getI32(by_saves("user_id")); }
+int32_t __getUserId(void) { return getI32(by_saves("user_id")); }
+
+void forEachValue(cheat_function callback, const char *count_name,
+                  const char *entry_name) {
+  size_t cnt = getI32(by_status(count_name));
+  int32_t *entry = getP32(by_status(entry_name));
+  void *rp;
+  for (size_t idx = 0; idx < cnt;) {
+    // 有一些小的数据
+    // 不知道干嘛的
+    rp = getP32(entry);
+    if (rp > (void *)0x10000000) {
+      callback(NULL, rp);
+      idx++;
+      // 地址后面有一个指针
+      // 同不知道干嘛的
+      entry++;
+    }
+    entry++;
+  }
+}
 
 /* 作弊器功能 */
 #define ROW(remote) (getI32(by_ptr(remote, "zombies_row")) + 1)
 #define COL(remote) (getF32(by_ptr(remote, "zombies_pos_y")))
 #define CODE(remote) (getI32(by_ptr(remote, "zombies_type")))
 void forEachZombies(cheat_function callback) {
-  size_t zcnt = getI32(by_status("zombies_count"));
-  int32_t *entry = getP32(by_status("zombies_entry"));
-  void *zp;
-  for (size_t idx = 0; idx < zcnt;) {
-    // 在僵尸地址前
-    // 有一些小的数据
-    // 不知道干嘛的
-    zp = getP32(entry);
-    if (zp > (void *)0x10000000) {
-      callback(NULL, zp);
-      idx++;
-      // 僵尸地址后面有一个指针
-      // 同不知道干嘛的
-      entry++;
-    }
-    entry++;
-  }
+  forEachValue(callback, "zombies_count", "zombies_entry");
 }
 
 pvz_cheat_decl(coverZombies) { setI32(by_ptr(remote, "zombies_butter"), 5000); }
@@ -123,9 +127,9 @@ int isProper(int code, int fieldType) {
 }
 pvz_cheat_decl(doLimits) {
   uint32_t *zom = by_status("zombies_list");
-  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工
-  static uint32_t candidate[] = {0,   0x4, 0x20, 0x10, 0xf, 0xc,
-                                 0x8, 0xe, 0x7,  0x16, 0xb, 0x11};
+  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆
+  static uint32_t candidate[] = {0,   0x4, 0x20, 0x10, 0xf,  0xc,  0x8,
+                                 0xe, 0x7, 0x16, 0xb,  0x11, 0x12, 0x3};
   static uint32_t which;
   static uint32_t fieldType;
   fieldType = getI32(by_status("field_type"));
@@ -157,13 +161,9 @@ void put10(int32_t code) {
   }
 }
 
-pvz_cheat_decl(callLadder) {
-  put10(LADDER_CODE);
-}
+pvz_cheat_decl(callLadder) { put10(LADDER_CODE); }
 
-pvz_cheat_decl(callGargantuar) {
-  put10(GARGANTUAR_CODE);
-}
+pvz_cheat_decl(callGargantuar) { put10(GARGANTUAR_CODE); }
 
 #undef ROW
 #undef COL
@@ -173,18 +173,7 @@ pvz_cheat_decl(callGargantuar) {
 #define COL(remote) (getI32(by_ptr(remote, "plants_col")) + 1)
 #define CODE(remote) (getI32(by_ptr(remote, "plants_type")))
 void forEachPlants(cheat_function callback) {
-  size_t pcnt = getI32(by_status("plants_count"));
-  int32_t *entry = getP32(by_status("plants_entry"));
-  void *pp;
-  for (size_t idx = 0; idx < pcnt;) {
-    pp = getP32(entry);
-    if (pp > (void *)0x10000000) {
-      callback(NULL, pp);
-      entry++;
-      idx++;
-    }
-    entry++;
-  }
+  forEachValue(callback, "plants_count", "plants_entry");
 }
 
 pvz_cheat_decl(fuck_LilyPad_Pumpkin) {
@@ -247,22 +236,13 @@ int enableCollect;
 #define check_status()                                                         \
   if (getStatus() == NULL)                                                     \
     return;
-void __collect() {
+pvz_cheat_decl(__collect_callback) {
+  if (IN_RANGE(getI32(by_ptr(remote, "goods_type")), 1, 4))
+    setI32(by_ptr(remote, "goods_collect"), 1);
+}
+void __collect(void) {
   check_status();
-  size_t gcnt = getI32(by_status("goods_count"));
-  int32_t *entry = getP32(by_status("goods_entry"));
-  void *gp;
-  for (size_t idx = 0; idx < gcnt;) {
-    gp = getP32(entry);
-    if (gp > (void *)0x10000000) {
-      // 银币/金币/钻石/阳光
-      if (IN_RANGE(getI32(by_ptr(gp, "good_type")), 1, 4))
-        setI32(by_ptr(gp, "good_collect"), 1);
-      idx++;
-      entry++;
-    }
-    entry++;
-  }
+  forEachValue(__collect_callback, "goods_count", "goods_entry");
 }
 void *__autoCollect(void *__pvz_unused p) {
   while (enableCollect) {
