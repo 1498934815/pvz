@@ -48,13 +48,13 @@ void *initServer(void *unused) {
 #define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
 #define do_send(str) send(fd, str, strlen(str), 0)
 
-int executeCmd(int fd, size_t len, const char *cmd) {
+int execute(int fd, const char *cmd) {
   static BufferType arg;
   memset(arg, 0, sizeof(arg));
   unsigned id;
   // 没有匹配到:会停止
   // 但在那之前option已经得到正确的值
-  sscanf(cmd, "%u:%s", &id, arg);
+  sscanf(cmd, "%zu:%s", &id, arg);
   struct pvz_option *option = getOption(id);
   enum server_attr attr = option->server_attr;
   cheat_function callback = option->callback;
@@ -77,7 +77,8 @@ int executeCmd(int fd, size_t len, const char *cmd) {
   destroy(&info.task);
   return 0;
 }
-void handleCmd(int fd, size_t len, const char *cmd) {
+
+void handleCmd(int fd, const char *cmd) {
   if (is_cmd(GETPID)) {
     do_send(to_string("%d", getpid()));
   } else if (is_cmd(GETBASE)) {
@@ -87,27 +88,21 @@ void handleCmd(int fd, size_t len, const char *cmd) {
   } else if (is_cmd(GETHASH)) {
     do_send(GIT_HASH);
   } else {
-    if (executeCmd(fd, len, cmd)) {
+    if (execute(fd, cmd)) {
       do_send(UN_INIT);
     } else {
-      do_send("success");
+      do_send(OK);
     }
   }
 }
 void *doHandleClient(void *arg) {
   int csock = *(int *)arg;
-  size_t rlen, clen;
+  size_t len, n;
   static BufferType buf;
-  static BufferType cmd;
-  // 非'\0'结尾
-  // 可能有魔法加成
-  memset(cmd, 0, sizeof(cmd));
-  memset(buf, 0, sizeof(buf));
-  // 失败时会返回-1或者0
-  while ((rlen = recv(csock, buf, BUFSIZE, 0)) > 0) {
-    sscanf(buf, "%zu:%s", &clen, cmd);
-    cmd[clen] = 0;
-    handleCmd(csock, clen, cmd);
+  while (memset(buf, 0, sizeof(buf)) && recv(csock, buf, BUFSIZE, 0) > 0) {
+    sscanf(buf, "%zu:%n", &len, &n);
+    const char *cmd = buf + n;
+    handleCmd(csock, cmd);
   }
   close(csock);
   pthread_exit(NULL);

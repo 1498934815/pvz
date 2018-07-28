@@ -30,6 +30,7 @@
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
 #define ERR "\033[31;1m[ERR]\033[0m "
 
+#define OK "ok"
 #define UN_INIT "uninitialized"
 #define GETPID "getpid"
 #define GETHASH "gethash"
