@@ -35,7 +35,7 @@
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-    请使用文件中的com.popcap.pvz_na_V{修改器版本}.apk，每更新一次修改器就需要再安装一次
+    请使用文件中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次
 
     数据包、存档的处理教程:http://lonelystar.org/ResDownload/1_Android_Na.htm
 
@@ -47,11 +47,11 @@
 
     基于JackpalTerminal(https://github.com/jackpal/Android-Terminal-Emulator)
 
-    如果您正确的放置了数据包、使用了正确的主程序，则应该类似于
+    如果您正确的放置了数据包、使用了正确的主程序,则应该类似于
 
     ![cheater_suceess](images/cheater_success.png)
-    如果您没有使用正确的主程序或者没有先打开PvZ，则
+    如果您没有使用正确的主程序或者没有先打开PvZ,则
 
     ![cheater_wrong](images/cheater_wrong.png)
-    如果您使用的主程序版本与修改器版本不匹配，则
+    如果您使用的主程序版本与修改器版本不匹配,则
     ![cheater_mismatch](images/cheater_mismatch.png)

@@ -52,8 +52,8 @@ void *__getField(void) {
 }
 
 void *getField(void) {
-  static void *field = 0;
-  if (field == 0)
+  static void *field = NULL;
+  if (field == NULL)
     field = __getField();
   return field;
 }
