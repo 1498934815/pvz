@@ -3,7 +3,7 @@ MODULE := \
 	libpvz_server
 
 common := src/utils.c src/pvz.c src/com.c
-pvz_client_src := src/client.c $(common)
+pvz_client_src := src/client.c src/console.c $(common)
 
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 
@@ -23,6 +23,10 @@ ifeq ($(NDK_BUILD),true)
 else
 	CC := gcc
 	STRIP := strip
+endif
+ifneq ($(DEBUG),)
+	CC_FLAG += -g -DDEBUG
+	STRIP := \#
 endif
 include build/build.mk
 define make_release

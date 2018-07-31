@@ -32,7 +32,9 @@ extern void parseRowAndCol(const char *, struct task **);
 extern const char *__attribute__((format(printf, 1, 2)))
 to_string(const char *, ...);
 
-void parseAddr(const char *, void **);
-void parseInt(const char *, int *);
+extern void parseAddr(const char *, void **);
+extern void parseInt(const char *, int *);
+
+extern void strip(const char *);
 
 #endif //__UTILS__H

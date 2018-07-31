@@ -26,7 +26,8 @@ enum user_attr {
   USER_GETSTRING = 4,
   USER_GETCOLROW = 8,
   USER_DEBUGINFO = 16,
-  USER_EXIT = 32,
+  USER_DEBUGCONSOLE = 32,
+  USER_EXIT = 64,
 };
 struct pvz_option {
   unsigned id;

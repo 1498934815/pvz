@@ -19,6 +19,8 @@
 #include "../inc/com.h"
 #include "../inc/defs.h"
 #include "../inc/utils.h"
+#include "../inc/client.h"
+#include "../inc/console.h"
 
 int initConnection(void) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -131,11 +133,6 @@ void doDisplayUserInterface(void) {
     PANIC;                                                                     \
   }
 #define GETOPT_V(mess) GETOPT(mess, info.val)
-#define do_cmd(fmt, ...) doCmd(to_string("%d" fmt, option->id __VA_ARGS__))
-#define do_cmd_with_arg(fmt, ...) do_cmd(":" fmt, __VA_ARGS__)
-// XXX ','不可少
-#define sendI(I) do_cmd_with_arg("%d", , I)
-#define sendS(S) do_cmd_with_arg("%s", , S)
 
 void doHandleUserOption(struct pvz_option *option) {
   static BufferType buf;
@@ -161,13 +158,18 @@ void doHandleUserOption(struct pvz_option *option) {
     setbuf(stdin, NULL);
     if (fgets(buf, sizeof(buf), stdin) == NULL)
       PANIC;
+    strip(buf);
     if (attr & USER_GETCOLROW) {
       // 作形式检查
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &info.task);
       destroy(&info.task);
     }
-    sendS(buf);
+    if (attr & USER_DEBUGCONSOLE) {
+      parseInstructions(buf);
+    } else {
+      sendS(buf);
+    }
   }
 }
 int main(int argc, char **argv) {
@@ -192,7 +194,3 @@ int main(int argc, char **argv) {
 }
 #undef GETOPT
 #undef GETOPT_V
-#undef do_cmd
-#undef do_cmd_with_arg
-#undef sendI
-#undef sendS

@@ -31,6 +31,8 @@
 #define ERR "\033[31;1m[ERR]\033[0m "
 
 #define OK "ok"
+#define READ "read"
+#define WRITE "write"
 #define UN_INIT "uninitialized"
 #define GETPID "getpid"
 #define GETHASH "gethash"

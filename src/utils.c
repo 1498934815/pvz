@@ -60,7 +60,6 @@ void strip(const char *buf) {
     *temp = 0;
 }
 void parseRowAndCol(const char *buf, struct task **task) {
-  strip(buf);
   const char *val = buf;
   int row, col;
   enum statusMachine {
