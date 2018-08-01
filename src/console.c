@@ -45,7 +45,9 @@ success:
   ++consumed;
   goto consume;
 failed:
-  printf("FAILED\n");
+  ++*ins;
+  // FIXME:consumed是相对于某个Token的
+  printf("FAILED AT COL %d\n", consumed + 1);
   return;
 end:
   printf("PARSED %d %*s\n", consumed, consumed, ori);
@@ -69,6 +71,8 @@ int handleOperator(struct instruction **seqs, const char C, size_t consumed) {
 }
 int handleIdentity(struct instruction **seqs, const char C, size_t consumed) {
   if (isalpha(C))
+    return SUCCESS;
+  else if (isdigit(C) && consumed != 0)
     return SUCCESS;
   else if (inseq(C, "+-"))
     return END;
@@ -95,6 +99,9 @@ parse:
     handleTokens(handleOperator, &seqs, &val);
   } else if (isalpha(C)) {
     handleTokens(handleIdentity, &seqs, &val);
+  } else {
+    printf("Unexpected Token %c\n", C);
+    return;
   }
   goto parse;
 }

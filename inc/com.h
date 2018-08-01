@@ -19,6 +19,7 @@ enum server_attr {
   SERVER_NEED_ZOMBIES = 8,
   SERVER_NEED_PLANTS = 16,
   SERVER_GETCOLROW = 32,
+  SERVER_DEBUGCONSOLE = 64,
 };
 enum user_attr {
   USER_DONOTHING = 1,

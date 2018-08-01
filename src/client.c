@@ -167,9 +167,8 @@ void doHandleUserOption(struct pvz_option *option) {
     }
     if (attr & USER_DEBUGCONSOLE) {
       parseInstructions(buf);
-    } else {
-      sendS(buf);
     }
+    sendS(buf);
   }
 }
 int main(int argc, char **argv) {
