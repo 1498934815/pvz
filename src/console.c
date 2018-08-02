@@ -7,33 +7,45 @@
  * Module  :
  * License : MIT
  */
-#include <stdio.h>
 #include <ctype.h>
-#include "../inc/client.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "../inc/console.h"
-void insert_instruction(struct instruction **seqs, enum operates operate,
-                        const char *ref, size_t len) {
-  struct instruction *ins = (struct instruction *)insert(seqs, sizeof(**seqs));
+void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
+                size_t len) {
+  struct AST *ins = (struct AST *)malloc(sizeof(struct AST));
   ins->ref.ref = ref;
-  ins->operate = operate;
+  ins->ref.len = len;
+  ins->kind = kind;
 }
 
 #define inseq(C, seqs) (strchr(seqs, C) != NULL)
-#define SUCCESS 0
+#define PASSED 0
 #define END 1
 #define FAILED 2
-typedef int (*PassFunction)(struct instruction **, const char, size_t);
-void handleTokens(PassFunction passFunction, struct instruction **seqs,
+#define SHIFT 8
+#define RETCODE(status, kind) (status << SHIFT | kind)
+#define STATUS(status) (status >> SHIFT)
+#define KIND_MASK ((1 << SHIFT) - 1)
+#define KIND(status) (status & KIND_MASK)
+#define NOKIND(status) RETCODE(status, NONE)
+
+typedef int (*PassFunction)(struct AST **, const char, size_t);
+void handleTokens(PassFunction passFunction, struct AST **seqs,
                   const char **ins) {
   const char *ori = *ins;
   char C;
   size_t consumed = 0;
+  int status;
+  enum kinds kind;
 consume:
   C = **ins;
   if (C == 0 || isspace(C))
     goto end;
-  switch (passFunction(seqs, C, consumed)) {
-  case SUCCESS:
+  status = passFunction(seqs, C, consumed);
+  kind = KIND(status);
+  switch (STATUS(status)) {
+  case PASSED:
     goto success;
   case END:
     goto end;
@@ -50,39 +62,47 @@ failed:
   printf("FAILED AT COL %d\n", consumed + 1);
   return;
 end:
-  printf("PARSED %d %*s\n", consumed, consumed, ori);
+  printf("PARSED %d %*s %d\n", consumed, consumed, ori, kind);
   return;
 }
-int handleNumeric(struct instruction **seqs, const char C, size_t consumed) {
-  if (isdigit(C) || (isxdigit(C) && consumed >= 2))
-    return SUCCESS;
+int handleNumeric(struct AST **seqs, const char C, size_t consumed) {
+  if (isdigit(C))
+    return RETCODE(PASSED, DECINT);
+  else if(isxdigit(C) && consumed >= 2)
+    return RETCODE(PASSED, HEXINT);
   else if ((inseq(C, "xX")) && consumed == 1)
-    return SUCCESS;
+    return RETCODE(PASSED, HEXINT);
   else if (inseq(C, "+-"))
-    return END;
+    return NOKIND(END);
   else
-    return FAILED;
+    return NOKIND(FAILED);
 }
-int handleOperator(struct instruction **seqs, const char C, size_t consumed) {
+int handleOperator(struct AST **seqs, const char C, size_t consumed) {
   if (inseq(C, "+-"))
-    return SUCCESS;
+    return RETCODE(PASSED, OPERATOR);
   else
-    return FAILED;
+    return NOKIND(FAILED);
 }
-int handleIdentity(struct instruction **seqs, const char C, size_t consumed) {
+int handleIdentity(struct AST **seqs, const char C, size_t consumed) {
   if (isalpha(C))
-    return SUCCESS;
+    return RETCODE(PASSED, IDENTITY);
   else if (isdigit(C) && consumed != 0)
-    return SUCCESS;
+    return RETCODE(PASSED, IDENTITY);
   else if (inseq(C, "+-"))
-    return END;
+    return NOKIND(END);
   else
-    return FAILED;
+    return NOKIND(FAILED);
+}
+int handleSubExprBegin(struct AST **seqs, const char C, size_t consumed) {
+  return RETCODE(PASSED, SUBEXPRBEGIN);
+}
+int handleSubExprEnd(struct AST **seqs, const char C, size_t consumed) {
+  return RETCODE(PASSED, SUBEXPREND);
 }
 void parseInstructions(const char *ins) {
   const char *val = ins;
   char C;
-  struct instruction *seqs = NULL;
+  struct AST *seqs = NULL;
 parse:
   while (isspace(*val))
     ++val;
@@ -91,7 +111,6 @@ parse:
     return;
   }
   // 0xFFFFFFF
-  // 0777
   // 123456
   if (isdigit(C)) {
     handleTokens(handleNumeric, &seqs, &val);
@@ -99,6 +118,10 @@ parse:
     handleTokens(handleOperator, &seqs, &val);
   } else if (isalpha(C)) {
     handleTokens(handleIdentity, &seqs, &val);
+  } else if (C == '[') {
+    handleTokens(handleSubExprBegin, &seqs, &val);
+  } else if (C == ']') {
+    handleTokens(handleSubExprEnd, &seqs, &val);
   } else {
     printf("Unexpected Token %c\n", C);
     return;

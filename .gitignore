@@ -6,3 +6,5 @@ lib
 /release
 /server
 /server.c
+/test.c
+/test

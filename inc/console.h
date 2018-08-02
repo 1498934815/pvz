@@ -10,22 +10,29 @@
 #ifndef __CONSOLE__H
 #define __CONSOLE__H
 
-#include "../inc/utils.h"
+#include <stddef.h>
 
 struct block_ref {
   const void *ref;
   size_t len;
 };
 
-enum operates {
-  VALUE,
+enum kinds {
+  NONE,
+  DECINT,
+  HEXINT,
+  OPERATOR,
+  IDENTITY,
+  SUBEXPRBEGIN,
+  SUBEXPREND,
   MEMREAD,
   MEMWRITE,
 };
 
-struct instruction {
-  struct list list;
-  enum operates operate;
+struct AST {
+  struct AST *left;
+  struct AST *right;
+  enum kinds kind;
   struct block_ref ref;
 };
 
