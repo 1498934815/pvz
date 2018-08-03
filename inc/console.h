@@ -19,14 +19,12 @@ struct block_ref {
 
 enum kinds {
   NONE,
+  OPERATOR,
   DECINT,
   HEXINT,
-  OPERATOR,
   IDENTITY,
   SUBEXPRBEGIN,
   SUBEXPREND,
-  MEMREAD,
-  MEMWRITE,
 };
 
 struct AST {
@@ -36,5 +34,5 @@ struct AST {
   struct block_ref ref;
 };
 
-void parseInstructions(const char *);
+struct AST *parseInstructions(const char *);
 #endif //__CONSOLE__H

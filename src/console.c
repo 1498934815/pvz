@@ -10,13 +10,65 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "../inc/defs.h"
 #include "../inc/console.h"
+
+bool shouldRight(enum kinds lhs, enum kinds rhs) {
+  switch (lhs) {
+  case OPERATOR:
+    if (IN_RANGE(rhs, DECINT, IDENTITY))
+      return true;
+  default:;
+  }
+  return false;
+}
+bool shouldLeft(enum kinds lhs, enum kinds rhs) {
+  switch (lhs) {
+  case OPERATOR:
+    if (IN_RANGE(rhs, DECINT, IDENTITY))
+      return true;
+  default:;
+  }
+  return false;
+}
+bool shouldParent(enum kinds lhs, enum kinds rhs) {
+  switch (rhs) {
+  case OPERATOR:
+    if (IN_RANGE(lhs, OPERATOR, IDENTITY))
+      return true;
+  default:;
+  }
+  return false;
+}
+void __insertAST(struct AST **seqs, struct AST *ins) {
+  struct AST *prev = *seqs;
+  if (shouldLeft(prev->kind, ins->kind) && prev->left == NULL) {
+    prev->left = ins;
+  } else if (shouldRight(prev->kind, ins->kind) && prev->right == NULL) {
+    prev->right = ins;
+  } else if (shouldParent(prev->kind, ins->kind) &&
+             (ins->left == NULL || ins->right == NULL)) {
+    *(ins->left ? &ins->right : &ins->left) = prev;
+    *seqs = ins;
+  } else {
+    printf("SYNATX ERROR\n");
+  }
+}
 void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
-                size_t len) {
+               size_t len) {
   struct AST *ins = (struct AST *)malloc(sizeof(struct AST));
+  ins->left = NULL;
+  ins->right = NULL;
   ins->ref.ref = ref;
   ins->ref.len = len;
   ins->kind = kind;
+
+  if (*seqs == NULL) {
+    *seqs = ins;
+  } else {
+    __insertAST(seqs, ins);
+  }
 }
 
 #define inseq(C, seqs) (strchr(seqs, C) != NULL)
@@ -43,7 +95,6 @@ consume:
   if (C == 0 || isspace(C))
     goto end;
   status = passFunction(seqs, C, consumed);
-  kind = KIND(status);
   switch (STATUS(status)) {
   case PASSED:
     goto success;
@@ -59,16 +110,17 @@ success:
 failed:
   ++*ins;
   // FIXME:consumed是相对于某个Token的
-  printf("FAILED AT COL %d\n", consumed + 1);
+  printf("SYNATX ERROR AT COL %d\n", consumed + 1);
   return;
 end:
-  printf("PARSED %d %*s %d\n", consumed, consumed, ori, kind);
+  kind = KIND(status);
+  insertAST(seqs, kind, ori, consumed);
   return;
 }
 int handleNumeric(struct AST **seqs, const char C, size_t consumed) {
   if (isdigit(C))
     return RETCODE(PASSED, DECINT);
-  else if(isxdigit(C) && consumed >= 2)
+  else if (isxdigit(C) && consumed >= 2)
     return RETCODE(PASSED, HEXINT);
   else if ((inseq(C, "xX")) && consumed == 1)
     return RETCODE(PASSED, HEXINT);
@@ -99,7 +151,7 @@ int handleSubExprBegin(struct AST **seqs, const char C, size_t consumed) {
 int handleSubExprEnd(struct AST **seqs, const char C, size_t consumed) {
   return RETCODE(PASSED, SUBEXPREND);
 }
-void parseInstructions(const char *ins) {
+struct AST *parseInstructions(const char *ins) {
   const char *val = ins;
   char C;
   struct AST *seqs = NULL;
@@ -108,7 +160,7 @@ parse:
     ++val;
   C = *val;
   if (C == 0) {
-    return;
+    return seqs;
   }
   // 0xFFFFFFF
   // 123456
@@ -124,7 +176,7 @@ parse:
     handleTokens(handleSubExprEnd, &seqs, &val);
   } else {
     printf("Unexpected Token %c\n", C);
-    return;
+    return seqs;
   }
   goto parse;
 }
