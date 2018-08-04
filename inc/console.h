@@ -22,12 +22,11 @@ enum kinds {
   SUBEXPRBEGIN,
   SUBEXPREND,
 };
-
 struct AST {
   struct AST *left;
   struct AST *right;
   enum kinds kind;
-  const void *ref;
+  const char *ref;
   size_t len;
 };
 

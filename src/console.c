@@ -59,7 +59,9 @@ struct AST **__insertAST(struct AST **target, struct AST *ins) {
   struct AST *prev = *target;
   if (prev->kind == SUBEXPRBEGIN && prev->left != NULL && prev->right == NULL &&
       ins->kind != SUBEXPREND) {
-    prev->left = *__insertAST(&prev->left, ins);
+    struct AST *ret = *__insertAST(&prev->left, ins);
+    if (ret->kind == OPERATOR)
+      prev->left = ret;
     return &prev->left;
   }
   if (shouldLeft(prev, ins) && prev->left == NULL) {
@@ -81,13 +83,16 @@ struct AST **getMostAST(void) {
   return real(gQueue)->AST;
 }
 void pushAST(struct AST **AST) {
-  ((struct ASTQueue *)insert(&gQueue, sizeof(gQueue)))->AST = AST;
+  // XXX 老往这种地方摔坑
+  ((struct ASTQueue *)insert(&gQueue, sizeof(struct ASTQueue)))->AST = AST;
 }
 void popAST(void) {
   struct ASTQueue *p, *q;
   for (p = gQueue; p != real(gQueue); p = next(p))
     q = p;
-  pop(q);
+  pop(&real(gQueue));
+  next(q) = NULL;
+  real(gQueue) = q;
 }
 void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
                size_t len) {
@@ -102,9 +107,12 @@ void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
   if (*seqs == NULL) {
     *seqs = ins;
   } else {
+    // 遇到SUBEXPRBEGIN后
+    // 在遇到SUBEXPREND之前的所有Token
+    // 都要插到最后的EXPR中
     ret = __insertAST(getMostAST(), ins);
     if (ret != NULL) {
-      switch ((*ret)->kind) {
+      switch (ins->kind) {
       case SUBEXPRBEGIN:
         pushAST(ret);
         break;
@@ -234,7 +242,7 @@ parse:
     ++val;
   C = *val;
   if (C == 0) {
-    return seqs;
+    goto end;
   }
   // 0xFFFFFFF
   // 123456
@@ -250,7 +258,10 @@ parse:
     handleTokens(handleSubExprEnd, &seqs, &val);
   } else {
     printf("Unexpected Token %c\n", C);
-    return seqs;
+    goto end;
   }
   goto parse;
+end:
+  destroy(gQueue);
+  return seqs;
 }
