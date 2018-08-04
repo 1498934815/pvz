@@ -12,11 +12,6 @@
 
 #include <stddef.h>
 
-struct block_ref {
-  const void *ref;
-  size_t len;
-};
-
 enum kinds {
   NONE,
   OPERATOR,
@@ -31,7 +26,8 @@ struct AST {
   struct AST *left;
   struct AST *right;
   enum kinds kind;
-  struct block_ref ref;
+  const void *ref;
+  size_t len;
 };
 
 struct AST *parseInstructions(const char *);

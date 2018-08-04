@@ -100,6 +100,8 @@ void *doHandleClient(void *arg) {
   size_t len, n;
   static BufferType buf;
   while (memset(buf, 0, sizeof(buf)) && recv(csock, buf, BUFSIZE, 0) > 0) {
+    // FIXME 没有必要
+    // 不过为了兼容以前的版本的GETHASH之类...还是留着吧
     sscanf(buf, "%zu:%n", &len, &n);
     const char *cmd = buf + n;
     handleCmd(csock, cmd);

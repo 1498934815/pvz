@@ -14,45 +14,62 @@
 #include "../inc/defs.h"
 #include "../inc/console.h"
 
-bool shouldRight(enum kinds lhs, enum kinds rhs) {
-  switch (lhs) {
+bool shouldRight(struct AST *lhs, struct AST *rhs) {
+  switch (lhs->kind) {
   case OPERATOR:
-    if (IN_RANGE(rhs, DECINT, IDENTITY))
+    if (IN_RANGE(rhs->kind, DECINT, SUBEXPRBEGIN))
       return true;
+    break;
+  case SUBEXPRBEGIN:
+    if (rhs->kind == SUBEXPREND)
+      return true;
+    break;
   default:;
   }
   return false;
 }
-bool shouldLeft(enum kinds lhs, enum kinds rhs) {
-  switch (lhs) {
+bool shouldLeft(struct AST *lhs, struct AST *rhs) {
+  switch (lhs->kind) {
   case OPERATOR:
-    if (IN_RANGE(rhs, DECINT, IDENTITY))
+    if (IN_RANGE(rhs->kind, DECINT, SUBEXPRBEGIN))
       return true;
+    break;
+  case SUBEXPRBEGIN:
+    if (IN_RANGE(rhs->kind, DECINT, SUBEXPRBEGIN))
+      return true;
+    break;
   default:;
   }
   return false;
 }
-bool shouldParent(enum kinds lhs, enum kinds rhs) {
-  switch (rhs) {
+bool shouldParent(struct AST *lhs, struct AST *rhs) {
+  switch (rhs->kind) {
   case OPERATOR:
-    if (IN_RANGE(lhs, OPERATOR, IDENTITY))
+    if (IN_RANGE(lhs->kind, OPERATOR, IDENTITY))
       return true;
+    if (lhs->kind == SUBEXPRBEGIN && lhs->right != NULL)
+      return true;
+    break;
   default:;
   }
   return false;
 }
-void __insertAST(struct AST **seqs, struct AST *ins) {
-  struct AST *prev = *seqs;
-  if (shouldLeft(prev->kind, ins->kind) && prev->left == NULL) {
+void __insertAST(struct AST **seqs, struct AST **target, struct AST *ins) {
+  struct AST *prev = *target;
+  if (shouldLeft(prev, ins) && prev->left == NULL) {
     prev->left = ins;
-  } else if (shouldRight(prev->kind, ins->kind) && prev->right == NULL) {
+  } else if (shouldRight(prev, ins) && prev->right == NULL) {
     prev->right = ins;
-  } else if (shouldParent(prev->kind, ins->kind) &&
-             (ins->left == NULL || ins->right == NULL)) {
-    *(ins->left ? &ins->right : &ins->left) = prev;
-    *seqs = ins;
+  } else if (shouldParent(prev, ins)) {
+    ins->left = prev;
+    *target = ins;
   } else {
-    printf("SYNATX ERROR\n");
+    if (prev->kind == SUBEXPRBEGIN && prev->left != NULL &&
+        prev->right == NULL) {
+      __insertAST(&prev->left, &prev->left, ins);
+    } else {
+      printf("SYNATX ERROR\n");
+    }
   }
 }
 void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
@@ -60,14 +77,14 @@ void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
   struct AST *ins = (struct AST *)malloc(sizeof(struct AST));
   ins->left = NULL;
   ins->right = NULL;
-  ins->ref.ref = ref;
-  ins->ref.len = len;
+  ins->ref = ref;
+  ins->len = len;
   ins->kind = kind;
 
   if (*seqs == NULL) {
     *seqs = ins;
   } else {
-    __insertAST(seqs, ins);
+    __insertAST(seqs, seqs, ins);
   }
 }
 
@@ -82,19 +99,29 @@ void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
 #define KIND(status) (status & KIND_MASK)
 #define NOKIND(status) RETCODE(status, NONE)
 
-typedef int (*PassFunction)(struct AST **, const char, size_t);
+bool checkTokenLength(enum kinds kind, size_t consumed) {
+  switch (kind) {
+  case SUBEXPRBEGIN:
+  case SUBEXPREND:
+  case OPERATOR:
+    return consumed == 1;
+  default:;
+  }
+  return false;
+}
+typedef int (*PassFunction)(const char, size_t);
 void handleTokens(PassFunction passFunction, struct AST **seqs,
                   const char **ins) {
   const char *ori = *ins;
   char C;
   size_t consumed = 0;
   int status;
-  enum kinds kind;
+  enum kinds kind = NONE;
 consume:
   C = **ins;
   if (C == 0 || isspace(C))
     goto end;
-  status = passFunction(seqs, C, consumed);
+  status = passFunction(C, consumed);
   switch (STATUS(status)) {
   case PASSED:
     goto success;
@@ -106,50 +133,66 @@ consume:
 success:
   ++*ins;
   ++consumed;
+  const enum kinds k = KIND(status);
+  // XXX 0xFFFF0
+  // 处理到最后的'0'时
+  // 会认为是DECINT
+  // 实际上如果得到过HEXINT就应该一直都是HEXINT
+  // 此处依赖于enum kinds的先后顺序
+  kind = k > kind ? k : kind;
+  if (checkTokenLength(kind, consumed))
+    goto end;
   goto consume;
 failed:
   ++*ins;
   // FIXME:consumed是相对于某个Token的
-  printf("SYNATX ERROR AT COL %d\n", consumed + 1);
+  printf("SYNATX ERROR AT COL %s\n", strndup(ori, consumed));
   return;
 end:
-  kind = KIND(status);
   insertAST(seqs, kind, ori, consumed);
   return;
 }
-int handleNumeric(struct AST **seqs, const char C, size_t consumed) {
+int handleNumeric(const char C, size_t consumed) {
   if (isdigit(C))
     return RETCODE(PASSED, DECINT);
   else if (isxdigit(C) && consumed >= 2)
     return RETCODE(PASSED, HEXINT);
   else if ((inseq(C, "xX")) && consumed == 1)
     return RETCODE(PASSED, HEXINT);
-  else if (inseq(C, "+-"))
+  else if (inseq(C, "+-]"))
     return NOKIND(END);
   else
     return NOKIND(FAILED);
 }
-int handleOperator(struct AST **seqs, const char C, size_t consumed) {
+int handleOperator(const char C, size_t consumed) {
   if (inseq(C, "+-"))
     return RETCODE(PASSED, OPERATOR);
   else
     return NOKIND(FAILED);
 }
-int handleIdentity(struct AST **seqs, const char C, size_t consumed) {
+int handleIdentity(const char C, size_t consumed) {
   if (isalpha(C))
     return RETCODE(PASSED, IDENTITY);
   else if (isdigit(C) && consumed != 0)
     return RETCODE(PASSED, IDENTITY);
-  else if (inseq(C, "+-"))
+  else if (inseq(C, "+-]"))
     return NOKIND(END);
   else
     return NOKIND(FAILED);
 }
-int handleSubExprBegin(struct AST **seqs, const char C, size_t consumed) {
-  return RETCODE(PASSED, SUBEXPRBEGIN);
+int handleSubExprBegin(const char C, size_t consumed) {
+  // XXX 无论下一个字符是什么
+  // 在此返回NOKIND(END)可以把下一个字符的处理交给其他的handleXXX
+  if (C == '[')
+    return RETCODE(PASSED, SUBEXPRBEGIN);
+  else
+    return NOKIND(END);
 }
-int handleSubExprEnd(struct AST **seqs, const char C, size_t consumed) {
-  return RETCODE(PASSED, SUBEXPREND);
+int handleSubExprEnd(const char C, size_t consumed) {
+  if (C == ']')
+    return RETCODE(PASSED, SUBEXPREND);
+  else
+    return NOKIND(END);
 }
 struct AST *parseInstructions(const char *ins) {
   const char *val = ins;
