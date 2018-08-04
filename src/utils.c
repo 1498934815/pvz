@@ -41,10 +41,11 @@ void insert_task(struct task **target, int row, int col) {
   node->row = row;
   node->col = col;
 }
-void pop(struct task **target) {
-  struct task *helper = next(*target);
-  free(*target);
-  *target = helper;
+void pop(void *_Node) {
+  struct list **node = _Node;
+  struct list *helper = next(*node);
+  free(*node);
+  *node = helper;
 }
 int has(struct task *target, int row, int col) {
   while (target != NULL) {

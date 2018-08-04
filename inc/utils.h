@@ -23,7 +23,7 @@ struct task {
 };
 #define next(x) (*(__typeof__(x) *)&(((struct list *)(x))->next))
 #define real(x) (*(__typeof__(x) *)&(((struct list *)(x))->real))
-extern void pop(struct task **);
+extern void pop(void *);
 extern int has(struct task *, int, int);
 extern void insert_task(struct task **, int, int);
 extern void destroy(void *);

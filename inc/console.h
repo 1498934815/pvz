@@ -11,6 +11,7 @@
 #define __CONSOLE__H
 
 #include <stddef.h>
+#include "../inc/utils.h"
 
 enum kinds {
   NONE,
@@ -28,6 +29,11 @@ struct AST {
   enum kinds kind;
   const void *ref;
   size_t len;
+};
+
+struct ASTQueue {
+  struct list list;
+  struct AST **AST;
 };
 
 struct AST *parseInstructions(const char *);

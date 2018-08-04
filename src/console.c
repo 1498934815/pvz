@@ -14,6 +14,7 @@
 #include "../inc/defs.h"
 #include "../inc/console.h"
 
+struct ASTQueue *gQueue;
 bool shouldRight(struct AST *lhs, struct AST *rhs) {
   switch (lhs->kind) {
   case OPERATOR:
@@ -54,27 +55,44 @@ bool shouldParent(struct AST *lhs, struct AST *rhs) {
   }
   return false;
 }
-void __insertAST(struct AST **seqs, struct AST **target, struct AST *ins) {
+struct AST **__insertAST(struct AST **target, struct AST *ins) {
   struct AST *prev = *target;
+  if (prev->kind == SUBEXPRBEGIN && prev->left != NULL && prev->right == NULL &&
+      ins->kind != SUBEXPREND) {
+    prev->left = *__insertAST(&prev->left, ins);
+    return &prev->left;
+  }
   if (shouldLeft(prev, ins) && prev->left == NULL) {
     prev->left = ins;
+    return &prev->left;
   } else if (shouldRight(prev, ins) && prev->right == NULL) {
     prev->right = ins;
+    return &prev->right;
   } else if (shouldParent(prev, ins)) {
     ins->left = prev;
     *target = ins;
+    return target;
   } else {
-    if (prev->kind == SUBEXPRBEGIN && prev->left != NULL &&
-        prev->right == NULL) {
-      __insertAST(&prev->left, &prev->left, ins);
-    } else {
-      printf("SYNATX ERROR\n");
-    }
+    printf("SYNATX ERROR\n");
   }
+  return NULL;
+}
+struct AST **getMostAST(void) {
+  return real(gQueue)->AST;
+}
+void pushAST(struct AST **AST) {
+  ((struct ASTQueue *)insert(&gQueue, sizeof(gQueue)))->AST = AST;
+}
+void popAST(void) {
+  struct ASTQueue *p, *q;
+  for (p = gQueue; p != real(gQueue); p = next(p))
+    q = p;
+  pop(q);
 }
 void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
                size_t len) {
   struct AST *ins = (struct AST *)malloc(sizeof(struct AST));
+  struct AST **ret;
   ins->left = NULL;
   ins->right = NULL;
   ins->ref = ref;
@@ -84,7 +102,18 @@ void insertAST(struct AST **seqs, enum kinds kind, const char *ref,
   if (*seqs == NULL) {
     *seqs = ins;
   } else {
-    __insertAST(seqs, seqs, ins);
+    ret = __insertAST(getMostAST(), ins);
+    if (ret != NULL) {
+      switch ((*ret)->kind) {
+      case SUBEXPRBEGIN:
+        pushAST(ret);
+        break;
+      case SUBEXPREND:
+        if (getMostAST() != seqs)
+          popAST();
+      default:;
+      }
+    }
   }
 }
 
@@ -198,6 +227,8 @@ struct AST *parseInstructions(const char *ins) {
   const char *val = ins;
   char C;
   struct AST *seqs = NULL;
+  gQueue = NULL;
+  pushAST(&seqs);
 parse:
   while (isspace(*val))
     ++val;
