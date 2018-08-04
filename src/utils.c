@@ -28,11 +28,8 @@ void *insert(void *_Target, size_t len) {
 }
 void destroy(void *_Node) {
   struct list **node = _Node;
-  struct list *helper;
   while (*node != NULL) {
-    helper = next(*node);
-    free(*node);
-    *node = helper;
+    pop(node);
   }
   *node = NULL;
 }

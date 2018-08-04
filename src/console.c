@@ -196,13 +196,13 @@ int handleNumeric(const char C, size_t consumed) {
     return RETCODE(PASSED, HEXINT);
   else if ((inseq(C, "xX")) && consumed == 1)
     return RETCODE(PASSED, HEXINT);
-  else if (inseq(C, "+-]"))
+  else if (inseq(C, "+-]="))
     return NOKIND(END);
   else
     return NOKIND(FAILED);
 }
 int handleOperator(const char C, size_t consumed) {
-  if (inseq(C, "+-"))
+  if (inseq(C, "+-="))
     return RETCODE(PASSED, OPERATOR);
   else
     return NOKIND(FAILED);
@@ -212,7 +212,7 @@ int handleIdentity(const char C, size_t consumed) {
     return RETCODE(PASSED, IDENTITY);
   else if (isdigit(C) && consumed != 0)
     return RETCODE(PASSED, IDENTITY);
-  else if (inseq(C, "+-]"))
+  else if (inseq(C, "+-]="))
     return NOKIND(END);
   else
     return NOKIND(FAILED);
@@ -248,7 +248,7 @@ parse:
   // 123456
   if (isdigit(C)) {
     handleTokens(handleNumeric, &seqs, &val);
-  } else if (inseq(C, "+-")) {
+  } else if (inseq(C, "+-=")) {
     handleTokens(handleOperator, &seqs, &val);
   } else if (isalpha(C)) {
     handleTokens(handleIdentity, &seqs, &val);
@@ -262,6 +262,6 @@ parse:
   }
   goto parse;
 end:
-  destroy(gQueue);
+  destroy(&gQueue);
   return seqs;
 }
