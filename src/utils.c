@@ -10,11 +10,13 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <assert.h>
 #include "../inc/defs.h"
 #include "../inc/pvz.h"
 #include "../inc/utils.h"
 void *insert(void *_Target, size_t len) {
   struct list **target = _Target;
+  assert(len >= sizeof(struct list));
   struct list *node = malloc(len);
   next(node) = NULL;
   if (*target == NULL) {
