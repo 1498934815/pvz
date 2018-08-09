@@ -19,7 +19,6 @@ enum server_attr {
   SERVER_NEED_ZOMBIES = 8,
   SERVER_NEED_PLANTS = 16,
   SERVER_GETCOLROW = 32,
-  SERVER_DEBUGCONSOLE = 64,
 };
 enum user_attr {
   USER_DONOTHING = 1,
@@ -27,8 +26,7 @@ enum user_attr {
   USER_GETSTRING = 4,
   USER_GETCOLROW = 8,
   USER_DEBUGINFO = 16,
-  USER_DEBUGCONSOLE = 32,
-  USER_EXIT = 64,
+  USER_EXIT = 32,
 };
 struct pvz_option {
   unsigned id;

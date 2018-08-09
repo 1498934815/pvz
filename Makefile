@@ -3,7 +3,7 @@ MODULE := \
 	libpvz_server
 
 common := src/utils.c src/pvz.c src/com.c
-pvz_client_src := src/client.c src/console.c $(common)
+pvz_client_src := src/client.c $(common)
 
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 

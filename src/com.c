@@ -70,9 +70,6 @@ struct pvz_option pvz_options[] = {
 
     OPTION("输出调试信息", NULL, NULL, SERVER_DONOTHING, USER_DEBUGINFO),
 
-    OPTION("调试控制台", NULL, NULL, SERVER_DONOTHING,
-           USER_DEBUGCONSOLE | USER_GETSTRING),
-
     OPTION("退出", NULL, NULL, SERVER_DONOTHING, USER_EXIT),
 };
 unsigned getOptionsLength(void) { return ARRAY_SIZE(pvz_options); }

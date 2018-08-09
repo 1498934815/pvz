@@ -20,7 +20,6 @@
 #include "../inc/defs.h"
 #include "../inc/utils.h"
 #include "../inc/client.h"
-#include "../inc/console.h"
 
 int initConnection(void) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -164,9 +163,6 @@ void doHandleUserOption(struct pvz_option *option) {
       // 如果失败会引发SIGINT
       parseRowAndCol(buf, &info.task);
       destroy(&info.task);
-    }
-    if (attr & USER_DEBUGCONSOLE) {
-      parseInstructions(buf);
     }
     sendS(buf);
   }
