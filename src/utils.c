@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <stdbool.h>
 #include "../inc/defs.h"
 #include "../inc/pvz.h"
 #include "../inc/utils.h"
@@ -46,13 +47,13 @@ void pop(void *_Node) {
   free(*node);
   *node = helper;
 }
-int has(struct task *target, int row, int col) {
+bool has(struct task *target, int row, int col) {
   while (target != NULL) {
     if (target->row == row && target->col == col)
-      return 1;
+      return true;
     target = next(target);
   }
-  return 0;
+  return false;
 }
 void strip(const char *buf) {
   char *temp;

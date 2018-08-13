@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <pthread.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -48,7 +49,7 @@ void *initServer(void *unused) {
 #define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
 #define do_send(str) send(fd, str, strlen(str), 0)
 
-int execute(int fd, const char *cmd) {
+bool execute(int fd, const char *cmd) {
   static BufferType arg;
   memset(arg, 0, sizeof(arg));
   unsigned id;
@@ -59,7 +60,7 @@ int execute(int fd, const char *cmd) {
   enum server_attr attr = option->server_attr;
   cheat_function callback = option->callback;
   if ((attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
-    return 1;
+    return false;
 #define getV() sscanf(arg, "%d", &info.val)
   if (attr & SERVER_GETINT) {
     getV();
@@ -75,7 +76,7 @@ int execute(int fd, const char *cmd) {
     callback(arg, NULL);
   }
   destroy(&info.task);
-  return 0;
+  return true;
 }
 
 void handleCmd(int fd, const char *cmd) {
@@ -89,9 +90,9 @@ void handleCmd(int fd, const char *cmd) {
     do_send(GIT_HASH);
   } else {
     if (execute(fd, cmd)) {
-      do_send(UN_INIT);
-    } else {
       do_send(OK);
+    } else {
+      do_send(UN_INIT);
     }
   }
 }

@@ -10,6 +10,7 @@
 #define __UTILS__H
 #include <stdint.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include "../inc/defs.h"
 #define PANIC raise(SIGINT)
 struct list {
@@ -24,7 +25,7 @@ struct task {
 #define next(x) (*(__typeof__(x) *)&(((struct list *)(x))->next))
 #define real(x) (*(__typeof__(x) *)&(((struct list *)(x))->real))
 extern void pop(void *);
-extern int has(struct task *, int, int);
+extern bool has(struct task *, int, int);
 extern void insert_task(struct task **, int, int);
 extern void destroy(void *);
 extern void *insert(void *, size_t);

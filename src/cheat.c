@@ -7,12 +7,14 @@
  * Module  :
  * License : MIT
  */
+
+#include <time.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
-#include <time.h>
+#include <stdbool.h>
 #include <pthread.h>
 #include "../inc/pvz.h"
 #include "../inc/cheat.h"
@@ -112,7 +114,7 @@ pvz_cheat_decl(putLadder) {
     }
   }
 }
-int isProper(int code, int fieldType) {
+bool isProper(int code, int fieldType) {
   switch (code) {
   // 泳池模式得到海豚、潜水
   case 0xe:
@@ -123,7 +125,7 @@ int isProper(int code, int fieldType) {
   case 0x11:
     return !IN_RANGE(fieldType, 4, 5);
   }
-  return 1;
+  return true;
 }
 pvz_cheat_decl(doLimits) {
   uint32_t *zom = by_status("zombies_list");
@@ -232,7 +234,7 @@ pvz_cheat_decl(changeCardCode) {
 #undef first_card_code
 }
 pthread_t collectTid;
-int enableCollect;
+bool enableCollect;
 #define check_status()                                                         \
   if (getStatus() == NULL)                                                     \
     return;
@@ -252,11 +254,11 @@ void *__autoCollect(void *__pvz_unused p) {
   pthread_exit(NULL);
 }
 pvz_cheat_decl(autoCollect) {
-  enableCollect = 1;
+  enableCollect = true;
   pthread_create(&collectTid, NULL, __autoCollect, NULL);
 }
 pvz_cheat_decl(cancelAutoCollect) {
-  enableCollect = 0;
+  enableCollect = false;
   if (collectTid) {
     pthread_join(collectTid, NULL);
     collectTid = 0;

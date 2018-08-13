@@ -13,6 +13,7 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <strings.h>
+#include <stdbool.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "../inc/pvz.h"
@@ -21,7 +22,7 @@
 #include "../inc/utils.h"
 #include "../inc/client.h"
 
-int initConnection(void) {
+bool initConnection(void) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in sin;
   memset(&sin, 0, sizeof(sin));
@@ -30,10 +31,10 @@ int initConnection(void) {
   sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
   if (connect(sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     close(sockfd);
-    return 1;
+    return true;
   }
   info.sock = sockfd;
-  return 0;
+  return false;
 }
 int getSock(void) { return info.sock; }
 void initClientCore(void) {
