@@ -235,20 +235,15 @@ pvz_cheat_decl(changeCardCode) {
 }
 pthread_t collectTid;
 bool enableCollect;
-#define check_status()                                                         \
-  if (getStatus() == NULL)                                                     \
-    return;
 pvz_cheat_decl(__collect_callback) {
   if (IN_RANGE(getI32(by_ptr(remote, "goods_type")), 1, 4))
     setI32(by_ptr(remote, "goods_collect"), 1);
 }
-void __collect(void) {
-  check_status();
-  forEachValue(__collect_callback, "goods_count", "goods_entry");
-}
 void *__autoCollect(void *__pvz_unused p) {
   while (enableCollect) {
-    __collect();
+    if (getStatus() == NULL)
+      continue;
+    forEachValue(__collect_callback, "goods_count", "goods_entry");
     usleep(WAIT_USECONDS);
   }
   pthread_exit(NULL);
