@@ -13,13 +13,11 @@ libpvz_server_flag := -shared -fPIC -ldl
 inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c99 -DGIT_HASH=\"$(git_hash)\"
 ifeq ($(NDK_BUILD),true)
-	NDK ?= $(HOME)/android-ndk-r14b
-	NDK_STANDALONE ?= $(HOME)/ndk/arm
+	NDK_STANDALONE ?= $(HOME)/ndk
 	NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
-	NDK_SYSROOT ?= $(NDK)/platforms/android-12/arch-arm
-	CC := $(NDK_TOOCHAIN)-gcc
+	CC := $(NDK_TOOCHAIN)-clang
 	STRIP := $(NDK_TOOCHAIN)-strip
-	CC_FLAG += -fPIC -pie --sysroot=$(NDK_SYSROOT)
+	CC_FLAG += -fPIC -fpie
 else
 	CC := gcc
 	STRIP := strip

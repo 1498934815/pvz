@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <string.h>
 #include <strings.h>
 #include <stdbool.h>
 #include <sys/socket.h>
