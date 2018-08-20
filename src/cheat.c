@@ -129,9 +129,10 @@ bool isProper(int code, int fieldType) {
 }
 pvz_cheat_decl(doLimits) {
   uint32_t *zom = by_status("zombies_list");
-  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆
-  static uint32_t candidate[] = {0,   0x4, 0x20, 0x10, 0xf,  0xc,  0x8,
-                                 0xe, 0x7, 0x16, 0xb,  0x11, 0x12, 0x3};
+  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆 白眼
+  static uint32_t candidate[] = {0,   0x4,  0x20, 0x10, 0xf,
+                                 0xc, 0x8,  0xe,  0x7,  0x16,
+                                 0xb, 0x11, 0x12, 0x3,  GARGANTUAR_CODE};
   static uint32_t which;
   static uint32_t fieldType;
   fieldType = getI32(by_status("field_type"));
