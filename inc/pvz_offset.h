@@ -37,10 +37,6 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_row", 0x1c},
     // 植物类型代码
     {"plants_type", 0x30},
-    // 植物血量
-    {"plants_hp", 0x4c},
-    // 植物攻击力
-    {"plants_attack", 0x54},
     // 物品
     {"goods_collect", 0x5c},
     {"goods_type", 0x64},
@@ -77,11 +73,10 @@ struct pvz_offset pvz_off_tbl[] = {
 };
 struct pvz_offset *__getOffset(const char *name) {
   struct pvz_offset *pf;
-  for (size_t i = 0; i < sizeof(pvz_off_tbl) / sizeof(pvz_off_tbl[0]); ++i) {
+  for (size_t i = 0; i < ARRAY_SIZE(pvz_off_tbl); ++i) {
     pf = &pvz_off_tbl[i];
-    if (strcmp(name, pf->name) == 0) {
+    if (strcmp(name, pf->name) == 0)
       break;
-    }
   }
   return pf;
 }

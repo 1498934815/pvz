@@ -13,7 +13,7 @@
 #include <dlfcn.h>
 #include "../inc/pvz.h"
 jmp_buf env;
-void getDynamicBase(void) {
+void initDynamicBase(void) {
   Dl_info dl;
   // 得到进程空间中的SPECIFIC_DYNAMIC_LIBRARIES
   void *handle = dlopen(SPECIFIC_DYNAMIC_LIBRARIES, RTLD_NOW);
@@ -22,29 +22,26 @@ void getDynamicBase(void) {
 
   info.base = dl.dli_fbase;
 }
-void getBssBase(void) {
+void initBssBase(void) {
   void *exec = info.base;
   info.bss = (void *)PAGE_END((uint32_t)(exec + LIBPVZ_BSS_OFF));
 }
 void pvz_write(void *lp, void *buf, size_t len) { memmove(lp, buf, len); }
 void pvz_read(void *lp, void *buf, size_t len) { memmove(buf, lp, len); }
-int32_t getI32(void *rp) {
-  static int32_t val;
-  pvz_read(rp, &val, sizeof(val));
-  return val;
-}
-void *getP32(void *rp) {
-  static void *val;
-  pvz_read(rp, &val, sizeof(uint32_t));
-  return val;
-}
-float getF32(void *rp) {
-  static float val;
-  pvz_read(rp, &val, sizeof(val));
-  return val;
-}
-void setI32(void *rp, int32_t v) { pvz_write(rp, &v, sizeof(v)); }
-void setF32(void *rp, float v) { pvz_write(rp, &v, sizeof(v)); }
+#define IMPL_GET(type, name)                                                   \
+  DEFINE_GET(type, name) {                                                     \
+    static type val;                                                           \
+    pvz_read(remote, &val, sizeof(val));                                       \
+    return val;                                                                \
+  }
+#define IMPL_SET(type, name)                                                   \
+  DEFINE_SET(type, name) { pvz_write(remote, &val, sizeof(val)); }
+IMPL_GET(int32_t, I32);
+IMPL_GET(float, F32);
+IMPL_GET(void *, P32);
+IMPL_SET(int32_t, I32);
+IMPL_SET(float, F32);
+
 void initBase(void) {
   info.base = NULL;
   info.bss = NULL;
@@ -53,6 +50,6 @@ void initBase(void) {
 }
 void doInit(void) {
   initBase();
-  getDynamicBase();
-  getBssBase();
+  initDynamicBase();
+  initBssBase();
 }

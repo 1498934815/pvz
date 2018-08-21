@@ -101,7 +101,7 @@ void catchSIGINT(int sig) {
 void registerSigHandle(void) { signal(SIGINT, catchSIGINT); }
 
 void printInfo(void) {
-  notice("Github " GITHUB);
+  notice("Github " REPO);
   notice("Tieba " TIEBA_POST_URL);
   notice("CommitHash " GIT_HASH);
   notice("By 百度贴吧@" AUTHOR);
@@ -119,6 +119,8 @@ void printDebugInfo(void) {
 void doInitClient(void) {
   printInfo();
   initClientCore();
+  doInitOptions();
+  registerSigHandle();
   printDebugInfo();
 }
 void doDisplayUserInterface(void) {
@@ -171,8 +173,6 @@ void doHandleUserOption(struct pvz_option *option) {
 }
 int main(int argc, char **argv) {
   doInitClient();
-  doInitOptions();
-  registerSigHandle();
   unsigned id;
   if (setjmp(env) == SETJMP_RET) {
     err("无效输入");

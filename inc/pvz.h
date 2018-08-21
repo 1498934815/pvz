@@ -31,15 +31,18 @@ struct {
 } info;
 extern jmp_buf env;
 
-void initBase(void);
-void getDynamicBase(void);
-void getBssBase(void);
 void pvz_write(void *, void *, size_t);
 void pvz_read(void *, void *, size_t);
-int32_t getI32(void *);
-void *getP32(void *);
-float getF32(void *);
-void setI32(void *, int32_t);
-void setF32(void *, float);
+#define DEFINE_GET(type, name) type get##name(void *remote)
+#define DEFINE_SET(type, name) void set##name(void *remote, type val)
+DEFINE_GET(int32_t, I32);
+DEFINE_GET(float, F32);
+DEFINE_GET(void *, P32);
+DEFINE_SET(int32_t, I32);
+DEFINE_SET(float, F32);
+
+void initBase(void);
+void initDynamicBase(void);
+void initBssBase(void);
 void doInit(void);
 #endif //__PVZ__H

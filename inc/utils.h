@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "../inc/defs.h"
+
 #define PANIC raise(SIGINT)
 struct list {
   struct list *next;

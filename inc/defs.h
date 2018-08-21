@@ -18,14 +18,12 @@
 #define SETJMP_RET 0xff
 #define WAIT_USECONDS (500000)
 
-#define GITHUB "https://github.com/ze00/pvz"
-#define BRANCH "client"
-#define CODE_TXT GITHUB "/blob/" BRANCH "/doc/code.txt"
-#define HELP_TXT GITHUB "/blob/" BRANCH "/doc/help.txt"
-#define README_MD GITHUB "/blob/" BRANCH "/README.md"
-
-#define TIEBA_POST_URL "https://tieba.baidu.com/p/5645499737"
-#define AUTHOR "AS魇梦蚀"
+#define REPO GIT_REPO
+#define BRANCH GIT_BRANCH
+#define BLOB REPO "/blob/" BRANCH
+#define CODE_TXT BLOB "/doc/code.txt"
+#define HELP_TXT BLOB "/doc/help.txt"
+#define README_MD BLOB "/README.md"
 
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
 #define ERR "\033[31;1m[ERR]\033[0m "
