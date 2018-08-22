@@ -20,10 +20,18 @@
 #include "../inc/cheat.h"
 #include "../inc/pvz_offset.h"
 
-void *by_ptr(void *ptr, const char *name) { return ptr + getOffset(name); }
-void *by_field(const char *name) { return by_ptr(getField(), name); }
-void *by_status(const char *name) { return by_ptr(getStatus(), name); }
-void *by_saves(const char *name) { return by_ptr(getSaves(), name); }
+void *by_ptr(void *ptr, const char *name) {
+  return ptr + getOffset(name);
+}
+void *by_field(const char *name) {
+  return by_ptr(getField(), name);
+}
+void *by_status(const char *name) {
+  return by_ptr(getStatus(), name);
+}
+void *by_saves(const char *name) {
+  return by_ptr(getSaves(), name);
+}
 
 void *__getField(void) {
   void *heap = getP32(by_ptr(info.bss, "heap"));
@@ -65,9 +73,13 @@ void *getStatus(void) {
   return status;
 }
 
-void *getSaves(void) { return getP32(by_field("saves_entry")); }
+void *getSaves(void) {
+  return getP32(by_field("saves_entry"));
+}
 
-int32_t __getUserId(void) { return getI32(by_saves("user_id")); }
+int32_t __getUserId(void) {
+  return getI32(by_saves("user_id"));
+}
 
 void forEachValue(cheat_function callback, const char *count_name,
                   const char *entry_name) {
@@ -80,12 +92,12 @@ void forEachValue(cheat_function callback, const char *count_name,
     rp = getP32(entry);
     if (rp > (void *)0x10000000) {
       callback(NULL, rp);
-      idx++;
+      ++idx;
       // 地址后面有一个指针
       // 同不知道干嘛的
-      entry++;
+      ++entry;
     }
-    entry++;
+    ++entry;
   }
 }
 
@@ -97,7 +109,9 @@ void forEachZombies(cheat_function callback) {
   forEachValue(callback, "zombies_count", "zombies_entry");
 }
 
-pvz_cheat_decl(coverZombies) { setI32(by_ptr(remote, "zombies_butter"), 5000); }
+pvz_cheat_decl(coverZombies) {
+  setI32(by_ptr(remote, "zombies_butter"), 5000);
+}
 
 pvz_cheat_decl(putLadder) {
   if (info.task != NULL) {
@@ -164,9 +178,13 @@ void put10(int32_t code) {
   }
 }
 
-pvz_cheat_decl(callLadder) { put10(LADDER_CODE); }
+pvz_cheat_decl(callLadder) {
+  put10(LADDER_CODE);
+}
 
-pvz_cheat_decl(callGargantuar) { put10(GARGANTUAR_CODE); }
+pvz_cheat_decl(callGargantuar) {
+  put10(GARGANTUAR_CODE);
+}
 
 #undef ROW
 #undef COL
@@ -191,17 +209,25 @@ pvz_cheat_decl(fuck_LilyPad_Pumpkin) {
   }
 }
 
-pvz_cheat_decl(freePlants) { setI32(by_field("free_plants"), 1); }
+pvz_cheat_decl(freePlants) {
+  setI32(by_field("free_plants"), 1);
+}
 #undef ROW
 #undef COL
 #undef CODE
 
 #define set_by_val(p) setI32((p), info.val)
-pvz_cheat_decl(switchMode) { set_by_val(by_field("mode")); }
+pvz_cheat_decl(switchMode) {
+  set_by_val(by_field("mode"));
+}
 
-pvz_cheat_decl(switchFieldType) { set_by_val(by_status("field_type")); }
+pvz_cheat_decl(switchFieldType) {
+  set_by_val(by_status("field_type"));
+}
 
-pvz_cheat_decl(setSun) { set_by_val(by_status("sun")); }
+pvz_cheat_decl(setSun) {
+  set_by_val(by_status("sun"));
+}
 
 pvz_cheat_decl(setFlags) {
   // clang-format off
@@ -211,13 +237,21 @@ pvz_cheat_decl(setFlags) {
   // clang-format on
 }
 
-pvz_cheat_decl(pass) { setI32(by_status("pass"), 1); }
+pvz_cheat_decl(pass) {
+  setI32(by_status("pass"), 1);
+}
 
-pvz_cheat_decl(changeCoins) { set_by_val(by_saves("coins")); }
+pvz_cheat_decl(changeCoins) {
+  set_by_val(by_saves("coins"));
+}
 
-pvz_cheat_decl(jump) { set_by_val(by_saves("adventure_level")); }
+pvz_cheat_decl(jump) {
+  set_by_val(by_saves("adventure_level"));
+}
 
-pvz_cheat_decl(pass2life) { setI32(by_saves("2life"), 2); }
+pvz_cheat_decl(pass2life) {
+  setI32(by_saves("2life"), 2);
+}
 
 pvz_cheat_decl(moveSaves) {
   // 形如/storage/emulated/0/Android/data/com.popcap.pvz_na/files/userdata/users.dat

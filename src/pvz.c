@@ -26,8 +26,12 @@ void initBssBase(void) {
   void *exec = info.base;
   info.bss = (void *)PAGE_END((uint32_t)(exec + LIBPVZ_BSS_OFF));
 }
-void pvz_write(void *lp, void *buf, size_t len) { memmove(lp, buf, len); }
-void pvz_read(void *lp, void *buf, size_t len) { memmove(buf, lp, len); }
+void pvz_write(void *lp, void *buf, size_t len) {
+  memmove(lp, buf, len);
+}
+void pvz_read(void *lp, void *buf, size_t len) {
+  memmove(buf, lp, len);
+}
 #define IMPL_GET(type, name)                                                   \
   DEFINE_GET(type, name) {                                                     \
     static type val;                                                           \
@@ -35,7 +39,9 @@ void pvz_read(void *lp, void *buf, size_t len) { memmove(buf, lp, len); }
     return val;                                                                \
   }
 #define IMPL_SET(type, name)                                                   \
-  DEFINE_SET(type, name) { pvz_write(remote, &val, sizeof(val)); }
+  DEFINE_SET(type, name) {                                                     \
+    pvz_write(remote, &val, sizeof(val));                                      \
+  }
 IMPL_GET(int32_t, I32);
 IMPL_GET(float, F32);
 IMPL_GET(void *, P32);

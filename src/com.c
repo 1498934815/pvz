@@ -71,21 +71,18 @@ struct pvz_option pvz_options[] = {
     OPTION("输出调试信息", NULL, NULL, SERVER_DONOTHING, USER_DEBUGINFO),
 
     OPTION("退出", NULL, NULL, SERVER_DONOTHING, USER_EXIT),
+    OPTION(NULL, NULL, NULL, SERVER_DONOTHING, USER_DONOTHING),
 };
-unsigned getOptionsLength(void) { return ARRAY_SIZE(pvz_options); }
-
 void doInitOptions(void) {
-  struct pvz_option *option;
-  for (unsigned idx = 0; idx < getOptionsLength(); ++idx) {
-    option = &pvz_options[idx];
+  unsigned idx = 0;
+  for_each_option(option) {
     option->id = idx;
+    ++idx;
   }
 }
 
 struct pvz_option *getOption(unsigned id) {
-  struct pvz_option *option;
-  for (unsigned idx = 0; idx < getOptionsLength(); ++idx) {
-    option = &pvz_options[idx];
+  for_each_option(option) {
     if (option->id == id)
       return option;
   }

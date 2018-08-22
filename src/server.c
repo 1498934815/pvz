@@ -120,4 +120,6 @@ void __attribute__((constructor)) doInitServer(void) {
   pthread_create(&tid, NULL, initServer, NULL);
   pthread_detach(tid);
 }
-void __attribute__((destructor)) doDestroyServer(void) { close(sockfd); }
+void __attribute__((destructor)) doDestroyServer(void) {
+  close(sockfd);
+}

@@ -39,6 +39,9 @@ struct pvz_option {
 
 extern struct pvz_option pvz_options[];
 
+#define for_each_option(option)                                                \
+  for (struct pvz_option *option = pvz_options; option->name != NULL; ++option)
+
 unsigned getOptionsLength(void);
 void doInitOptions(void);
 struct pvz_option *getOption(unsigned);

@@ -37,7 +37,9 @@ bool initConnection(void) {
   info.sock = sockfd;
   return false;
 }
-int getSock(void) { return info.sock; }
+int getSock(void) {
+  return info.sock;
+}
 void initClientCore(void) {
   if (initConnection()) {
     if (getSock() == 0) {
@@ -76,8 +78,12 @@ const char *doCmd(const char *cmd) {
   }
   return rec;
 }
-void getRemoteBase(void) { parseAddr(doCmd(GETBASE), &info.base); }
-void detectPVZ(void) { parseInt(doCmd(GETPID), &info.pid); }
+void getRemoteBase(void) {
+  parseAddr(doCmd(GETBASE), &info.base);
+}
+void detectPVZ(void) {
+  parseInt(doCmd(GETPID), &info.pid);
+}
 void verifyVersion(void) {
   const char *hash = doCmd(GETHASH);
   if (strcmp(hash, GIT_HASH) != 0) {
@@ -86,7 +92,9 @@ void verifyVersion(void) {
     exit(-1);
   }
 }
-void *getField(void) { return info.base; }
+void *getField(void) {
+  return info.base;
+}
 void *getStatus(void) {
   void *v;
   parseAddr(doCmd(GETSTATUS), &v);
@@ -98,7 +106,9 @@ void catchSIGINT(int sig) {
   destroy(&info.task);
   longjmp(env, SETJMP_RET);
 }
-void registerSigHandle(void) { signal(SIGINT, catchSIGINT); }
+void registerSigHandle(void) {
+  signal(SIGINT, catchSIGINT);
+}
 
 void printInfo(void) {
   notice("Github " REPO);
@@ -124,9 +134,7 @@ void doInitClient(void) {
   printDebugInfo();
 }
 void doDisplayUserInterface(void) {
-  const struct pvz_option *option;
-  for (unsigned idx = 0; idx < getOptionsLength(); ++idx) {
-    option = &pvz_options[idx];
+  for_each_option(option) {
     printf("%u.%s\n", option->id, option->name);
   }
 }

@@ -80,5 +80,7 @@ struct pvz_offset *__getOffset(const char *name) {
   }
   return pf;
 }
-off_t getOffset(const char *name) { return __getOffset(name)->offset; }
+off_t getOffset(const char *name) {
+  return __getOffset(name)->offset;
+}
 #endif //__PVZ_OFFSET__H

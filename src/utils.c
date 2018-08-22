@@ -92,13 +92,13 @@ parse:
     CHECK(isdigit(*val) && IN_RANGE(DIGIT(), 1, 6));
     row = DIGIT();
     status = NEED_DOT;
-    val++;
+    ++val;
     goto parse;
   case NEED_COL:
     CHECK(isdigit(*val) && IN_RANGE(DIGIT(), 1, 9));
     col = DIGIT();
     status = NEED_COMMA;
-    val++;
+    ++val;
     // 不允许重复
     if (!has(*task, row, col))
       insert_task(task, row, col);
@@ -106,12 +106,12 @@ parse:
   case NEED_DOT:
     CHECK('.' == *val);
     status = NEED_COL;
-    val++;
+    ++val;
     goto parse;
   case NEED_COMMA:
     CHECK(',' == *val);
     status = NEED_ROW;
-    val++;
+    ++val;
     goto parse;
   }
 panic:
@@ -127,7 +127,11 @@ const char *to_string(const char *fmt, ...) {
   va_end(va);
   return buf;
 }
-void parseAddr(const char *rec, void **out) { sscanf(rec, "%p", out); }
-void parseInt(const char *rec, int *out) { sscanf(rec, "%d", out); }
+void parseAddr(const char *rec, void **out) {
+  sscanf(rec, "%p", out);
+}
+void parseInt(const char *rec, int *out) {
+  sscanf(rec, "%d", out);
+}
 #undef CHECK
 #undef DIGIT
