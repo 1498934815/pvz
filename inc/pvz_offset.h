@@ -72,13 +72,13 @@ struct pvz_offset pvz_off_tbl[] = {
     {"2life", 0x2c},
 };
 struct pvz_offset *__getOffset(const char *name) {
-  struct pvz_offset *pf;
-  for (size_t i = 0; i < ARRAY_SIZE(pvz_off_tbl); ++i) {
-    pf = &pvz_off_tbl[i];
-    if (strcmp(name, pf->name) == 0)
-      break;
+#define for_each_term(off)                                                     \
+  for (struct pvz_offset *off = pvz_off_tbl; off->name != NULL; ++off)
+  for_each_term(off) {
+    if (strcmp(name, off->name) == 0)
+      return off;
   }
-  return pf;
+  return NULL;
 }
 off_t getOffset(const char *name) {
   return __getOffset(name)->offset;
