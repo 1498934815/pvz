@@ -37,6 +37,8 @@ struct pvz_offset pvz_off_tbl[] = {
     {"plants_row", 0x1c},
     // 植物类型代码
     {"plants_type", 0x30},
+    // 植物血量
+    {"plants_hp", 0x4c},
     // 物品
     {"goods_collect", 0x5c},
     {"goods_type", 0x64},
