@@ -50,7 +50,7 @@ void *initServer(void *unused) {
 #define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
 #define do_send(str) send(fd, str, strlen(str), 0)
 
-bool execute(int fd, const char *cmd) {
+bool execute(const char *cmd) {
   static BufferType arg;
   memset(arg, 0, sizeof(arg));
   unsigned id;
@@ -90,7 +90,7 @@ void handleCmd(int fd, const char *cmd) {
   } else if (is_cmd(GETHASH)) {
     do_send(GIT_HASH);
   } else {
-    if (execute(fd, cmd)) {
+    if (execute(cmd)) {
       do_send(OK);
     } else {
       do_send(UN_INIT);
