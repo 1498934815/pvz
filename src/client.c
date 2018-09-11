@@ -159,7 +159,7 @@ void doHandleUserOption(struct pvz_option *option) {
     printDebugInfo();
   }
   if (attr & USER_DONOTHING) {
-    do_cmd(, );
+    do_cmd();
   }
   if (attr & USER_GETINT) {
     GETOPT_V("?");

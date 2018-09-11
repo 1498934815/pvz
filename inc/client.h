@@ -12,10 +12,11 @@
 
 #include "../inc/utils.h"
 extern const char *doCmd(const char *);
-#define do_cmd(fmt, ...) doCmd(to_string("%d" fmt, option->id __VA_ARGS__))
-#define do_cmd_with_arg(fmt, ...) do_cmd(":" fmt, __VA_ARGS__)
-// XXX ','不可少, 什么时候C也有和__VA_OPT__类似的东西
-#define sendI(I) do_cmd_with_arg("%d", , I)
-#define sendS(S) do_cmd_with_arg("%s", , S)
+// XXX GNU扩展
+// 如果args是个空包，##args前的逗号会被无视
+#define do_cmd(fmt, args...) doCmd(to_string("%d" fmt, option->id, ##args))
+#define do_cmd_with_arg(fmt, args...) do_cmd(":" fmt, ##args)
+#define sendI(I) do_cmd_with_arg("%d", I)
+#define sendS(S) do_cmd_with_arg("%s", S)
 
 #endif //__CLIENT__H
