@@ -32,16 +32,16 @@ bool initConnection(void) {
   sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
   if (connect(sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     close(sockfd);
-    return true;
+    return false;
   }
   info.sock = sockfd;
-  return false;
+  return true;
 }
 int getSock(void) {
   return info.sock;
 }
 void initClientCore(void) {
-  if (initConnection()) {
+  if (!initConnection()) {
     if (getSock() == 0) {
       err("也许您没有启动PvZ?");
       err("也可能...您启动的是不正确的PvZ");
