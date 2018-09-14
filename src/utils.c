@@ -38,7 +38,7 @@ void destroy(void *_Node) {
   *node = NULL;
 }
 void insert_task(struct task **target, int row, int col) {
-  struct task *node = insert((struct list **)target, sizeof(struct task));
+  struct task *node = insert(target, sizeof(struct task));
   node->row = row;
   node->col = col;
 }
