@@ -26,11 +26,12 @@ struct pvz_option pvz_options[] = {
     OPTION("只出巨人僵尸", callGargantuar, NULL, SERVER_DONOTHING,
            USER_DONOTHING),
 
-    OPTION("搭梯", putLadder,
-           "要将梯子僵尸放于何列?\n例如:1.2,1.3(行与列以英文句号分隔,"
-           "多个行列以英文逗号分隔):",
-           SERVER_NEED_ZOMBIES | SERVER_GETCOLROW,
-           USER_GETSTRING | USER_GETCOLROW),
+    OPTION(
+        "搭梯", putLadder,
+        "要将场上的梯子僵尸移动到何行何列?\n例如:1.2,1.3(行与列以英文句号分隔,"
+        "多个行列以英文逗号分隔):",
+        SERVER_NEED_ZOMBIES | SERVER_GETCOLROW,
+        USER_GETSTRING | USER_GETCOLROW),
 
     OPTION("炸荷叶烂南瓜", fuck_LilyPad_Pumpkin,
            "要去除何处的莲叶或破坏何处的南瓜?(行与列以英文句号分隔,"
@@ -44,8 +45,8 @@ struct pvz_option pvz_options[] = {
 
     OPTION("修改当前无尽轮数", setFlags, NULL, SERVER_GETINT, USER_GETINT),
 
-    OPTION("跳关", switchMode, "部分代码见" CODE_TXT "\n", SERVER_GETINT,
-           USER_GETINT),
+    OPTION("修改当前游戏模式", switchMode, "部分代码见" CODE_TXT "\n",
+           SERVER_GETINT, USER_GETINT),
 
     OPTION("冒险跳关", jump, NULL, SERVER_GETINT | SERVER_NOT_INGAME,
            USER_GETINT),
@@ -59,11 +60,12 @@ struct pvz_option pvz_options[] = {
 
     OPTION("修改第一个卡槽", changeCardCode, NULL, SERVER_GETINT, USER_GETINT),
 
-    OPTION("切换场景", switchFieldType,
+    OPTION("切换游戏场景类型", switchFieldType,
            "场景代码(0-7)见" CODE_TXT "\n请更改后重新进入当前关卡\n",
            SERVER_GETINT, USER_GETINT),
 
-    OPTION("自动收集", autoCollect, NULL, SERVER_NOT_INGAME, USER_DONOTHING),
+    OPTION("自动收集物品", autoCollect, NULL, SERVER_NOT_INGAME,
+           USER_DONOTHING),
 
     OPTION("取消自动收集", cancelAutoCollect, NULL, SERVER_NOT_INGAME,
            USER_DONOTHING),
