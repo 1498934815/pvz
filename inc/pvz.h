@@ -19,6 +19,7 @@
 #define PUMPKIN_CODE (30)
 #define LILYPAD_CODE (16)
 #define LADDER_CODE (21)
+#define RED_CODE (32)
 #define GARGANTUAR_CODE (23)
 
 struct {

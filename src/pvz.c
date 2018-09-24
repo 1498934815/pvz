@@ -7,6 +7,7 @@
  * Module  :
  * License : MIT
  */
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -58,4 +59,6 @@ void doInit(void) {
   initBase();
   initDynamicBase();
   initBssBase();
+  // 设置随机数种子
+  srand(time(NULL));
 }

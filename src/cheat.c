@@ -8,7 +8,6 @@
  * License : MIT
  */
 
-#include <time.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -141,23 +140,28 @@ bool isProper(int code, int fieldType) {
   }
   return true;
 }
+uint32_t generateCandidate(size_t i, uint32_t fieldType) {
+  // 普僵 铁桶 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆
+  // 白眼 红眼 梯子
+  static uint32_t candidate[] = {
+      0,        0x4,        0x10, 0xf,  0xc,  0x8, 0xe,
+      0x7,      0x16,       0xb,  0x11, 0x12, 0x3, GARGANTUAR_CODE,
+      RED_CODE, LADDER_CODE};
+  uint32_t which, seed;
+  do {
+    which = rand() % ARRAY_SIZE(candidate);
+    // 至少十只红眼
+    seed = i < 40 ? candidate[which] : RED_CODE;
+  } while (!isProper(seed,
+                     fieldType)); // 如果得到的僵尸不合适,重新生成
+  return seed;
+}
 pvz_cheat_decl(doLimits) {
   uint32_t *zom = by_status("zombies_list");
-  // 普僵 铁桶 红眼 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆 白眼
-  static uint32_t candidate[] = {0,   0x4,  0x20, 0x10, 0xf,
-                                 0xc, 0x8,  0xe,  0x7,  0x16,
-                                 0xb, 0x11, 0x12, 0x3,  GARGANTUAR_CODE};
-  static uint32_t which;
-  static uint32_t fieldType;
-  fieldType = getI32(by_status("field_type"));
-  srand(time(NULL));
+  uint32_t fieldType = getI32(by_status("field_type"));
   for (size_t iidx = 0; iidx < 20; ++iidx) {
     for (size_t jidx = 0; jidx < 50; ++jidx) {
-      do {
-        which = rand() % ARRAY_SIZE(candidate);
-      } while (!isProper(candidate[which],
-                         fieldType)); // 如果得到的僵尸不合适,重新生成
-      setI32(zom, candidate[which]);
+      setI32(zom, generateCandidate(jidx, fieldType));
       ++zom;
     }
   }
