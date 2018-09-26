@@ -22,6 +22,14 @@
 #define RED_CODE (32)
 #define GARGANTUAR_CODE (23)
 
+enum pvz_field {
+  DAY,
+  NIGHT,
+  POOL,
+  FOG,
+  ROOF,
+  MOONNIGHT,
+};
 struct {
   void *base;
   void *bss;

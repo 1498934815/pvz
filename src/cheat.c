@@ -127,41 +127,42 @@ pvz_cheat_decl(putLadder) {
     }
   }
 }
-bool isProper(int code, int fieldType) {
+bool isProper(int code, enum pvz_field fieldType) {
   switch (code) {
   // 泳池模式得到海豚、潜水
   case 0xe:
   case 0xb:
-    return IN_RANGE(fieldType, 2, 3);
+    return IN_RANGE(fieldType, POOL, FOG);
   // 非屋顶、月夜得到舞王、矿工
   case 0x8:
   case 0x11:
-    return !IN_RANGE(fieldType, 4, 5);
+    return !IN_RANGE(fieldType, ROOF, MOONNIGHT);
   }
   return true;
 }
-uint32_t generateCandidate(size_t i, uint32_t fieldType) {
+uint32_t generateCandidate(size_t i, enum pvz_field fieldType) {
   // 普僵 铁桶 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆
   // 白眼 红眼 梯子
   static uint32_t candidate[] = {
       0,        0x4,        0x10, 0xf,  0xc,  0x8, 0xe,
       0x7,      0x16,       0xb,  0x11, 0x12, 0x3, GARGANTUAR_CODE,
       RED_CODE, LADDER_CODE};
-  uint32_t which, seed;
+  uint32_t which;
+  // 至少十只红眼
+  if (i >= 40)
+    return RED_CODE;
   do {
     which = rand() % ARRAY_SIZE(candidate);
-    // 至少十只红眼
-    seed = i < 40 ? candidate[which] : RED_CODE;
-  } while (!isProper(seed,
+  } while (!isProper(candidate[which],
                      fieldType)); // 如果得到的僵尸不合适,重新生成
-  return seed;
+  return candidate[which];
 }
 pvz_cheat_decl(doLimits) {
   uint32_t *zom = by_status("zombies_list");
-  uint32_t fieldType = getI32(by_status("field_type"));
-  for (size_t iidx = 0; iidx < 20; ++iidx) {
-    for (size_t jidx = 0; jidx < 50; ++jidx) {
-      setI32(zom, generateCandidate(jidx, fieldType));
+  enum pvz_field fieldType = (enum pvz_field)getI32(by_status("field_type"));
+  for (size_t wave = 0; wave < 20; ++wave) {
+    for (size_t i = 0; i < 50; ++i) {
+      setI32(zom, generateCandidate(i, fieldType));
       ++zom;
     }
   }
@@ -170,11 +171,11 @@ pvz_cheat_decl(doLimits) {
 void put10(int32_t code) {
   uint32_t *zom = by_status("zombies_list");
   int32_t c;
-  for (size_t iidx = 0; iidx < 20; ++iidx) {
+  for (size_t wave = 0; wave < 20; ++wave) {
     c = code;
-    for (size_t jidx = 0; jidx < 50; ++jidx) {
+    for (size_t i = 0; i < 50; ++i) {
       // 每波十只
-      if (jidx == 10)
+      if (i == 10)
         c = -1;
       setI32(zom, c);
       ++zom;
