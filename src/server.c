@@ -101,7 +101,8 @@ void *doHandleClient(void *arg) {
   int csock = *(int *)arg;
   size_t len, n;
   static BufferType buf;
-  while (memset(buf, 0, sizeof(buf)), recv(csock, buf, BUFSIZE, 0) > 0) {
+  memset(buf, 0, sizeof(buf));
+  while (recv(csock, buf, BUFSIZE, 0) > 0) {
     // FIXME 没有必要
     // 不过为了兼容以前的版本的GETHASH之类...还是留着吧
     sscanf(buf, "%zu:%n", &len, &n);

@@ -66,7 +66,7 @@ const char *doCmd(const char *cmd) {
   memset(rec, 0, sizeof(rec));
   size_t len = strlen(cmd);
   sprintf(snd, "%zu:%s", len, cmd);
-  if (send(getSock(), snd, strlen(snd), 0) == -1 ||
+  if (send(getSock(), snd, strlen(snd) + 1, 0) == -1 ||
       recv(getSock(), rec, BUFSIZE, 0) <= 0) {
     close(getSock());
     // 重试
