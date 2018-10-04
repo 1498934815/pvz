@@ -13,7 +13,7 @@
 #include "../inc/defs.h"
 #include "../inc/cheat.h"
 enum server_attr {
-  SERVER_DONOTHING = 1,
+  SERVER_NULL = 1,
   SERVER_GETINT = 2,
   SERVER_NOT_INGAME = 4,
   SERVER_NEED_ZOMBIES = 8,
@@ -21,7 +21,7 @@ enum server_attr {
   SERVER_GETCOLROW = 32,
 };
 enum user_attr {
-  USER_DONOTHING = 1,
+  USER_NULL = 1,
   USER_GETINT = 2,
   USER_GETSTRING = 4,
   USER_GETCOLROW = 8,
@@ -30,6 +30,7 @@ enum user_attr {
 };
 struct pvz_option {
   unsigned id;
+  unsigned wide;
   const char *name;
   const char *notice;
   cheat_function callback;
@@ -45,4 +46,7 @@ extern struct pvz_option pvz_options[];
 unsigned getOptionsLength(void);
 void doInitOptions(void);
 struct pvz_option *getOption(unsigned);
+
+extern unsigned padding;
+extern unsigned leastID;
 #endif //__COM__H

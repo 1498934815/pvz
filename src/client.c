@@ -128,14 +128,22 @@ void printDebugInfo(void) {
 }
 void doInitClient(void) {
   printInfo();
-  initClientCore();
   doInitOptions();
   registerSigHandle();
+  initClientCore();
   printDebugInfo();
 }
 void doDisplayUserInterface(void) {
+  unsigned pad;
   for_each_option(option) {
-    printf("%u.%s\n", option->id, option->name);
+    // 补充适当的空格
+    pad = padding - option->wide;
+    // 奇数的ID或者已是最后一个时
+    // 则换行
+    if (option->id % 2 == 1 || option->id == leastID)
+      printf("%2u.%s\n", option->id, option->name);
+    else
+      printf("%2u.%s%*s", option->id, option->name, pad, "\t");
   }
 }
 #define GETOPT(mess, opt)                                                      \
@@ -158,7 +166,7 @@ void doHandleUserOption(struct pvz_option *option) {
   if (attr & USER_DEBUGINFO) {
     printDebugInfo();
   }
-  if (attr & USER_DONOTHING) {
+  if (attr & USER_NULL) {
     do_cmd();
   }
   if (attr & USER_GETINT) {

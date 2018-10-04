@@ -35,6 +35,7 @@ pvz_cheat(doLimits);
 pvz_cheat(callLadder);
 pvz_cheat(callGargantuar);
 pvz_cheat(freePlants);
+pvz_cheat(shutdownFreePlants);
 pvz_cheat(switchMode);
 pvz_cheat(switchFieldType);
 pvz_cheat(moveSaves);
@@ -44,4 +45,5 @@ pvz_cheat(changeCardCode);
 pvz_cheat(pass2life);
 pvz_cheat(autoCollect);
 pvz_cheat(cancelAutoCollect);
+pvz_cheat(triggerMowers);
 #endif //__CHEAT__H

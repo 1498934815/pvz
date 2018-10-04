@@ -16,11 +16,13 @@
 #define SPECIFIC_DYNAMIC_LIBRARIES "libpvz.so"
 #define LIBPVZ_BASE_HELPER "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
 #define LIBPVZ_BSS_OFF (0xc5d860)
+
 #define PUMPKIN_CODE (30)
 #define LILYPAD_CODE (16)
+#define THIEF_CODE (20)
 #define LADDER_CODE (21)
-#define RED_CODE (32)
 #define GARGANTUAR_CODE (23)
+#define RED_CODE (32)
 
 enum pvz_field {
   DAY,

@@ -162,7 +162,10 @@ pvz_cheat_decl(doLimits) {
   enum pvz_field fieldType = (enum pvz_field)getI32(by_status("field_type"));
   for (size_t wave = 0; wave < 20; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
-      setI32(zom, generateCandidate(i, fieldType));
+      if ((wave == 9 || wave == 19) && i < 3)
+        setI32(zom, THIEF_CODE);
+      else
+        setI32(zom, generateCandidate(i, fieldType));
       ++zom;
     }
   }
@@ -216,6 +219,9 @@ pvz_cheat_decl(fuck_LilyPad_Pumpkin) {
 
 pvz_cheat_decl(freePlants) {
   setI32(by_field("free_plants"), 1);
+}
+pvz_cheat_decl(shutdownFreePlants) {
+  setI32(by_field("free_plants"), 0);
 }
 #undef ROW
 #undef COL
@@ -298,5 +304,12 @@ pvz_cheat_decl(cancelAutoCollect) {
     pthread_join(collectTid, NULL);
     collectTid = 0;
   }
+}
+pvz_cheat_decl(__triggerMowers_callback) {
+  // 表示触发推车
+  setI32(by_ptr(remote, "mowers_trigger"), 2);
+}
+pvz_cheat_decl(triggerMowers) {
+  forEachValue(__triggerMowers_callback, "mowers_count", "mowers_entry");
 }
 #undef set_by_val
