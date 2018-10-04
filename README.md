@@ -1,5 +1,5 @@
 # PVZ小工具
-  * 本人在aarch64/arm的Android 7.12中测试通过
+  * 本人在aarch64/arm的Android 4.4.4、7.12、8.1中测试通过
 
     ![pvz](images/pvz.png)
 
