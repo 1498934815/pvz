@@ -25,11 +25,11 @@
 
 bool initConnection(void) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  struct sockaddr_in sin;
-  memset(&sin, 0, sizeof(sin));
-  sin.sin_family = AF_INET;
-  sin.sin_port = htons(SERVER_PORT);
-  sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
+  struct sockaddr_in sin = {
+      .sin_family = AF_INET,
+      .sin_port = htons(SERVER_PORT),
+      .sin_addr.s_addr = inet_addr(SERVER_ADDR),
+  };
   if (connect(sockfd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     close(sockfd);
     return false;

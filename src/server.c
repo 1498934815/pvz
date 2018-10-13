@@ -25,11 +25,11 @@ void *initServer(void *unused) {
   (void)unused;
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   int csock;
-  struct sockaddr_in sin;
-  memset(&sin, 0, sizeof(sin));
-  sin.sin_family = AF_INET;
-  sin.sin_port = htons(SERVER_PORT);
-  sin.sin_addr.s_addr = inet_addr(SERVER_ADDR);
+  struct sockaddr_in sin = {
+      .sin_family = AF_INET,
+      .sin_port = htons(SERVER_PORT),
+      .sin_addr.s_addr = inet_addr(SERVER_ADDR),
+  };
   int reuseaddr = 1;
   setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(reuseaddr));
   bind(sockfd, (struct sockaddr *)&sin, sizeof(sin));
