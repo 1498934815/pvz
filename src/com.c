@@ -40,10 +40,6 @@ struct pvz_option pvz_options[] = {
     OPTION("冒险跳关", jump, NULL, SERVER_GETINT | SERVER_NOT_INGAME,
            USER_GETINT),
     OPTION("过第二周目", pass2life, NULL, SERVER_NOT_INGAME, USER_NULL),
-    OPTION("混乱存档", moveSaves,
-           "请进入泳池无尽查看效果 && 请确保game1_{mode}.dat存在\n见" CODE_TXT
-           "底部的说明\n",
-           SERVER_GETINT | SERVER_NOT_INGAME, USER_GETINT),
     OPTION("修改第一个卡槽", changeCardCode, NULL, SERVER_GETINT, USER_GETINT),
     OPTION("切换游戏场景类型", switchFieldType,
            "场景代码(0-7)见" CODE_TXT "\n请更改后重新进入当前关卡\n",

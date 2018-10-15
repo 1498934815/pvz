@@ -38,7 +38,6 @@ pvz_cheat(freePlants);
 pvz_cheat(shutdownFreePlants);
 pvz_cheat(switchMode);
 pvz_cheat(switchFieldType);
-pvz_cheat(moveSaves);
 pvz_cheat(changeCoins);
 pvz_cheat(jump);
 pvz_cheat(changeCardCode);

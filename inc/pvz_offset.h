@@ -46,7 +46,6 @@ struct pvz_offset pvz_off_tbl[] = {
     {"mowers_trigger", 0x2c},
     // bss + 0x...
     {"heap", 0x5138c8},
-    {"userloc_helper", 0x7a9fcc},
     // *(*heap + field_offset)
     {"field_offset", 0x2dfa0},
     // field + 0x...

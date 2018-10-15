@@ -264,15 +264,6 @@ pvz_cheat_decl(pass2life) {
   setI32(by_saves("2life"), 2);
 }
 
-pvz_cheat_decl(moveSaves) {
-  // 形如/storage/emulated/0/Android/data/com.popcap.pvz_na/files/userdata/users.dat
-  void *helper = by_field("userloc_helper");
-  const char *locs = dirname(helper);
-  int32_t uid = __getUserId();
-  system(to_string("cd %s ; cp game%d_%d.dat game%d_13.dat", locs, uid,
-                   info.val, uid));
-}
-
 pvz_cheat_decl(changeCardCode) {
   void *card = getP32(by_status("cards_entry"));
 #define first_card_code 0x74
