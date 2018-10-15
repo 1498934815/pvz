@@ -1,11 +1,11 @@
 # PVZ小工具
   * 本人在aarch64/arm的Android 4.4.4、7.12、8.1中测试通过
 
-    ![pvz](images/pvz.png)
+    ![pvz](doc/images/pvz.png)
 
   * 效果
 
-    ![effect](images/effect.png)
+    ![effect](doc/images/effect.png)
 ## 支持什么功能?
   ```
   0.改阳光
@@ -51,12 +51,12 @@
 
     如果您正确的放置了数据包、使用了正确的主程序,则应该类似于
 
-    ![cheater_suceess](images/cheater_success.png)
+    ![cheater_suceess](doc/images/cheater_success.png)
 
     如果您没有使用正确的主程序或者没有先打开PvZ,则
 
-    ![cheater_wrong](images/cheater_wrong.png)
+    ![cheater_wrong](doc/images/cheater_wrong.png)
 
     如果您使用的主程序版本与修改器版本不匹配,则
 
-    ![cheater_mismatch](images/cheater_mismatch.png)
+    ![cheater_mismatch](doc/images/cheater_mismatch.png)
