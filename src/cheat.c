@@ -162,7 +162,8 @@ pvz_cheat_decl(doLimits) {
   enum pvz_field fieldType = (enum pvz_field)getI32(by_status("field_type"));
   for (size_t wave = 0; wave < 20; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
-      if ((wave == 9 || wave == 19) && i < 3)
+      // 如果尾数是9
+      if ((wave % 10 == 9) && i < 3)
         setI32(zom, THIEF_CODE);
       else
         setI32(zom, generateCandidate(i, fieldType));
