@@ -89,6 +89,8 @@ struct pvz_offset pvz_off_tbl[] = {
     {"user_id", 0x20},
     {"adventure_level", 0x28},
     {"2life", 0x2c},
+    // end
+    {NULL, 0},
 };
 struct pvz_offset *__getOffset(const char *name) {
 #define for_each_term(off)                                                     \
@@ -126,13 +128,11 @@ IMPL_SET(int32_t, I32);
 IMPL_SET(float, F32);
 
 void initBase(void) {
-  info->base = NULL;
-  info->bss = NULL;
-  info->task = NULL;
-  info->pid = 0;
+  static struct pvzinfo gCtx;
+  info = &gCtx;
+  memset(info, 0, sizeof(struct pvzinfo));
 }
 void doInit(void) {
-  info = alloca(sizeof(struct pvzinfo));
   initBase();
   initDynamicBase();
   initBssBase();

@@ -24,7 +24,8 @@ void forEachZombies(cheat_function);
 void *getSaves(void);
 void *getField(void);
 void *getStatus(void);
-#define fromPtr(ptr, name) (ptr + getOffset(name))
+
+void *fromPtr(void *, const char *);
 #define fromField(name) fromPtr(getField(), name)
 #define fromStatus(name) fromPtr(getStatus(), name)
 #define fromSaves(name) fromPtr(getSaves(), name)

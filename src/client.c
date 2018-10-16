@@ -130,6 +130,7 @@ void doInitClient(void) {
   printInfo();
   doInitOptions();
   registerSigHandle();
+  initBase();
   initClientCore();
   printDebugInfo();
 }

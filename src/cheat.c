@@ -18,6 +18,9 @@
 #include "../inc/pvz.h"
 #include "../inc/cheat.h"
 
+void *fromPtr(void *ptr, const char *name) {
+  return ptr + getOffset(name);
+}
 void *__getField(void) {
   void *heap = getP32(fromPtr(info->bss, "heap"));
   struct pvz_offset *off = __getOffset("field_offset");
