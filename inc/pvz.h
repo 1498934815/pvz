@@ -32,16 +32,25 @@ enum pvz_field {
   ROOF,
   MOONNIGHT,
 };
-struct {
+struct pvzinfo {
   void *base;
   void *bss;
   int sock;
   int32_t val;
   pid_t pid;
   struct task *task;
-} info;
-extern jmp_buf env;
+};
+extern struct pvzinfo *info;
 
+struct pvz_offset {
+  const char *name;
+  off_t offset;
+};
+extern struct pvz_offset pvz_off_tbl[];
+struct pvz_offset *__getOffset(const char *);
+off_t getOffset(const char *);
+
+extern jmp_buf env;
 void pvz_write(void *, void *, size_t);
 void pvz_read(void *, void *, size_t);
 #define DEFINE_GET(type, name) type get##name(void *remote)

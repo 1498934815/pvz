@@ -34,11 +34,11 @@ bool initConnection(void) {
     close(sockfd);
     return false;
   }
-  info.sock = sockfd;
+  info->sock = sockfd;
   return true;
 }
 int getSock(void) {
-  return info.sock;
+  return info->sock;
 }
 void initClientCore(void) {
   if (!initConnection()) {
@@ -79,10 +79,10 @@ const char *doCmd(const char *cmd) {
   return rec;
 }
 void getRemoteBase(void) {
-  parseAddr(doCmd(GETBASE), &info.base);
+  parseAddr(doCmd(GETBASE), &info->base);
 }
 void detectPVZ(void) {
-  parseInt(doCmd(GETPID), &info.pid);
+  parseInt(doCmd(GETPID), &info->pid);
 }
 void verifyVersion(void) {
   const char *hash = doCmd(GETHASH);
@@ -93,7 +93,7 @@ void verifyVersion(void) {
   }
 }
 void *getField(void) {
-  return info.base;
+  return info->base;
 }
 void *getStatus(void) {
   void *v;
@@ -103,7 +103,7 @@ void *getStatus(void) {
 void catchSIGINT(int sig) {
   (void)sig;
   setbuf(stdin, NULL);
-  destroy(&info.task);
+  destroy(&info->task);
   longjmp(env, SETJMP_RET);
 }
 void registerSigHandle(void) {
@@ -124,7 +124,7 @@ void printDebugInfo(void) {
   // getStatus() -> doCmd会重新得到PID/BASE
   // 如果最后一个参数是getStatus() 那么打印的PID/BASE可能是之前client的PID/BASE
   void *status = getStatus();
-  noticef("PID:%d 基址:%p 状态与信息:%p\n", info.pid, info.base, status);
+  noticef("PID:%d 基址:%p 状态与信息:%p\n", info->pid, info->base, status);
 }
 void doInitClient(void) {
   printInfo();
@@ -151,7 +151,7 @@ void doDisplayUserInterface(void) {
   if (scanf("%u", &opt) != 1) {                                                \
     PANIC;                                                                     \
   }
-#define GETOPT_V(mess) GETOPT(mess, info.val)
+#define GETOPT_V(mess) GETOPT(mess, info->val)
 
 void doHandleUserOption(struct pvz_option *option) {
   static BufferType buf;
@@ -171,7 +171,7 @@ void doHandleUserOption(struct pvz_option *option) {
   }
   if (attr & USER_GETINT) {
     GETOPT_V("?");
-    sendI(info.val);
+    sendI(info->val);
   }
   if (attr & USER_GETSTRING) {
     setbuf(stdin, NULL);
@@ -181,8 +181,8 @@ void doHandleUserOption(struct pvz_option *option) {
     if (attr & USER_GETCOLROW) {
       // 作形式检查
       // 如果失败会引发SIGINT
-      parseRowAndCol(buf, &info.task);
-      destroy(&info.task);
+      parseRowAndCol(buf, &info->task);
+      destroy(&info->task);
     }
     sendS(buf);
   }

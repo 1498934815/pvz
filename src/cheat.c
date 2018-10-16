@@ -17,23 +17,9 @@
 #include <pthread.h>
 #include "../inc/pvz.h"
 #include "../inc/cheat.h"
-#include "../inc/pvz_offset.h"
-
-void *by_ptr(void *ptr, const char *name) {
-  return ptr + getOffset(name);
-}
-void *by_field(const char *name) {
-  return by_ptr(getField(), name);
-}
-void *by_status(const char *name) {
-  return by_ptr(getStatus(), name);
-}
-void *by_saves(const char *name) {
-  return by_ptr(getSaves(), name);
-}
 
 void *__getField(void) {
-  void *heap = getP32(by_ptr(info.bss, "heap"));
+  void *heap = getP32(fromPtr(info->bss, "heap"));
   struct pvz_offset *off = __getOffset("field_offset");
   enum {
     NEED_ZERO,
@@ -68,22 +54,22 @@ void *getField(void) {
 }
 
 void *getStatus(void) {
-  void *status = getP32(by_field("status"));
+  void *status = getP32(fromField("status"));
   return status;
 }
 
 void *getSaves(void) {
-  return getP32(by_field("saves_entry"));
+  return getP32(fromField("saves_entry"));
 }
 
 int32_t __getUserId(void) {
-  return getI32(by_saves("user_id"));
+  return getI32(fromSaves("user_id"));
 }
 
 void forEachValue(cheat_function callback, const char *count_name,
                   const char *entry_name) {
-  size_t cnt = getI32(by_status(count_name));
-  int32_t *entry = getP32(by_status(entry_name));
+  size_t cnt = getI32(fromStatus(count_name));
+  int32_t *entry = getP32(fromStatus(entry_name));
   void *rp;
   for (size_t idx = 0; idx < cnt;) {
     // 有一些小的数据
@@ -101,29 +87,29 @@ void forEachValue(cheat_function callback, const char *count_name,
 }
 
 /* 作弊器功能 */
-#define ROW(remote) (getI32(by_ptr(remote, "zombies_row")) + 1)
-#define COL(remote) (getF32(by_ptr(remote, "zombies_pos_y")))
-#define CODE(remote) (getI32(by_ptr(remote, "zombies_type")))
+#define ROW(remote) (getI32(fromPtr(remote, "zombies_row")) + 1)
+#define COL(remote) (getF32(fromPtr(remote, "zombies_pos_y")))
+#define CODE(remote) (getI32(fromPtr(remote, "zombies_type")))
 void forEachZombies(cheat_function callback) {
   forEachValue(callback, "zombies_count", "zombies_entry");
 }
 
 pvz_cheat_decl(coverZombies) {
-  setI32(by_ptr(remote, "zombies_butter"), 5000);
+  setI32(fromPtr(remote, "zombies_butter"), 5000);
 }
 
 pvz_cheat_decl(putLadder) {
-  if (info.task != NULL) {
+  if (info->task != NULL) {
     if (CODE(remote) == LADDER_CODE) {
-      float f = info.task->col * 100;
-      int32_t row = info.task->row - 1;
-      if (f > getF32(by_ptr(remote, "zombies_pos_x")))
+      float f = info->task->col * 100;
+      int32_t row = info->task->row - 1;
+      if (f > getF32(fromPtr(remote, "zombies_pos_x")))
         return;
-      setI32(by_ptr(remote, "zombies_row"), row);
-      setF32(by_ptr(remote, "zombies_pos_x"), f);
-      setF32(by_ptr(remote, "zombies_pos_y"), f);
-      // printf("put ladder on %d:%d\n", info.task->row, info.task->col);
-      pop(&info.task);
+      setI32(fromPtr(remote, "zombies_row"), row);
+      setF32(fromPtr(remote, "zombies_pos_x"), f);
+      setF32(fromPtr(remote, "zombies_pos_y"), f);
+      // printf("put ladder on %d:%d\n", info->task->row, info->task->col);
+      pop(&info->task);
     }
   }
 }
@@ -158,8 +144,8 @@ uint32_t generateCandidate(size_t i, enum pvz_field fieldType) {
   return candidate[which];
 }
 pvz_cheat_decl(doLimits) {
-  uint32_t *zom = by_status("zombies_list");
-  enum pvz_field fieldType = (enum pvz_field)getI32(by_status("field_type"));
+  uint32_t *zom = fromStatus("zombies_list");
+  enum pvz_field fieldType = (enum pvz_field)getI32(fromStatus("field_type"));
   for (size_t wave = 0; wave < 20; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
       // 如果尾数是9
@@ -173,7 +159,7 @@ pvz_cheat_decl(doLimits) {
 }
 
 void put10(int32_t code) {
-  uint32_t *zom = by_status("zombies_list");
+  uint32_t *zom = fromStatus("zombies_list");
   int32_t c;
   for (size_t wave = 0; wave < 20; ++wave) {
     c = code;
@@ -199,83 +185,83 @@ pvz_cheat_decl(callGargantuar) {
 #undef COL
 #undef CODE
 
-#define ROW(remote) (getI32(by_ptr(remote, "plants_row")) + 1)
-#define COL(remote) (getI32(by_ptr(remote, "plants_col")) + 1)
-#define CODE(remote) (getI32(by_ptr(remote, "plants_type")))
+#define ROW(remote) (getI32(fromPtr(remote, "plants_row")) + 1)
+#define COL(remote) (getI32(fromPtr(remote, "plants_col")) + 1)
+#define CODE(remote) (getI32(fromPtr(remote, "plants_type")))
 void forEachPlants(cheat_function callback) {
   forEachValue(callback, "plants_count", "plants_entry");
 }
 
 pvz_cheat_decl(fuck_LilyPad_Pumpkin) {
-  if (has(info.task, ROW(remote), COL(remote))) {
+  if (has(info->task, ROW(remote), COL(remote))) {
     switch (CODE(remote)) {
     case LILYPAD_CODE:
-      setI32(by_ptr(remote, "plants_vis"), 0);
+      setI32(fromPtr(remote, "plants_vis"), 0);
       break;
     case PUMPKIN_CODE:
-      setI32(by_ptr(remote, "plants_hp"), 1332);
+      setI32(fromPtr(remote, "plants_hp"), 1332);
     }
   }
 }
 
 pvz_cheat_decl(freePlants) {
-  setI32(by_field("free_plants"), 1);
+  setI32(fromField("free_plants"), 1);
 }
 pvz_cheat_decl(shutdownFreePlants) {
-  setI32(by_field("free_plants"), 0);
+  setI32(fromField("free_plants"), 0);
 }
 #undef ROW
 #undef COL
 #undef CODE
 
-#define set_by_val(p) setI32((p), info.val)
+#define set_from_val(p) setI32((p), info->val)
 pvz_cheat_decl(switchMode) {
-  set_by_val(by_field("mode"));
+  set_from_val(fromField("mode"));
 }
 
 pvz_cheat_decl(switchFieldType) {
-  set_by_val(by_status("field_type"));
+  set_from_val(fromStatus("field_type"));
 }
 
 pvz_cheat_decl(setSun) {
-  set_by_val(by_status("sun"));
+  set_from_val(fromStatus("sun"));
 }
 
 pvz_cheat_decl(setFlags) {
   // clang-format off
-  set_by_val(by_ptr(
-        getP32(by_status("flags_helper")),
+  set_from_val(fromPtr(
+        getP32(fromStatus("flags_helper")),
         "flags"));
   // clang-format on
 }
 
 pvz_cheat_decl(pass) {
-  setI32(by_status("pass"), 1);
+  setI32(fromStatus("pass"), 1);
 }
 
 pvz_cheat_decl(changeCoins) {
-  set_by_val(by_saves("coins"));
+  set_from_val(fromSaves("coins"));
 }
 
 pvz_cheat_decl(jump) {
-  set_by_val(by_saves("adventure_level"));
+  set_from_val(fromSaves("adventure_level"));
 }
 
 pvz_cheat_decl(pass2life) {
-  setI32(by_saves("2life"), 2);
+  setI32(fromSaves("2life"), 2);
 }
 
 pvz_cheat_decl(changeCardCode) {
-  void *card = getP32(by_status("cards_entry"));
+  void *card = getP32(fromStatus("cards_entry"));
 #define first_card_code 0x74
-  set_by_val(card + first_card_code);
+  set_from_val(card + first_card_code);
 #undef first_card_code
 }
 pthread_t collectTid;
 bool enableCollect;
 pvz_cheat_decl(__collect_callback) {
-  if (IN_RANGE(getI32(by_ptr(remote, "goods_type")), 1, 4))
-    setI32(by_ptr(remote, "goods_collect"), 1);
+  if (IN_RANGE(getI32(fromPtr(remote, "goods_type")), 1, 4))
+    setI32(fromPtr(remote, "goods_collect"), 1);
 }
 void *__autoCollect(void *__pvz_unused p) {
   while (enableCollect) {
@@ -299,9 +285,9 @@ pvz_cheat_decl(cancelAutoCollect) {
 }
 pvz_cheat_decl(__triggerMowers_callback) {
   // 表示触发推车
-  setI32(by_ptr(remote, "mowers_trigger"), 2);
+  setI32(fromPtr(remote, "mowers_trigger"), 2);
 }
 pvz_cheat_decl(triggerMowers) {
   forEachValue(__triggerMowers_callback, "mowers_count", "mowers_entry");
 }
-#undef set_by_val
+#undef set_from_val

@@ -62,12 +62,12 @@ bool execute(const char *cmd) {
   cheat_function callback = option->callback;
   if ((attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
     return false;
-#define getV() sscanf(arg, "%d", &info.val)
+#define getV() sscanf(arg, "%d", &info->val)
   if (attr & SERVER_GETINT) {
     getV();
   }
   if (attr & SERVER_GETCOLROW) {
-    parseRowAndCol(arg, &info.task);
+    parseRowAndCol(arg, &info->task);
   }
   if (attr & SERVER_NEED_ZOMBIES) {
     forEachZombies(callback);
@@ -76,7 +76,7 @@ bool execute(const char *cmd) {
   } else {
     callback(arg, NULL);
   }
-  destroy(&info.task);
+  destroy(&info->task);
   return true;
 }
 
