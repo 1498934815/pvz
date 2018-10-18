@@ -45,5 +45,12 @@
 #define err(mess) puts(ERR mess)
 #define errf(...) printf(ERR __VA_ARGS__)
 
+#define __pvz_unused __attribute__((unused))
+#define __pvz_weak __attribute__((weak))
+#define __pvz_cheat(name) void name(void *__pvz_unused remote)
+#define pvz_cheat(name) __pvz_cheat(name) __pvz_weak
+#define pvz_cheat_decl(name) __pvz_cheat(name)
+
+typedef void (*cheat_function)(void *__pvz_unused);
 typedef char BufferType[BUFSIZE];
 #endif //__DEFS__H

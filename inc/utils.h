@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <pthread.h>
 #include "../inc/defs.h"
 
 #define PANIC raise(SIGINT)
@@ -20,14 +21,23 @@ struct list {
 };
 struct task {
   struct list list;
-  int32_t row;
-  int32_t col;
+  uint32_t row;
+  uint32_t col;
+};
+struct daemon {
+  struct list list;
+  cheat_function callback;
+  unsigned startID;
+  unsigned cancelID;
+  pthread_t tid;
+  bool on;
 };
 #define next(x) (*(__typeof__(x) *)&(((struct list *)(x))->next))
 #define real(x) (*(__typeof__(x) *)&(((struct list *)(x))->real))
 extern void pop(void *);
 extern bool has(struct task *, int, int);
 extern void insert_task(struct task **, int, int);
+extern void insert_daemon(struct daemon **, unsigned, unsigned, cheat_function);
 extern void destroy(void *);
 extern void *insert(void *, size_t);
 extern void parseRowAndCol(const char *, struct task **);

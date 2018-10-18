@@ -7,7 +7,9 @@
  * Module  :
  * License : MIT
  */
+#include "../inc/pvz.h"
 #include "../inc/com.h"
+#include "../inc/utils.h"
 #define OPTION(name, command, notice, server_attr, user_attr)                  \
   { 0, 0, name, notice, command, server_attr, user_attr }
 
@@ -44,10 +46,12 @@ struct pvz_option pvz_options[] = {
     OPTION("切换游戏场景类型", switchFieldType,
            "场景代码(0-7)见" CODE_TXT "\n请更改后重新进入当前关卡\n",
            SERVER_GETINT, USER_GETINT),
-    OPTION("自动收集物品", autoCollect, NULL, SERVER_NOT_INGAME, USER_NULL),
-    OPTION("取消自动收集", cancelAutoCollect, NULL, SERVER_NOT_INGAME,
+    OPTION("自动收集物品", autoCollect, NULL, SERVER_RUNAS_DAEMON, USER_NULL),
+    OPTION("取消自动收集", NULL, NULL, SERVER_NOT_INGAME | SERVER_CANCEL_DAEMON,
            USER_NULL),
     OPTION("触发场上推车", triggerMowers, NULL, SERVER_NULL, USER_NULL),
+    OPTION("随机模块", randomEffects, NULL, SERVER_RUNAS_DAEMON, USER_NULL),
+    OPTION("取消随机模块", NULL, NULL, SERVER_CANCEL_DAEMON, USER_NULL),
     OPTION("输出调试信息", NULL, NULL, SERVER_NULL, USER_DEBUGINFO),
     OPTION("退出", NULL, NULL, SERVER_NULL, USER_EXIT),
     OPTION(NULL, NULL, NULL, SERVER_NULL, USER_NULL),
@@ -56,13 +60,18 @@ unsigned padding = 0;
 unsigned leastID = 0;
 void doInitOptions(void) {
   unsigned idx = 0;
+  const struct pvz_option *prev;
   for_each_option(option) {
     option->id = idx;
     // 一个中文字符相当于三个字节
     // 字宽相当于两个空格
     option->wide = strlen(option->name) / 3 * 2;
     padding = option->wide > padding ? option->wide : padding;
+    if (option->server_attr & SERVER_CANCEL_DAEMON)
+      // 通过「取消」的id来找到daemon函数
+      insert_daemon(&info->daemon, prev->id, option->id, prev->callback);
     ++idx;
+    prev = option;
   }
   leastID = idx - 1;
 }

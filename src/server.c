@@ -49,7 +49,35 @@ void *initServer(void *unused) {
 }
 #define is_cmd(icmd) (strcmp(cmd, icmd) == 0)
 #define do_send(str) send(fd, str, strlen(str), 0)
-
+void *__thread_wrapper(void *data) {
+  struct daemon *daemon = data;
+  while (daemon->on) {
+    if (getStatus() == NULL) {
+      usleep(WAIT_USECONDS);
+      continue;
+    }
+    daemon->callback(NULL);
+  }
+  pthread_exit(NULL);
+}
+void runasDaemon(unsigned id) {
+  for (struct daemon *daemon = info->daemon; daemon != NULL;
+       daemon = next(daemon)) {
+    if (daemon->startID == id) {
+      daemon->on = true;
+      pthread_create(&daemon->tid, NULL, __thread_wrapper, daemon);
+    }
+  }
+}
+void cancelDaemon(unsigned id) {
+  for (struct daemon *daemon = info->daemon; daemon != NULL;
+       daemon = next(daemon)) {
+    if (daemon->cancelID == id) {
+      daemon->on = false;
+      pthread_join(daemon->tid, NULL);
+    }
+  }
+}
 bool execute(const char *cmd) {
   static BufferType arg;
   memset(arg, 0, sizeof(arg));
@@ -60,21 +88,26 @@ bool execute(const char *cmd) {
   struct pvz_option *option = getOption(id);
   enum server_attr attr = option->server_attr;
   cheat_function callback = option->callback;
-  if ((attr & SERVER_NOT_INGAME) == 0 && getStatus() == NULL)
+  if (!(attr &
+        (SERVER_NOT_INGAME | SERVER_RUNAS_DAEMON | SERVER_CANCEL_DAEMON)) &&
+      getStatus() == NULL)
     return false;
 #define getV() sscanf(arg, "%d", &info->val)
   if (attr & SERVER_GETINT) {
     getV();
-  }
-  if (attr & SERVER_GETCOLROW) {
+  } else if (attr & SERVER_GETCOLROW) {
     parseRowAndCol(arg, &info->task);
   }
   if (attr & SERVER_NEED_ZOMBIES) {
     forEachZombies(callback);
   } else if (attr & SERVER_NEED_PLANTS) {
     forEachPlants(callback);
+  } else if (attr & SERVER_RUNAS_DAEMON) {
+    runasDaemon(option->id);
+  } else if (attr & SERVER_CANCEL_DAEMON) {
+    cancelDaemon(option->id);
   } else {
-    callback(arg, NULL);
+    callback(NULL);
   }
   destroy(&info->task);
   return true;

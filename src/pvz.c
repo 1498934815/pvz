@@ -43,6 +43,14 @@ struct pvz_offset pvz_off_tbl[] = {
     {"zombies_hp", 0xd4},
     // 僵尸黄油
     {"zombies_butter", 0xbc},
+    // 僵尸冰冻
+    {"zombies_ice", 0xc0},
+    // 僵尸性质
+    // 0x01 - 僵尸魅惑
+    // 0x0100 - 僵尸吹飞
+    // 0x010000 - 僵尸冰冻
+    // 0x01000000 - 僵尸黄油
+    {"zombies_flags", 0xc4},
     // 植物是否可见
     {"plants_vis", 0x18},
     // 植物的列
@@ -56,7 +64,17 @@ struct pvz_offset pvz_off_tbl[] = {
     // 物品
     {"goods_collect", 0x5c},
     {"goods_type", 0x64},
-    // 推车
+    // 罐子里的僵尸代码
+    {"vases_zombie_code", 0x3c},
+    // 罐子里的植物代码
+    {"vases_plant_code", 0x40},
+    // 罐子里是什么
+    // 1 植物
+    // 2 僵尸
+    {"vases_type", 0x44},
+    // 罐子透视
+    {"vases_vis", 0x4C},
+    // 触发推车
     {"mowers_trigger", 0x2c},
     // bss + 0x...
     {"heap", 0x5138c8},
@@ -76,6 +94,8 @@ struct pvz_offset pvz_off_tbl[] = {
     {"goods_count", 0x118},
     {"mowers_entry", 0x124},
     {"mowers_count", 0x134},
+    {"vases_entry", 0x140},
+    {"vases_count", 0x150},
     {"zombies_list", 0x810},
     {"field_type", 0x56a8},
     {"sun", 0x56bc},
@@ -86,7 +106,6 @@ struct pvz_offset pvz_off_tbl[] = {
     {"flags", 0x6c},
     // *saves_entry + ...
     {"coins", 0x4},
-    {"user_id", 0x20},
     {"adventure_level", 0x28},
     {"2life", 0x2c},
     // end
@@ -122,6 +141,7 @@ void pvz_read(void *lp, void *buf, size_t len) {
     pvz_write(remote, &val, sizeof(val));                                      \
   }
 IMPL_GET(int32_t, I32);
+IMPL_GET(uint32_t, U32);
 IMPL_GET(float, F32);
 IMPL_GET(void *, P32);
 IMPL_SET(int32_t, I32);

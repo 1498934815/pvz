@@ -128,9 +128,9 @@ void printDebugInfo(void) {
 }
 void doInitClient(void) {
   printInfo();
+  initBase();
   doInitOptions();
   registerSigHandle();
-  initBase();
   initClientCore();
   printDebugInfo();
 }

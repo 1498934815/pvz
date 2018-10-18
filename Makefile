@@ -2,15 +2,24 @@ MODULE := \
 	pvz_client \
 	libpvz_server
 
-common := src/utils.c src/pvz.c src/com.c
-pvz_client_src := src/client.c $(common)
+common := \
+	src/utils.c \
+	src/pvz.c \
+	src/com.c
+pvz_client_src := \
+	src/client.c \
+	$(common)
 
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 git_repo := $(shell git config --get remote.origin.url)
 git_branch := $(shell git symbolic-ref --short -q HEAD)
 
-libpvz_server_src := src/server.c src/cheat.c $(common)
-libpvz_server_flag := -shared -fPIC -ldl
+libpvz_server_src := \
+	src/server.c \
+	src/cheat.c \
+	module/random.c \
+	$(common)
+libpvz_server_flag := -shared -ldl
 
 inc := $(shell find inc)
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c99 \

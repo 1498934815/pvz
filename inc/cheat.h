@@ -9,15 +9,7 @@
  */
 #ifndef __CHEAT__H
 #define __CHEAT__H
-// for com.c
-#define __pvz_unused __attribute__((unused))
-#define __pvz_weak __attribute__((weak))
-#define __pvz_cheat(name)                                                      \
-  void name(const char *__pvz_unused arg, void *__pvz_unused remote)
-#define pvz_cheat(name) __pvz_cheat(name) __pvz_weak
-#define pvz_cheat_decl(name) __pvz_cheat(name)
-
-typedef void (*cheat_function)(const char *__pvz_unused, void *__pvz_unused);
+#include "../inc/defs.h"
 
 void forEachPlants(cheat_function);
 void forEachZombies(cheat_function);
@@ -48,6 +40,6 @@ pvz_cheat(jump);
 pvz_cheat(changeCardCode);
 pvz_cheat(pass2life);
 pvz_cheat(autoCollect);
-pvz_cheat(cancelAutoCollect);
 pvz_cheat(triggerMowers);
+pvz_cheat(randomEffects);
 #endif //__CHEAT__H

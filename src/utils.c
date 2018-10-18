@@ -42,6 +42,13 @@ void insert_task(struct task **target, int row, int col) {
   node->row = row;
   node->col = col;
 }
+void insert_daemon(struct daemon **target, unsigned startID, unsigned cancelID,
+                   cheat_function callback) {
+  struct daemon *node = insert(target, sizeof(struct daemon));
+  node->startID = startID;
+  node->cancelID = cancelID;
+  node->callback = callback;
+}
 void pop(void *_Node) {
   struct list **node = _Node;
   struct list *helper = next(*node);

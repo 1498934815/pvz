@@ -39,6 +39,7 @@ struct pvzinfo {
   int32_t val;
   pid_t pid;
   struct task *task;
+  struct daemon *daemon;
 };
 extern struct pvzinfo *info;
 
@@ -56,6 +57,7 @@ void pvz_read(void *, void *, size_t);
 #define DEFINE_GET(type, name) type get##name(void *remote)
 #define DEFINE_SET(type, name) void set##name(void *remote, type val)
 DEFINE_GET(int32_t, I32);
+DEFINE_GET(uint32_t, U32);
 DEFINE_GET(float, F32);
 DEFINE_GET(void *, P32);
 DEFINE_SET(int32_t, I32);

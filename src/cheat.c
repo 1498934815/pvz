@@ -65,13 +65,9 @@ void *getSaves(void) {
   return getP32(fromField("saves_entry"));
 }
 
-int32_t __getUserId(void) {
-  return getI32(fromSaves("user_id"));
-}
-
 void forEachValue(cheat_function callback, const char *count_name,
                   const char *entry_name) {
-  size_t cnt = getI32(fromStatus(count_name));
+  size_t cnt = getU32(fromStatus(count_name));
   int32_t *entry = getP32(fromStatus(entry_name));
   void *rp;
   for (size_t idx = 0; idx < cnt;) {
@@ -79,7 +75,7 @@ void forEachValue(cheat_function callback, const char *count_name,
     // 不知道干嘛的
     rp = getP32(entry);
     if (rp > (void *)0x10000000) {
-      callback(NULL, rp);
+      callback(rp);
       ++idx;
       // 地址后面有一个指针
       // 同不知道干嘛的
@@ -90,9 +86,9 @@ void forEachValue(cheat_function callback, const char *count_name,
 }
 
 /* 作弊器功能 */
-#define ROW(remote) (getI32(fromPtr(remote, "zombies_row")) + 1)
+#define ROW(remote) (getU32(fromPtr(remote, "zombies_row")) + 1)
 #define COL(remote) (getF32(fromPtr(remote, "zombies_pos_y")))
-#define CODE(remote) (getI32(fromPtr(remote, "zombies_type")))
+#define CODE(remote) (getU32(fromPtr(remote, "zombies_type")))
 void forEachZombies(cheat_function callback) {
   forEachValue(callback, "zombies_count", "zombies_entry");
 }
@@ -141,7 +137,7 @@ uint32_t generateCandidate(uint32_t seeds[], size_t seedSize, size_t i,
 void replaceSeed(uint32_t seeds[], size_t seedSize, size_t end, bool hasThief,
                  bool hasRed) {
   uint32_t *zom = fromStatus("zombies_list");
-  enum pvz_field fieldType = (enum pvz_field)getI32(fromStatus("field_type"));
+  enum pvz_field fieldType = (enum pvz_field)getU32(fromStatus("field_type"));
   for (size_t wave = 0; wave < 20; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
       // 如果尾数是9
@@ -181,9 +177,9 @@ pvz_cheat_decl(callGargantuar) {
 #undef COL
 #undef CODE
 
-#define ROW(remote) (getI32(fromPtr(remote, "plants_row")) + 1)
-#define COL(remote) (getI32(fromPtr(remote, "plants_col")) + 1)
-#define CODE(remote) (getI32(fromPtr(remote, "plants_type")))
+#define ROW(remote) (getU32(fromPtr(remote, "plants_row")) + 1)
+#define COL(remote) (getU32(fromPtr(remote, "plants_col")) + 1)
+#define CODE(remote) (getU32(fromPtr(remote, "plants_type")))
 void forEachPlants(cheat_function callback) {
   forEachValue(callback, "plants_count", "plants_entry");
 }
@@ -253,31 +249,14 @@ pvz_cheat_decl(changeCardCode) {
   set_from_val(card + first_card_code);
 #undef first_card_code
 }
-pthread_t collectTid;
-bool enableCollect;
 pvz_cheat_decl(__collect_callback) {
-  if (IN_RANGE(getI32(fromPtr(remote, "goods_type")), 1, 4))
+  if (IN_RANGE(getU32(fromPtr(remote, "goods_type")), 1, 4))
     setI32(fromPtr(remote, "goods_collect"), 1);
 }
-void *__autoCollect(void *__pvz_unused p) {
-  while (enableCollect) {
-    if (getStatus() == NULL)
-      continue;
-    forEachValue(__collect_callback, "goods_count", "goods_entry");
-    usleep(WAIT_USECONDS);
-  }
-  pthread_exit(NULL);
-}
+
 pvz_cheat_decl(autoCollect) {
-  enableCollect = true;
-  pthread_create(&collectTid, NULL, __autoCollect, NULL);
-}
-pvz_cheat_decl(cancelAutoCollect) {
-  enableCollect = false;
-  if (collectTid) {
-    pthread_join(collectTid, NULL);
-    collectTid = 0;
-  }
+  forEachValue(__collect_callback, "goods_count", "goods_entry");
+  usleep(WAIT_USECONDS);
 }
 pvz_cheat_decl(__triggerMowers_callback) {
   // 表示触发推车
