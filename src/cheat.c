@@ -129,59 +129,52 @@ bool isProper(int code, enum pvz_field fieldType) {
   }
   return true;
 }
-uint32_t generateCandidate(size_t i, enum pvz_field fieldType) {
-  // 普僵 铁桶 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆
-  // 白眼 红眼 梯子
-  static uint32_t candidate[] = {
-      0,        0x4,        0x10, 0xf,  0xc,  0x8, 0xe,
-      0x7,      0x16,       0xb,  0x11, 0x12, 0x3, GARGANTUAR_CODE,
-      RED_CODE, LADDER_CODE};
+uint32_t generateCandidate(uint32_t seeds[], size_t seedSize, size_t i,
+                           enum pvz_field fieldType) {
   uint32_t which;
-  // 至少十只红眼
-  if (i >= 40)
-    return RED_CODE;
   do {
-    which = rand() % ARRAY_SIZE(candidate);
-  } while (!isProper(candidate[which],
+    which = rand() % seedSize;
+  } while (!isProper(seeds[which],
                      fieldType)); // 如果得到的僵尸不合适,重新生成
-  return candidate[which];
+  return seeds[which];
 }
-pvz_cheat_decl(doLimits) {
+void replaceSeed(uint32_t seeds[], size_t seedSize, size_t end, bool hasThief,
+                 bool hasRed) {
   uint32_t *zom = fromStatus("zombies_list");
   enum pvz_field fieldType = (enum pvz_field)getI32(fromStatus("field_type"));
   for (size_t wave = 0; wave < 20; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
       // 如果尾数是9
-      if ((wave % 10 == 9) && i < 3)
+      if (i >= end)
+        setI32(zom, -1);
+      else if (hasThief && (wave % 10 == 9) && i < 3)
         setI32(zom, THIEF_CODE);
+      else if (hasRed && i >= 40)
+        setI32(zom, RED_CODE);
       else
-        setI32(zom, generateCandidate(i, fieldType));
+        setI32(zom, generateCandidate(seeds, seedSize, i, fieldType));
       ++zom;
     }
   }
 }
-
-void put10(int32_t code) {
-  uint32_t *zom = fromStatus("zombies_list");
-  int32_t c;
-  for (size_t wave = 0; wave < 20; ++wave) {
-    c = code;
-    for (size_t i = 0; i < 50; ++i) {
-      // 每波十只
-      if (i == 10)
-        c = -1;
-      setI32(zom, c);
-      ++zom;
-    }
-  }
+pvz_cheat_decl(doLimits) {
+  // 普僵 铁桶 小丑 气球 冰车 舞王 海豚 橄榄 篮球 潜水 矿工 跳跳 撑杆
+  // 白眼 红眼 梯子
+  static uint32_t seeds[] = {
+      0,        0x4,        0x10, 0xf,  0xc,  0x8, 0xe,
+      0x7,      0x16,       0xb,  0x11, 0x12, 0x3, GARGANTUAR_CODE,
+      RED_CODE, LADDER_CODE};
+  replaceSeed(seeds, ARRAY_SIZE(seeds), 50, true, true);
 }
 
 pvz_cheat_decl(callLadder) {
-  put10(LADDER_CODE);
+  static uint32_t seeds[] = {LADDER_CODE};
+  replaceSeed(seeds, ARRAY_SIZE(seeds), 10, false, false);
 }
 
 pvz_cheat_decl(callGargantuar) {
-  put10(GARGANTUAR_CODE);
+  static uint32_t seeds[] = {GARGANTUAR_CODE};
+  replaceSeed(seeds, ARRAY_SIZE(seeds), 10, false, false);
 }
 
 #undef ROW
