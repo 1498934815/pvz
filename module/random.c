@@ -53,12 +53,12 @@ pvz_cheat_decl(__vases_random_callback) {
   if (applied && !proper())
     return;
   switch (getI32(fromPtr(remote, "vases_type"))) {
-    case 1:
-      setI32(fromPtr(remote, "vases_plant_code"), rand() % 48);
-      break;
-    case 2:
-      setI32(fromPtr(remote, "vases_zombie_code"), rand() % 25);
-      break;
+  case 1:
+    setI32(fromPtr(remote, "vases_plant_code"), rand() % 48);
+    break;
+  case 2:
+    setI32(fromPtr(remote, "vases_zombie_code"), rand() % 25);
+    break;
   }
   setI32(fromPtr(remote, "vases_vis"), 500);
   applied = true;
