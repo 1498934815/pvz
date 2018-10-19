@@ -35,6 +35,7 @@
   ```
 ## 相关功能的使用文档
   [部分功能解释](doc/help.txt)
+
   [部分相关代码](doc/code.txt)
 ## 使用步骤
   * **获取一个北美版的植物大战僵尸**
@@ -44,6 +45,7 @@
     请使用文件中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次
 
     [数据包、存档的处理教程](http://lonelystar.org/ResDownload/1_Android_Na.htm)
+
     [安装修改器教程](doc/install.md)
 
     感谢植物大战僵尸吧@囧丫乙 @豪哥e278提供的教程
