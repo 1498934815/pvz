@@ -162,6 +162,7 @@ void doHandleUserOption(struct pvz_option *option) {
   }
   if (attr & USER_EXIT) {
     close(getSock());
+    destroy(&info->daemon);
     exit(0);
   }
   if (attr & USER_DEBUGINFO) {

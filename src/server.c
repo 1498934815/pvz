@@ -156,4 +156,5 @@ void __attribute__((constructor)) doInitServer(void) {
 }
 void __attribute__((destructor)) doDestroyServer(void) {
   close(sockfd);
+  destroy(&info->daemon);
 }
