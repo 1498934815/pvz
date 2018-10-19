@@ -112,12 +112,9 @@ void registerSigHandle(void) {
 
 void printInfo(void) {
   notice("Github " REPO);
-  notice("Tieba " TIEBA_POST_URL);
+  notice("Tieba " TIEBA_POST_URL " @" AUTHOR);
   notice("CommitHash " GIT_HASH);
-  notice("By 百度贴吧@" AUTHOR);
-  notice("部分功能的解释见 " HELP_TXT);
-  notice("关于进入其他无尽 " CODE_TXT);
-  notice("关于本程序的使用 " README_MD);
+  notice("关于本程序的用法 " README_MD);
 }
 void printDebugInfo(void) {
   // XXX 游戏重新打开时
