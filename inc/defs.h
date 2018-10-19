@@ -22,7 +22,6 @@
 #define BRANCH GIT_BRANCH
 #define BLOB REPO "/blob/" BRANCH
 #define CODE_TXT BLOB "/doc/code.txt"
-#define HELP_TXT BLOB "/doc/help.txt"
 #define README_MD BLOB "/README.md"
 
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
