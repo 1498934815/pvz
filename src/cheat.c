@@ -140,9 +140,9 @@ void replaceSeed(uint32_t seeds[], size_t seedSize, size_t end, bool hasThief,
   enum pvz_field fieldType = (enum pvz_field)getU32(fromStatus("field_type"));
   for (size_t wave = 0; wave < 20; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
-      // 如果尾数是9
       if (i >= end)
         setI32(zom, -1);
+      // 如果尾数是9
       else if (hasThief && (wave % 10 == 9) && i < 3)
         setI32(zom, THIEF_CODE);
       else if (hasRed && i >= 40)
