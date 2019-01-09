@@ -47,30 +47,30 @@
 ## 使用步骤
   * 1.**获取一个北美版的植物大战僵尸**
 
-  链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
+    链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-  **请使用链接中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次**
+    **请使用链接中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次**
 
   * 2.**使用直装版的修改器**
 
-  链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
+    链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-  基于JackpalTerminal(https://github.com/jackpal/Android-Terminal-Emulator)
+    基于JackpalTerminal(https://github.com/jackpal/Android-Terminal-Emulator)
 
-  **如果您正确的放置了数据包、使用了正确的主程序,则应该类似于**
+    如果您正确的放置了数据包、使用了正确的主程序,则应该类似于
 
     ![cheater_suceess](doc/images/cheater_success.png)
 
-  如果您没有正确处理数据包,则会提示您**"You should have at least one active Google account on your device."**
+    如果您没有正确处理数据包,则会提示您**You should have at least one active Google account on your device.**
 
-  **这时,请打开上面提到的两个教程,它们可以帮助您解决您的问题**
+    这时,请打开上面提到的两个教程,它们可以帮助您解决您的问题
 
     ![google_account](doc/images/google_account.jpg)
 
-  **如果您没有使用正确的主程序或者没有先打开PvZ,则**
+    如果您没有使用正确的主程序或者没有先打开PvZ,则
 
     ![cheater_wrong](doc/images/cheater_wrong.png)
 
-  **如果您使用的主程序版本与修改器版本不匹配,则**
+    如果您使用的主程序版本与修改器版本不匹配,则
 
     ![cheater_mismatch](doc/images/cheater_mismatch.png)
