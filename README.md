@@ -37,20 +37,21 @@
   [部分功能解释](doc/help.txt)
 
   [部分相关代码](doc/code.txt)
+## 相关教程
+  [数据包、存档的处理教程](http://lonelystar.org/ResDownload/1_Android_Na.htm)
+
+  [安装修改器教程](doc/install.md)
+
+  感谢植物大战僵尸吧@囧丫乙 @豪哥e278提供的教程
+
 ## 使用步骤
-  * **获取一个北美版的植物大战僵尸**
+  * 1.**获取一个北美版的植物大战僵尸**
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-    请使用文件中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次
+    **请使用链接中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次**
 
-    [数据包、存档的处理教程](http://lonelystar.org/ResDownload/1_Android_Na.htm)
-
-    [安装修改器教程](doc/install.md)
-
-    感谢植物大战僵尸吧@囧丫乙 @豪哥e278提供的教程
-
-  * 1.**使用直装版的修改器**
+  * 2.**使用直装版的修改器**
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
@@ -59,6 +60,12 @@
     如果您正确的放置了数据包、使用了正确的主程序,则应该类似于
 
     ![cheater_suceess](doc/images/cheater_success.png)
+
+    如果您没有正确处理数据包,则会提示您**You should have at least one active Google account on your device.**
+
+    这时,请打开上面提到的两个教程,它们可以帮助您解决您的问题
+
+    ![google_account](doc/images/google_account.jpg)
 
     如果您没有使用正确的主程序或者没有先打开PvZ,则
 
