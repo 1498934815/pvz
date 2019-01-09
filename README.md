@@ -37,7 +37,7 @@
   [部分功能解释](doc/help.txt)
 
   [部分相关代码](doc/code.txt)
-## 相关教程
+## 相关安装教程
   [数据包、存档的处理教程](http://lonelystar.org/ResDownload/1_Android_Na.htm)
 
   [安装修改器教程](doc/install.md)
@@ -61,9 +61,9 @@
 
     ![cheater_suceess](doc/images/cheater_success.png)
 
-    如果您没有正确处理数据包,则会提示您**You should have at least one active Google account on your device.**
+    如果您没有正确处理数据包,则会提示您**"You should have at least one active Google account on your device."**
 
-    这时,请打开上面提到的两个教程,它们可以帮助您解决您的问题
+    此时,请打开上面提到的两个教程,它们可以帮助您解决您的问题
 
     ![google_account](doc/images/google_account.jpg)
 
