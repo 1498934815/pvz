@@ -5,6 +5,6 @@ lib
 /old_cheater
 /release
 /server
-/server.c
+/server.cc
 /test.c
 /test
