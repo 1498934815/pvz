@@ -25,7 +25,6 @@ struct msgPack {
 class Communicator {
   int fd;
   struct sockaddr_in sin;
-  static Communicator *instance;
 
 public:
   Communicator(const char *, int);
@@ -34,21 +33,11 @@ public:
   void asServer();
   void asClient();
   void sendMessage(msgPack &&);
-  msgPack *recvMessage();
+  error<int, msgPack *> recvMessage();
   std::vector<msgPack> recvMessages();
   int doAccept();
   void disconnect();
-  static Communicator *getInstance();
-};
-class Server : public Communicator {
-public:
-  Server(const char *, int);
-  Server(int);
-};
-class Client : public Communicator {
-public:
-  Client(const char *, int);
 };
 
-msgPack &&makeMsgPack(msgType, int, const char *);
+msgPack makeMsgPack(msgType, int, const char *);
 #endif // __COMMUNICATOR__H

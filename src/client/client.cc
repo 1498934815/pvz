@@ -8,15 +8,33 @@
  * License : MIT
  */
 #include <common/common.h>
+#include <common/options.h>
 #include <common/communicator.h>
-int main() {
-  Client client(SERVER_ADDR, SERVER_PORT);
-  for (int i = 0; i < 10; ++i) {
-    client.sendMessage(makeMsgPack(STRING, i, "Hello World"));
-    for (auto &&reply : client.recvMessages()) {
-      DEBUG_LOG("%d %s", reply.id, reply.msg);
-    }
+#include <client/PvzClient.h>
+void printAuthorInfo() {
+  uinotice("Github " GIT_REPO);
+  uinotice("Tieba " TIEBA_POST_URL " @" AUTHOR);
+  uinotice("CommitHash " GIT_HASH);
+  uinotice("关于本程序的用法 " README_MD);
+}
+void printDebugInfo() {
+  PvzClient *pvz = PvzClient::getInstance();
+  pvz->fetchInfos();
+  uinoticef("PID:%d 基址:%p 状态与信息:%p\n", pvz->pid, pvz->base, pvz->status);
+}
+void displayUserInterface() {
+  for (auto &&o : Options::getInstance()->getOptions()) {
+    uiprintf("%d.%s\n", o.id, o.name);
   }
-  client.sendMessage(makeMsgPack(EOR, 0, "EOR"));
+  getchar();
+}
+int main() {
+  printAuthorInfo();
+  PvzClient client(SERVER_ADDR, SERVER_PORT);
+  printDebugInfo();
+  Options options;
+  while (true) {
+    displayUserInterface();
+  }
   return 0;
 }

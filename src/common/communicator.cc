@@ -15,14 +15,7 @@
 #include <utility>
 #include <common/common.h>
 #include <common/communicator.h>
-Communicator *Communicator::instance = nullptr;
-Communicator *Communicator::getInstance() {
-  return instance;
-}
-Communicator::Communicator(int sfd) : fd(sfd) {
-  if (getInstance() == nullptr)
-    instance = this;
-}
+Communicator::Communicator(int sfd) : fd(sfd) {}
 Communicator::Communicator(const char *addr, int port)
     : Communicator(socket(AF_INET, SOCK_STREAM, 0)) {
   sin = {
@@ -43,17 +36,17 @@ void Communicator::sendMessage(msgPack &&msg) {
     assert(!"Can't send message");
   }
 }
-msgPack *Communicator::recvMessage() {
+error<int, msgPack *> Communicator::recvMessage() {
   static msgPack msg;
-  if (recv(fd, &msg, sizeof(msg), 0) == -1) {
-    disconnect();
-    assert(!"Can't recv message");
-  }
-  return msg.type != EOR ? &msg : nullptr;
+  return error<int, msgPack *>(recv(fd, &msg, sizeof(msg), 0), &msg)
+      .when(0, nullptr)
+      .when(-1, nullptr);
 }
 std::vector<msgPack> Communicator::recvMessages() {
   std::vector<msgPack> result;
   while (msgPack *pack = recvMessage()) {
+    if (pack->type == EOR)
+      break;
     result.emplace_back(std::move(*pack));
   }
   return result;
@@ -76,19 +69,13 @@ void Communicator::asClient() {
     assert(!"Can't connect to server");
   }
 }
-Server::Server(const char *addr, int port) : Communicator(addr, port) {
-  asServer();
-}
-Server::Server(int fd) : Communicator(fd) {}
-Client::Client(const char *addr, int port) : Communicator(addr, port) {
-  asClient();
-}
-msgPack &&makeMsgPack(msgType type, int id, const char *msg) {
-  assert(strlen(msg) >= sizeof(msgPack::msg && !"Out of size"));
+
+msgPack makeMsgPack(msgType type, int id, const char *msg) {
+  assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
   msgPack pack = {
       .type = type,
       .id = id,
   };
   strcpy(pack.msg, msg);
-  return std::move(pack);
+  return pack;
 }
