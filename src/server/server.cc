@@ -14,13 +14,13 @@
 static pthread_t tid;
 void *__server_process(void *pfd) {
   PvzServer server(*reinterpret_cast<int *>(pfd));
-  while (msgPack *pack = server.recvMessage()) {
-    if (pack->type == EOR)
+  while (msgPack *pack = server.recvMessage().getValue()) {
+    if (pack->flags == msgFlag::EOR)
       continue;
-    DEBUG_LOG("%d %d %s", pack->type, pack->id, pack->msg);
-    server.sendMessage(makeMsgPack(STRING, 0, "REPLY 0"));
-    server.sendMessage(makeMsgPack(STRING, 1, "REPLY 1"));
-    server.sendMessage(makeMsgPack(EOR, 0, "EOR"));
+    DEBUG_LOG("%d %d %s", pack->flags, pack->id, pack->msg);
+    server.sendMessage(makeMsgPack(0, "REPLY 0"));
+    server.sendMessage(makeMsgPack(1, "REPLY 1"));
+    server.sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
   }
   DEBUG_LOG("DISCONNECT");
   pthread_exit(nullptr);

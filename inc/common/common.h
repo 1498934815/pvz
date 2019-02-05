@@ -10,6 +10,7 @@
 #ifndef __DEFS__H
 #define __DEFS__H
 #include <errno.h>
+#include <stdlib.h>
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 0x7a65
 #ifdef DEBUG
@@ -30,8 +31,10 @@
 #define uiprintf(...) printf(__VA_ARGS__)
 #define uinotice(...) uiprint(NOTICE __VA_ARGS__)
 #define uinoticef(...) uiprintf(NOTICE __VA_ARGS__)
-#define uierror(...) uiprint(ERROR __VA_ARGS__)
-#define uierrorf(...) uiprint(ERROR __VA_ARGS__)
+#define uierror(...) uiprint(ERR __VA_ARGS__)
+#define uierrorf(...) uiprintf(ERR __VA_ARGS__)
+#define uiscanf(...) scanf(__VA_ARGS__)
+#define uivscanf(...) vscanf(__VA_ARGS__)
 template <typename Ty> class Singleton {
   static Ty *instance;
 
@@ -45,11 +48,11 @@ public:
   }
 };
 template <typename Ty> Ty *Singleton<Ty>::instance = nullptr;
-template <typename Err, typename Ty = void *> struct error {
+template <typename Err = int, typename Ty = int> struct error {
   Err errcode;
   int reason;
   Ty value;
-  error(Err code, Ty val) : errcode(code), reason(errno), value(val) {}
+  error(Err code, Ty val = Ty()) : errcode(code), reason(errno), value(val) {}
   error &when(Err err, Ty val) {
     if (errcode == err)
       value = val;
@@ -58,8 +61,20 @@ template <typename Err, typename Ty = void *> struct error {
   operator Err() {
     return errcode;
   }
-  operator Ty() {
+  Ty &getValue() {
     return value;
+  }
+  template <typename Callable>
+  error &except(Err code, const char *message, Callable callable) {
+    if (errcode == code) {
+      uierrorf("PANIC, code:%d, errno:%d(%s), message:'%s'\n", errcode, reason,
+               strerror(reason), message);
+      callable();
+    }
+    return *this;
+  }
+  error &except(Err code, const char *message) {
+    return except(code, message, abort);
   }
 };
 #endif // __DEFS__H

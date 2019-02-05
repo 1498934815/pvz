@@ -18,7 +18,9 @@ class PvzServer : public Singleton<PvzServer>,
 public:
   PvzServer(const char *, int);
   PvzServer(int);
-  virtual void fetchInfos() override;
+  virtual void *getBase() override;
+  virtual void *getStatus() override;
+  virtual pid_t getPid() override;
 };
 
 #endif // __PVZSERVER__H

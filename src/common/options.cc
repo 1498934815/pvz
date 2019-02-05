@@ -15,9 +15,9 @@ void Options::addOption(unsigned id, flags flags, const char *name,
                         const char *description) {
   options.emplace_back(option{id, flags, name, description});
 }
-option &&Options::getOption(unsigned id) {
-  return std::move(*std::find_if(options.begin(), options.end(),
-                                 [&](option &op) { return op.id == id; }));
+const option *Options::getOption(unsigned id) {
+  auto &&it = std::find(options.begin(), options.end(), id);
+  return it != options.end() ? &*it : nullptr;
 }
 std::vector<option> &&Options::getOptions() {
   return std::move(options);

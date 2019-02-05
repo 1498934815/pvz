@@ -14,11 +14,15 @@
 enum flags {
   NONE,
 };
-struct option {
+class option {
+public:
   unsigned id;
   flags flags;
   const char *name;
   const char *description;
+  operator int() {
+    return id;
+  }
 };
 class Options : public Singleton<Options> {
   std::vector<option> options;
@@ -26,7 +30,7 @@ class Options : public Singleton<Options> {
 public:
   Options();
   void addOption(unsigned, flags, const char *, const char *);
-  option &&getOption(unsigned);
+  const option *getOption(unsigned);
   std::vector<option> &&getOptions();
 };
 #endif // __OPTIONS__H

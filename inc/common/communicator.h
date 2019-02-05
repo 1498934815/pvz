@@ -12,13 +12,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <vector>
-enum msgType {
-  STRING = 1,
-  ID = 2,
-  EOR = 4,
+enum class msgFlag : unsigned int {
+  NONE,
+  EOR = 1,
 };
 struct msgPack {
-  msgType type;
+  enum msgFlag flags;
   int id;
   char msg[128];
 };
@@ -39,5 +38,5 @@ public:
   void disconnect();
 };
 
-msgPack makeMsgPack(msgType, int, const char *);
+msgPack makeMsgPack(int, const char * = nullptr, enum msgFlag = msgFlag::NONE);
 #endif // __COMMUNICATOR__H

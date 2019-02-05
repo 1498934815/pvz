@@ -17,6 +17,9 @@ class PvzClient : public Singleton<PvzClient>,
                   public PvzCommon {
 public:
   PvzClient(const char *, int);
-  virtual void fetchInfos() override;
+  void printDebugInfo();
+  virtual void *getBase() override;
+  virtual void *getStatus() override;
+  virtual pid_t getPid() override;
 };
 #endif // __PVZCLIENT__H

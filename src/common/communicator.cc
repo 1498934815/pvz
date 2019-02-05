@@ -12,7 +12,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <vector>
-#include <utility>
 #include <common/common.h>
 #include <common/communicator.h>
 Communicator::Communicator(int sfd) : fd(sfd) {}
@@ -31,21 +30,20 @@ void Communicator::disconnect() {
   close(fd);
 }
 void Communicator::sendMessage(msgPack &&msg) {
-  if (send(fd, &msg, sizeof(msg), 0) == -1) {
-    disconnect();
-    assert(!"Can't send message");
-  }
+  error<>(send(fd, &msg, sizeof(msg), 0))
+      .when(0, 0)
+      .except(-1, "Can't send message");
 }
 error<int, msgPack *> Communicator::recvMessage() {
   static msgPack msg;
   return error<int, msgPack *>(recv(fd, &msg, sizeof(msg), 0), &msg)
       .when(0, nullptr)
-      .when(-1, nullptr);
+      .except(-1, "Can't recv message");
 }
 std::vector<msgPack> Communicator::recvMessages() {
   std::vector<msgPack> result;
-  while (msgPack *pack = recvMessage()) {
-    if (pack->type == EOR)
+  while (msgPack *pack = recvMessage().getValue()) {
+    if (pack->flags == msgFlag::EOR)
       break;
     result.emplace_back(std::move(*pack));
   }
@@ -57,25 +55,23 @@ int Communicator::doAccept() {
 void Communicator::asServer() {
   int reuseaddr = 1;
   setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(reuseaddr));
-  if (bind(fd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
-    disconnect();
-    assert(!"Can't bind socket");
-  }
+  error<>(bind(fd, (struct sockaddr *)&sin, sizeof(sin)))
+      .except(-1, "Can't bind to server");
   listen(fd, 1024);
 }
 void Communicator::asClient() {
-  if (connect(fd, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
-    disconnect();
-    assert(!"Can't connect to server");
-  }
+  error<>(connect(fd, (struct sockaddr *)&sin, sizeof(sin)))
+      .except(-1, "Can't connect to server");
 }
 
-msgPack makeMsgPack(msgType type, int id, const char *msg) {
-  assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
+msgPack makeMsgPack(int id, const char *msg, msgFlag flags) {
   msgPack pack = {
-      .type = type,
+      .flags = flags,
       .id = id,
   };
-  strcpy(pack.msg, msg);
+  if (msg != nullptr) {
+    assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
+    strcpy(pack.msg, msg);
+  }
   return pack;
 }

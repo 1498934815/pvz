@@ -12,9 +12,8 @@
 #include <unistd.h>
 class PvzCommon {
 public:
-  pid_t pid;
-  void *base;
-  void *status;
-  virtual void fetchInfos() = 0;
+  virtual void *getBase() = 0;
+  virtual void *getStatus() = 0;
+  virtual pid_t getPid() = 0;
 };
 #endif // __PVZCOMMON__H

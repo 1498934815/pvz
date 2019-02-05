@@ -11,7 +11,7 @@
 #define __PVZ__H
 #include <stdlib.h>
 
-void __writeMem(void *ptr, void *src, size_t size) {
+inline void __writeMem(void *ptr, void *src, size_t size) {
   memcpy(ptr, src, size);
 }
 template <typename Ty> void writeMem(void *ptr, Ty &value) {
@@ -22,15 +22,15 @@ template <typename Ty> Ty readMem(void *ptr, Ty &value) {
   return value;
 }
 #define implGet(name, type)                                                    \
-  type get##name(void *ptr, type &value) {                                     \
+  inline type get##name(void *ptr, type &value) {                              \
     return readMem<type>(ptr, value);                                          \
   }                                                                            \
-  type get##name(void *ptr) {                                                  \
+  inline type get##name(void *ptr) {                                           \
     static type buf;                                                           \
     return get##name(ptr, buf);                                                \
   }
 #define implSet(name, type)                                                    \
-  void set##name(void *ptr, type &value) {                                     \
+  inline void set##name(void *ptr, type &value) {                              \
     writeMem<type>(ptr, value);                                                \
   }
 #define implGetSet(name, type) implGet(name, type) implSet(name, type)
@@ -38,4 +38,6 @@ implGetSet(I32, int32_t);
 implGetSet(F32, float);
 implGetSet(Ptr, void *);
 #undef implGet
+#undef implSet
+#undef implGetset
 #endif // __PVZ__H
