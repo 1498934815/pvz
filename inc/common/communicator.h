@@ -15,10 +15,14 @@
 enum class msgFlag : unsigned int {
   NONE,
   EOR = 1,
+  COMMAND = 2,
 };
 struct msgPack {
   enum msgFlag flags;
-  int id;
+  union {
+    int id;
+    void *ptr;
+  };
   char msg[128];
 };
 class Communicator {

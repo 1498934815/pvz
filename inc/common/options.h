@@ -29,7 +29,7 @@ class Options : public Singleton<Options> {
 
 public:
   Options();
-  void addOption(unsigned, flags, const char *, const char *);
+  void addOption(flags, const char *, const char *);
   const option *getOption(unsigned);
   std::vector<option> &&getOptions();
 };

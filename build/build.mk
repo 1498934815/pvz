@@ -1,28 +1,17 @@
-define islib
-$(findstring lib, $(1))
-endef
-define fix-name
-$(strip $(1:lib%=lib%.so))
-endef
-define undo-name
-$(strip $(1:%.so=%))
-endef
-define fix-flag
-$(if $(call islib, $1), \
-	$(2) -fPIC -shared, \
-	$(2))
-endef
 define reg_rule
 $(foreach m,$(1), \
 	$(eval TARGET := $(m)) \
-	$(eval DEP := $($(call undo-name, $(m))_src) \
-	$(call fix-name, $($(call undo-name, $(m))_dep)) \
+	$(eval OUT := $($(m)_out)) \
+	$(eval SRC := $(strip $($(m)_src))) \
+	$(eval FLAG := $(strip $($(m)_flag))) \
+	$(eval DEP := $($(m)_src) \
+	$($(m)_dep) \
 	$(inc) $(MAKEFILE_LIST)) \
 	$(eval include build/reg_rule.mk))
 endef
-rmodules := $(foreach m, $(MODULE), $(call fix-name, $(m)))
-all:$(rmodules)
-$(call reg_rule, $(rmodules))
+rmodules := $(foreach m, $(MODULE), $($(m)_out))
+all:$(MODULE)
+$(call reg_rule, $(MODULE))
 .PHONY:clean
 clean:
 	-@ rm -rf $(rmodules)

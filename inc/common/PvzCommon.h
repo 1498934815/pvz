@@ -16,4 +16,10 @@ public:
   virtual void *getStatus() = 0;
   virtual pid_t getPid() = 0;
 };
+enum BuiltinsCommand {
+  GETHASH,
+  GETPID,
+  GETBASE,
+  GETSTATUS,
+};
 #endif // __PVZCOMMON__H

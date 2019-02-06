@@ -74,7 +74,7 @@ template <typename Err = int, typename Ty = int> struct error {
     return *this;
   }
   error &except(Err code, const char *message) {
-    return except(code, message, abort);
+    return except(code, message, []() { exit(1); });
   }
 };
 #endif // __DEFS__H

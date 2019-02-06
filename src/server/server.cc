@@ -12,15 +12,24 @@
 #include <common/communicator.h>
 #include <server/PvzServer.h>
 static pthread_t tid;
+void handleClientCommand(msgPack *pack) {
+  PvzServer *server = PvzServer::getLocalInstance();
+  if (pack->flags == msgFlag::COMMAND) {
+    DEBUG_LOG("HANDING COMMAND");
+    server->handleBuiltinsCommand(pack);
+  } else {
+    DEBUG_LOG("%d %d %s", pack->flags, pack->id, pack->msg);
+    server->sendMessage(makeMsgPack(0, "REPLY 0"));
+    server->sendMessage(makeMsgPack(1, "REPLY 1"));
+  }
+  server->sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
+}
 void *__server_process(void *pfd) {
   PvzServer server(*reinterpret_cast<int *>(pfd));
   while (msgPack *pack = server.recvMessage().getValue()) {
     if (pack->flags == msgFlag::EOR)
       continue;
-    DEBUG_LOG("%d %d %s", pack->flags, pack->id, pack->msg);
-    server.sendMessage(makeMsgPack(0, "REPLY 0"));
-    server.sendMessage(makeMsgPack(1, "REPLY 1"));
-    server.sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
+    handleClientCommand(pack);
   }
   DEBUG_LOG("DISCONNECT");
   pthread_exit(nullptr);

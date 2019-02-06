@@ -11,15 +11,18 @@
 PvzClient::PvzClient(const char *addr, int port) : Communicator(addr, port) {
   asClient();
 }
-
+msgPack &&PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
+  sendMessage(makeMsgPack(command, nullptr, msgFlag::COMMAND));
+  return std::move(recvMessages().front());
+}
 void *PvzClient::getBase() {
-  return nullptr;
+  return sendBuiltinsCommand(BuiltinsCommand::GETBASE).ptr;
 }
 void *PvzClient::getStatus() {
-  return nullptr;
+  return sendBuiltinsCommand(BuiltinsCommand::GETSTATUS).ptr;
 }
 pid_t PvzClient::getPid() {
-  return 999;
+  return sendBuiltinsCommand(BuiltinsCommand::GETPID).id;
 }
 
 void PvzClient::printDebugInfo() {

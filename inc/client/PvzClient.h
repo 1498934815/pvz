@@ -18,6 +18,7 @@ class PvzClient : public Singleton<PvzClient>,
 public:
   PvzClient(const char *, int);
   void printDebugInfo();
+  msgPack &&sendBuiltinsCommand(BuiltinsCommand);
   virtual void *getBase() override;
   virtual void *getStatus() override;
   virtual pid_t getPid() override;

@@ -1,27 +1,28 @@
 MODULE := \
-	pvz_client \
-	libpvz_server
+	client \
+	server
 define src_under
 $(shell find $(1) -type f)
 endef
 common := \
 	$(call src_under,src/common)
-pvz_client_src := \
+inc := $(call src_under,inc)
+client_src := \
 	$(call src_under,src/client) \
 	$(common)
+client_out := pvz_client
 
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 git_repo := $(shell git config --get remote.origin.url)
 git_branch := $(shell git symbolic-ref --short -q HEAD)
 
-libpvz_server_src := \
+server_src := \
 	$(call src_under,src/server) \
 	$(call src_under,src/module) \
 	$(common)
-libpvz_server_flag := -shared -ldl
-
-inc := $(shell find inc)
-CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x \
+server_flag := -shared -ldl
+server_out := libpvz_server.so
+CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DGIT_HASH=\"$(git_hash)\" \
 	-DGIT_REPO=\"$(git_repo)\" \
 	-DGIT_BRANCH=\"$(git_branch)\" \
@@ -34,7 +35,7 @@ ifeq ($(NDK_BUILD),true)
 	NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
 	CC := $(NDK_TOOCHAIN)-clang++
 	STRIP := $(NDK_TOOCHAIN)-strip
-	CC_FLAG += -fPIC -pie
+	CC_FLAG += -pie
 else
 	CC := g++
 	STRIP := strip

@@ -15,9 +15,13 @@
 class PvzServer : public Singleton<PvzServer>,
                   public Communicator,
                   public PvzCommon {
+  static thread_local PvzServer *localInstance;
+
 public:
   PvzServer(const char *, int);
   PvzServer(int);
+  void handleBuiltinsCommand(msgPack *);
+  static PvzServer *getLocalInstance();
   virtual void *getBase() override;
   virtual void *getStatus() override;
   virtual pid_t getPid() override;
