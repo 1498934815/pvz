@@ -10,6 +10,7 @@ $(foreach m,$(1), \
 	$(eval include build/reg_rule.mk))
 endef
 rmodules := $(foreach m, $(MODULE), $($(m)_out))
+.SUFFIXES:
 all:$(MODULE)
 $(call reg_rule, $(MODULE))
 .PHONY:clean

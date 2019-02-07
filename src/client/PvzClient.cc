@@ -11,9 +11,9 @@
 PvzClient::PvzClient(const char *addr, int port) : Communicator(addr, port) {
   asClient();
 }
-msgPack &&PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
+msgPack PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
   sendMessage(makeMsgPack(command, nullptr, msgFlag::COMMAND));
-  return std::move(recvMessages().front());
+  return recvMessages().front();
 }
 void *PvzClient::getBase() {
   return sendBuiltinsCommand(BuiltinsCommand::GETBASE).ptr;
@@ -23,6 +23,9 @@ void *PvzClient::getStatus() {
 }
 pid_t PvzClient::getPid() {
   return sendBuiltinsCommand(BuiltinsCommand::GETPID).id;
+}
+int PvzClient::getVersion() {
+  return sendBuiltinsCommand(BuiltinsCommand::GETVERSION).id;
 }
 
 void PvzClient::printDebugInfo() {

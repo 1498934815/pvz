@@ -18,9 +18,10 @@ class PvzClient : public Singleton<PvzClient>,
 public:
   PvzClient(const char *, int);
   void printDebugInfo();
-  msgPack &&sendBuiltinsCommand(BuiltinsCommand);
+  msgPack sendBuiltinsCommand(BuiltinsCommand);
   virtual void *getBase() override;
   virtual void *getStatus() override;
   virtual pid_t getPid() override;
+  virtual int getVersion() override;
 };
 #endif // __PVZCLIENT__H

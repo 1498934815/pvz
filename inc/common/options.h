@@ -11,13 +11,18 @@
 #define __OPTIONS__H
 #include <vector>
 #include <common/common.h>
-enum flags {
+enum attr {
   NONE,
+  EXIT = 1,
+  DEBUG_INFO = 2,
+  GAMING = 4,
+  GETINT = 8,
+  GETSTRING = 16,
 };
 class option {
 public:
   unsigned id;
-  flags flags;
+  attr attr;
   const char *name;
   const char *description;
   operator int() {
@@ -29,8 +34,8 @@ class Options : public Singleton<Options> {
 
 public:
   Options();
-  void addOption(flags, const char *, const char *);
+  void addOption(attr, const char *, const char *);
   const option *getOption(unsigned);
-  std::vector<option> &&getOptions();
+  const std::vector<option> &getOptions();
 };
 #endif // __OPTIONS__H

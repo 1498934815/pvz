@@ -22,6 +22,7 @@ struct msgPack {
   union {
     int id;
     void *ptr;
+    int_least64_t _;
   };
   char msg[128];
 };
@@ -42,5 +43,19 @@ public:
   void disconnect();
 };
 
-msgPack makeMsgPack(int, const char * = nullptr, enum msgFlag = msgFlag::NONE);
+template <typename Ty>
+msgPack makeMsgPack(Ty val, const char *msg = nullptr,
+                    msgFlag flags = msgFlag::NONE) {
+  msgPack pack = {
+      .flags = flags,
+  };
+  error<>(sizeof(val) > sizeof(msgPack::_))
+      .except(true, "sizeof(val) > sizeof(msgPack::_)");
+  memcpy(&pack._, &val, sizeof(val));
+  if (msg != nullptr) {
+    assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
+    strcpy(pack.msg, msg);
+  }
+  return pack;
+}
 #endif // __COMMUNICATOR__H

@@ -30,9 +30,12 @@ void *PvzServer::getStatus() {
 pid_t PvzServer::getPid() {
   return getpid();
 }
+int PvzServer::getVersion() {
+  return LOCAL_VERSION;
+}
 void PvzServer::handleBuiltinsCommand(msgPack *pack) {
   intptr_t commandsMap[] = {
-      [BuiltinsCommand::GETHASH] = (intptr_t)GIT_HASH,
+      [BuiltinsCommand::GETVERSION] = (intptr_t)getVersion(),
       [BuiltinsCommand::GETPID] = (intptr_t)getPid(),
       [BuiltinsCommand::GETBASE] = (intptr_t)getBase(),
       [BuiltinsCommand::GETSTATUS] = (intptr_t)getStatus(),

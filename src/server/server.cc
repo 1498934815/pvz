@@ -9,6 +9,7 @@
  */
 #include <pthread.h>
 #include <common/common.h>
+#include <common/options.h>
 #include <common/communicator.h>
 #include <server/PvzServer.h>
 static pthread_t tid;
@@ -18,9 +19,8 @@ void handleClientCommand(msgPack *pack) {
     DEBUG_LOG("HANDING COMMAND");
     server->handleBuiltinsCommand(pack);
   } else {
-    DEBUG_LOG("%d %d %s", pack->flags, pack->id, pack->msg);
-    server->sendMessage(makeMsgPack(0, "REPLY 0"));
-    server->sendMessage(makeMsgPack(1, "REPLY 1"));
+    auto *o = Options::getInstance()->getOption(pack->id);
+    DEBUG_LOG("GOT %s", o->name);
   }
   server->sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
 }
@@ -36,6 +36,8 @@ void *__server_process(void *pfd) {
 }
 void *__server_main(void *) {
   PvzServer server(SERVER_ADDR, SERVER_PORT);
+  // Initialize options
+  Options option;
   int csock;
   while ((csock = server.doAccept()) != -1) {
     pthread_t tid;

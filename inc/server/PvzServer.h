@@ -25,6 +25,7 @@ public:
   virtual void *getBase() override;
   virtual void *getStatus() override;
   virtual pid_t getPid() override;
+  virtual int getVersion() override;
 };
 
 #endif // __PVZSERVER__H

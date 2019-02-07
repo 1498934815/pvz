@@ -15,9 +15,10 @@ public:
   virtual void *getBase() = 0;
   virtual void *getStatus() = 0;
   virtual pid_t getPid() = 0;
+  virtual int getVersion() = 0;
 };
 enum BuiltinsCommand {
-  GETHASH,
+  GETVERSION,
   GETPID,
   GETBASE,
   GETSTATUS,

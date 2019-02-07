@@ -32,13 +32,14 @@ CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 ifeq ($(NDK_BUILD),true)
 	# We are use NDK-R17 current
 	NDK_STANDALONE ?= $(HOME)/ndk
-	NDK_TOOCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi
-	CC := $(NDK_TOOCHAIN)-clang++
-	STRIP := $(NDK_TOOCHAIN)-strip
-	CC_FLAG += -pie
+	NDK_TOOLCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi-
+	CC := $(NDK_TOOLCHAIN)clang++
+	STRIP := $(NDK_TOOLCHAIN)strip
+	CC_FLAG += -pie -DLOCAL_VERSION=$(shell date +'%Y%m%d')
 else
 	CC := g++
 	STRIP := strip
+	CC_FLAG += -DLOCAL_VERSION=0
 endif
 ifneq ($(DEBUG),)
 	CC_FLAG += -g -DDEBUG

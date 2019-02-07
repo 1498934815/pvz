@@ -63,15 +63,3 @@ void Communicator::asClient() {
   error<>(connect(fd, (struct sockaddr *)&sin, sizeof(sin)))
       .except(-1, "Can't connect to server");
 }
-
-msgPack makeMsgPack(int id, const char *msg, msgFlag flags) {
-  msgPack pack = {
-      .flags = flags,
-      .id = id,
-  };
-  if (msg != nullptr) {
-    assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
-    strcpy(pack.msg, msg);
-  }
-  return pack;
-}

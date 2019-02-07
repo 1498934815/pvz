@@ -21,6 +21,15 @@ template <typename Ty> Ty readMem(void *ptr, Ty &value) {
   __writeMem(reinterpret_cast<void *>(&value), ptr, sizeof(value));
   return value;
 }
+struct PvzOffset {
+  const char *name;
+  off_t off;
+};
+PvzOffset *__getOffset(const char *);
+off_t getOffset(const char *);
+void *incrFrom(void *, const char *);
+void *incrFromBase(const char *);
+void *incrFromStatus(const char *);
 #define implGet(name, type)                                                    \
   inline type get##name(void *ptr, type &value) {                              \
     return readMem<type>(ptr, value);                                          \
