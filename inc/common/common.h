@@ -66,7 +66,12 @@ template <typename Err = int, typename Ty = int> struct error {
   }
   template <typename Callable>
   error &except(Err code, const char *message, Callable callable) {
-    if (errcode == code) {
+    // XXX We will send a INTERRUPT_SIGNAL to all child threads and then the
+    // syscall will produce a EINTR, we should ignore it on this time and set
+    // the value as a defaultt
+    if (reason == EINTR) {
+      value = Ty(0);
+    } else if (errcode == code) {
       uierrorf("PANIC, code:%d, errno:%d(%s), message:'%s'\n", errcode, reason,
                strerror(reason), message);
       callable();

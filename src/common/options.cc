@@ -14,6 +14,11 @@ void Options::addOption(attr attr, const char *name, const char *description) {
   static unsigned id = 0;
   options.emplace_back(option{id++, attr, name, description});
 }
+void Options::uiPrint() {
+  for (auto &&o : getOptions()) {
+    uiprintf("%d.%s\n", o.id, o.name);
+  }
+}
 const option *Options::getOption(unsigned id) {
   auto &&it = std::find(options.begin(), options.end(), id);
   return it != options.end() ? &*it : nullptr;

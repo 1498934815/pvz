@@ -9,6 +9,7 @@
  */
 #ifndef __COMMUNICATOR__H
 #define __COMMUNICATOR__H
+#include <assert.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <vector>
@@ -19,8 +20,9 @@ enum class msgFlag : unsigned int {
 };
 struct msgPack {
   enum msgFlag flags;
+  unsigned id;
   union {
-    int id;
+    int val;
     void *ptr;
     int_least64_t _;
   };
@@ -38,13 +40,13 @@ public:
   void asClient();
   void sendMessage(msgPack &&);
   error<int, msgPack *> recvMessage();
+  error<int> doAccept();
   std::vector<msgPack> recvMessages();
-  int doAccept();
   void disconnect();
 };
 
 template <typename Ty>
-msgPack makeMsgPack(Ty val, const char *msg = nullptr,
+msgPack makeMsgPack(unsigned id, Ty val, const char *msg = nullptr,
                     msgFlag flags = msgFlag::NONE) {
   msgPack pack = {
       .flags = flags,
@@ -57,5 +59,10 @@ msgPack makeMsgPack(Ty val, const char *msg = nullptr,
     strcpy(pack.msg, msg);
   }
   return pack;
+}
+template <typename Ty>
+msgPack makeMsgPack(Ty val, const char *msg = nullptr,
+                    msgFlag flags = msgFlag::NONE) {
+  return makeMsgPack(0, val, msg, flags);
 }
 #endif // __COMMUNICATOR__H

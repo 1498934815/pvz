@@ -26,10 +26,13 @@ void getUserInputSafety(const char *prompt, const char *fmt, ...) {
   }
   va_end(va);
 }
+int getUserIntInputSafety() {
+  static int val;
+  getUserInputSafety("?", "%d", &val);
+  return val;
+}
 void displayUserInterface() {
-  for (auto &&o : Options::getInstance()->getOptions()) {
-    uiprintf("%d.%s\n", o.id, o.name);
-  }
+  Options::getInstance()->uiPrint();
 }
 void handleUserInput(int inputId) {
   auto *o = Options::getInstance()->getOption(inputId);
@@ -38,14 +41,19 @@ void handleUserInput(int inputId) {
     return;
   }
   PvzClient *client = PvzClient::getInstance();
-  uinoticef("SELECT %d %s %s\n", o->id, o->name, o->description);
+  int val = 0;
+  const char *str = nullptr;
   if (o->attr & EXIT) {
     client->disconnect();
     exit(0);
   } else if (o->attr & DEBUG_INFO) {
     client->printDebugInfo();
+    return;
   }
-  client->sendMessage(makeMsgPack(o->id));
+  if (o->attr & GETINT) {
+    val = getUserIntInputSafety();
+  }
+  client->sendMessage(makeMsgPack(o->id, val, str));
   for (auto &&v : client->recvMessages())
     uiprintf("%s\n", v.msg);
 }
@@ -63,11 +71,9 @@ int main() {
   Options options;
   checkVersion();
   client.printDebugInfo();
-  int id = 0;
   while (true) {
     displayUserInterface();
-    getUserInputSafety("?", "%d", &id);
-    handleUserInput(id);
+    handleUserInput(getUserIntInputSafety());
   }
   return 0;
 }

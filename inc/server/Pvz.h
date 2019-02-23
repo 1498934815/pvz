@@ -27,6 +27,8 @@ struct PvzOffset {
 };
 PvzOffset *__getOffset(const char *);
 off_t getOffset(const char *);
+void *__getBase();
+void *__getStatus();
 void *incrFrom(void *, const char *);
 void *incrFromBase(const char *);
 void *incrFromStatus(const char *);

@@ -22,10 +22,10 @@ void *PvzClient::getStatus() {
   return sendBuiltinsCommand(BuiltinsCommand::GETSTATUS).ptr;
 }
 pid_t PvzClient::getPid() {
-  return sendBuiltinsCommand(BuiltinsCommand::GETPID).id;
+  return sendBuiltinsCommand(BuiltinsCommand::GETPID).val;
 }
 int PvzClient::getVersion() {
-  return sendBuiltinsCommand(BuiltinsCommand::GETVERSION).id;
+  return sendBuiltinsCommand(BuiltinsCommand::GETVERSION).val;
 }
 
 void PvzClient::printDebugInfo() {

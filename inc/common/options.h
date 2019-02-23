@@ -35,6 +35,7 @@ class Options : public Singleton<Options> {
 public:
   Options();
   void addOption(attr, const char *, const char *);
+  void uiPrint();
   const option *getOption(unsigned);
   const std::vector<option> &getOptions();
 };

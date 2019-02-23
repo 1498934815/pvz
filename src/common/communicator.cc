@@ -7,7 +7,6 @@
  * Module  :
  * License : MIT
  */
-#include <assert.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -27,7 +26,12 @@ Communicator::~Communicator() {
   disconnect();
 }
 void Communicator::disconnect() {
-  close(fd);
+  if (fd != 0) {
+    close(fd);
+    fd = 0;
+  } else {
+    error<>(true).except(true, "socket was already closed");
+  }
 }
 void Communicator::sendMessage(msgPack &&msg) {
   error<>(send(fd, &msg, sizeof(msg), 0))
@@ -49,8 +53,8 @@ std::vector<msgPack> Communicator::recvMessages() {
   }
   return result;
 }
-int Communicator::doAccept() {
-  return accept(fd, NULL, NULL);
+error<int> Communicator::doAccept() {
+  return error<int>(accept(fd, NULL, NULL)).except(-1, "Can't accept");
 }
 void Communicator::asServer() {
   int reuseaddr = 1;

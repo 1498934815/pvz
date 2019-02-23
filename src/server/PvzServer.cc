@@ -22,10 +22,10 @@ PvzServer *PvzServer::getLocalInstance() {
   return localInstance;
 }
 void *PvzServer::getBase() {
-  return reinterpret_cast<void *>(0x1);
+  return __getBase();
 }
 void *PvzServer::getStatus() {
-  return reinterpret_cast<void *>(0x2);
+  return __getStatus();
 }
 pid_t PvzServer::getPid() {
   return getpid();
@@ -40,5 +40,5 @@ void PvzServer::handleBuiltinsCommand(msgPack *pack) {
       [BuiltinsCommand::GETBASE] = (intptr_t)getBase(),
       [BuiltinsCommand::GETSTATUS] = (intptr_t)getStatus(),
   };
-  sendMessage(makeMsgPack(commandsMap[pack->id]));
+  sendMessage(makeMsgPack(commandsMap[pack->val]));
 }
