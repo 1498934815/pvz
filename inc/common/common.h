@@ -13,12 +13,6 @@
 #include <stdlib.h>
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 0x7a65
-#ifdef DEBUG
-#include <stdio.h>
-#define DEBUG_LOG(fmt, args...) printf(fmt "\n", ##args)
-#else
-#define DEBUG_LOG(...)
-#endif
 
 #define BLOB GIT_REPO "/blob/" GIT_BRANCH
 #define CODE_TXT BLOB "/doc/code.txt"
@@ -35,6 +29,14 @@
 #define uierrorf(...) uiprintf(ERR __VA_ARGS__)
 #define uiscanf(...) scanf(__VA_ARGS__)
 #define uivscanf(...) vscanf(__VA_ARGS__)
+
+#ifdef DEBUG
+#include <stdio.h>
+#define DEBUG_LOG(fmt, args...) printf(fmt "\n", ##args)
+#else
+#define DEBUG_LOG(...)
+#endif
+
 template <typename Ty> class Singleton {
   static Ty *instance;
 

@@ -47,7 +47,6 @@ void handleClientCommand(msgPack *pack) {
   server->sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
 }
 void *__server_process(void *pfd) {
-  registerSignalMask();
   PvzServer server(*reinterpret_cast<int *>(pfd));
   while (msgPack *pack = server.recvMessage().getValue()) {
     if (pack->flags == msgFlag::EOR)
@@ -59,11 +58,11 @@ void *__server_process(void *pfd) {
   pthread_exit(nullptr);
 }
 void *__server_main(void *) {
-  registerSignalMask();
   PvzServer server(SERVER_ADDR, SERVER_PORT);
   // Initialize options
   Options option;
   int csock;
+  registerSignalMask();
   while ((csock = server.doAccept()) != -1) {
     DEBUG_LOG("GONNA A CLIENT");
     pthread_create(&tid, nullptr, __server_process,

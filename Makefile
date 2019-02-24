@@ -35,7 +35,7 @@ ifeq ($(NDK_BUILD),true)
 	NDK_TOOLCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi-
 	CC := $(NDK_TOOLCHAIN)clang++
 	STRIP := $(NDK_TOOLCHAIN)strip
-	CC_FLAG += -pie -DLOCAL_VERSION=$(shell date +'%Y%m%d')
+	CC_FLAG += -pie -DLOCAL_VERSION=$(shell date +'%y%m%d')
 else
 	CC := g++
 	STRIP := strip
