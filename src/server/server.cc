@@ -14,8 +14,9 @@
 #include <common/options.h>
 #include <common/communicator.h>
 #include <server/PvzServer.h>
-static pthread_t tid;
 static std::deque<pthread_t> *threads;
+#define emplace_front(container)                                               \
+  (container->emplace_front(0), container->front())
 #define INTERRUPT_SIGNAL SIGUSR1
 #define INTERRUPT_SIGHANDLER SIGHANDLER
 void SIGHANDLER(int) {}
@@ -65,9 +66,8 @@ void *__server_main(void *) {
   registerSignalMask();
   while ((csock = server.doAccept()) != -1) {
     DEBUG_LOG("GONNA A CLIENT");
-    pthread_create(&tid, nullptr, __server_process,
+    pthread_create(&emplace_front(threads), nullptr, __server_process,
                    reinterpret_cast<void *>(&csock));
-    threads->push_front(tid);
   }
   DEBUG_LOG("MAIN SERVER CLOSED");
   server.disconnect();
@@ -75,12 +75,11 @@ void *__server_main(void *) {
 }
 extern "C" void __attribute__((constructor)) __server_main_invocation() {
   DEBUG_LOG("INVOCATION");
-  pthread_create(&tid, nullptr, __server_main, nullptr);
   // XXX We create a deque<pthread_t> on heaps
   // because if it was a global variable
   // it will free automaticly
   threads = new std::deque<pthread_t>();
-  threads->push_front(tid);
+  pthread_create(&emplace_front(threads), nullptr, __server_main, nullptr);
 }
 extern "C" void __attribute__((destructor)) __server_cleanup() {
   DEBUG_LOG("CLEANUP");

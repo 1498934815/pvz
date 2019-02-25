@@ -46,6 +46,7 @@ void *incrFromStatus(const char *);
   }
 #define implGetSet(name, type) implGet(name, type) implSet(name, type)
 implGetSet(I32, int32_t);
+implGetSet(U32, uint32_t);
 implGetSet(F32, float);
 implGetSet(Ptr, void *);
 #undef implGet
