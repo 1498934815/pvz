@@ -15,8 +15,8 @@
 #include <vector>
 enum class msgFlag : unsigned int {
   NONE,
-  EOR = 1,
-  COMMAND = 2,
+  EOR,
+  COMMAND,
 };
 struct msgPack {
   enum msgFlag flags;
@@ -49,6 +49,7 @@ template <typename Ty>
 msgPack makeMsgPack(unsigned id, Ty val, const char *msg = nullptr,
                     msgFlag flags = msgFlag::NONE) {
   msgPack pack = {
+      .id = id,
       .flags = flags,
   };
   error<>(sizeof(val) > sizeof(msgPack::_))

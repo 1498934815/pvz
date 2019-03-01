@@ -43,7 +43,7 @@ void handleClientCommand(msgPack *pack) {
     server->handleBuiltinsCommand(pack);
   } else {
     auto *o = Options::getInstance()->getOption(pack->id);
-    DEBUG_LOG("GOT %s", o->name);
+    DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
   }
   server->sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
 }

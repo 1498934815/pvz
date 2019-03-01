@@ -13,6 +13,7 @@
 //#ifndef DEFINE_CHEAT
 //#define DEFINE_CHEAT(attr, name, description)
 DEFINE_CHEAT(DEBUG_INFO, "输出调试信息", nullptr);
+DEFINE_CHEAT(GETINT, "修改阳光", nullptr);
 DEFINE_CHEAT(EXIT, "退出", nullptr);
 //#undef DEFINE_CHEAT
 //#endif
