@@ -39,6 +39,7 @@ public:
   void asServer();
   void asClient();
   void sendMessage(msgPack &&);
+  void sendEOR();
   error<int, msgPack *> recvMessage();
   error<int> doAccept();
   std::vector<msgPack> recvMessages();

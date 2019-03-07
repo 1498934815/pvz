@@ -45,7 +45,7 @@ void handleClientCommand(msgPack *pack) {
     auto *o = Options::getInstance()->getOption(pack->id);
     DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
   }
-  server->sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
+  server->sendEOR();
 }
 void *__server_process(void *pfd) {
   PvzServer server(*reinterpret_cast<int *>(pfd));

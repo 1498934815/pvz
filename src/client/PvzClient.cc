@@ -13,7 +13,10 @@ PvzClient::PvzClient(const char *addr, int port) : Communicator(addr, port) {
 }
 msgPack PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
   sendMessage(makeMsgPack(command, nullptr, msgFlag::COMMAND));
-  return recvMessages().front();
+  auto &&msgs = recvMessages();
+  if (msgs.empty())
+    error<>(true).except(true, "May Remote Connection Was Already Closed");
+  return msgs.front();
 }
 void *PvzClient::getBase() {
   return sendBuiltinsCommand(BuiltinsCommand::GETBASE).ptr;

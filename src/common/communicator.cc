@@ -38,6 +38,9 @@ void Communicator::sendMessage(msgPack &&msg) {
       .when(0, 0)
       .except(-1, "Can't send message");
 }
+void Communicator::sendEOR() {
+  sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
+}
 error<int, msgPack *> Communicator::recvMessage() {
   static msgPack msg;
   return error<int, msgPack *>(recv(fd, &msg, sizeof(msg), 0), &msg)
