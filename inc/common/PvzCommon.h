@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __PVZCOMMON__H
-#define __PVZCOMMON__H
+#ifndef INC_COMMON_PVZCOMMON_H
+#define INC_COMMON_PVZCOMMON_H
 #include <unistd.h>
 class PvzCommon {
 public:
@@ -23,4 +23,4 @@ enum BuiltinsCommand {
   GETBASE,
   GETSTATUS,
 };
-#endif // __PVZCOMMON__H
+#endif // INC_COMMON_PVZCOMMON_H

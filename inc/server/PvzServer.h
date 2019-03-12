@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __PVZSERVER__H
-#define __PVZSERVER__H
+#ifndef INC_SERVER_PVZSERVER_H
+#define INC_SERVER_PVZSERVER_H
 #include <common/common.h>
 #include <common/communicator.h>
 #include <common/PvzCommon.h>
@@ -28,4 +28,4 @@ public:
   virtual int getVersion() override;
 };
 
-#endif // __PVZSERVER__H
+#endif // INC_SERVER_PVZSERVER_H

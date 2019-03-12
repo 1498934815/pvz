@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __OPTIONS__H
-#define __OPTIONS__H
+#ifndef INC_COMMON_OPTIONS_H
+#define INC_COMMON_OPTIONS_H
 #include <vector>
 #include <common/common.h>
 enum attr {
@@ -39,4 +39,4 @@ public:
   const option *getOption(unsigned);
   const std::vector<option> &getOptions();
 };
-#endif // __OPTIONS__H
+#endif // INC_COMMON_OPTIONS_H

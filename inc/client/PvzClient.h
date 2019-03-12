@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __PVZCLIENT__H
-#define __PVZCLIENT__H
+#ifndef INC_CLIENT_PVZCLIENT_H
+#define INC_CLIENT_PVZCLIENT_H
 #include <common/common.h>
 #include <common/PvzCommon.h>
 #include <common/communicator.h>
@@ -24,4 +24,4 @@ public:
   virtual pid_t getPid() override;
   virtual int getVersion() override;
 };
-#endif // __PVZCLIENT__H
+#endif // INC_CLIENT_PVZCLIENT_H

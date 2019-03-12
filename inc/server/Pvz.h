@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __PVZ__H
-#define __PVZ__H
+#ifndef INC_SERVER_PVZ_H
+#define INC_SERVER_PVZ_H
 #include <stdlib.h>
 
 inline void __writeMem(void *ptr, void *src, size_t size) {
@@ -52,4 +52,4 @@ implGetSet(Ptr, void *);
 #undef implGet
 #undef implSet
 #undef implGetset
-#endif // __PVZ__H
+#endif // INC_SERVER_PVZ_H

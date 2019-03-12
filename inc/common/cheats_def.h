@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __CHEATS_DEF__H
-#define __CHEATS_DEF__H
+#ifndef INC_COMMON_CHEATS_DEF_H
+#define INC_COMMON_CHEATS_DEF_H
 
 //#ifndef DEFINE_CHEAT
 //#define DEFINE_CHEAT(attr, name, description)
@@ -17,4 +17,4 @@ DEFINE_CHEAT(GETINT, "修改阳光", nullptr);
 DEFINE_CHEAT(EXIT, "退出", nullptr);
 //#undef DEFINE_CHEAT
 //#endif
-#endif // __CHEATS_DEF__H
+#endif // INC_COMMON_CHEATS_DEF_H

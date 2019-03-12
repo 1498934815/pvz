@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __COMMUNICATOR__H
-#define __COMMUNICATOR__H
+#ifndef INC_COMMON_COMMUNICATOR_H
+#define INC_COMMON_COMMUNICATOR_H
 #include <assert.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -53,8 +53,8 @@ msgPack makeMsgPack(unsigned id, Ty val, const char *msg = nullptr,
       .id = id,
       .flags = flags,
   };
-  error<>(sizeof(val) > sizeof(msgPack::_))
-      .except(true, "sizeof(val) > sizeof(msgPack::_)");
+  static_assert(sizeof(msgPack::_) >= sizeof(val),
+                "sizeof(msgPack::_) >= sizeof(val)");
   memcpy(&pack._, &val, sizeof(val));
   if (msg != nullptr) {
     assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
@@ -67,4 +67,4 @@ msgPack makeMsgPack(Ty val, const char *msg = nullptr,
                     msgFlag flags = msgFlag::NONE) {
   return makeMsgPack(0, val, msg, flags);
 }
-#endif // __COMMUNICATOR__H
+#endif // INC_COMMON_COMMUNICATOR_H
