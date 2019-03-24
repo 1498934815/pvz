@@ -8,6 +8,7 @@
  * License : MIT
  */
 #include <dlfcn.h>
+#include <common/common.h>
 #include <server/Pvz.h>
 struct PvzOffset offsets[] = {
 #include <server/PvzOffset.inc>
@@ -23,11 +24,12 @@ off_t getOffset(const char *name) {
   return __getOffset(name)->offset;
 }
 void *__getBase() {
-  static void *base = nullptr, *handle, *mapaddr, *bss, *progdata, *helper;
+  static void *base = nullptr;
+  if (base != nullptr)
+    return base;
+  void *handle, *mapaddr, *bss, *progdata, *helper;
   struct PvzOffset *off;
   Dl_info dl;
-  if (base != nullptr)
-    goto out;
   handle = dlopen(PVZ_CORE_LIB, RTLD_NOW);
   mapaddr = (dladdr(dlsym(handle, PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
   bss = incr(mapaddr, PVZ_CORE_LIB_BSS_MEM_OFF);
@@ -37,13 +39,13 @@ void *__getBase() {
 #define bound 0x20
 #define magicNumber "\0\0\0\0\0\0\xdd\x81"
   helper = incr(progdata, off->offset);
-  for (int i = -bound; i <= bound; i += sizeof(void *)) {
-    if (strncmp(reinterpret_cast<const char *>(incr(helper, i)), magicNumber, 8) == 0)
-      base = incr(helper, i + 2 * sizeof(void *));
+  for (int i = -bound; i <= bound; i += POINTERSIZE) {
+    if (strncmp(reinterpret_cast<const char *>(incr(helper, i)), magicNumber,
+                2 * POINTERSIZE) == 0)
+      base = incr(helper, i + 2 * POINTERSIZE);
   }
   if (base == nullptr)
     abort();
-out:
   return base;
 }
 void *__getStatus() {

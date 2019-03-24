@@ -38,6 +38,8 @@
 #define DEBUG_LOG(...)
 #endif
 
+#define POINTERSIZE (sizeof(void *))
+
 template <typename Ty> class Singleton {
   static Ty *instance;
 
