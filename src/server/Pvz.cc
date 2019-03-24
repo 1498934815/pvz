@@ -7,22 +7,54 @@
  * Module  :
  * License : MIT
  */
+#include <dlfcn.h>
 #include <server/Pvz.h>
+struct PvzOffset offsets[] = {
+#include <server/PvzOffset.inc>
+};
 PvzOffset *__getOffset(const char *name) {
+  for (auto &o : offsets) {
+    if (strcmp(o.name, name) == 0)
+      return &o;
+  }
   return nullptr;
 }
 off_t getOffset(const char *name) {
-  return __getOffset(name)->off;
+  return __getOffset(name)->offset;
 }
 void *__getBase() {
-  return reinterpret_cast<void *>(0x1);
+  static void *base = nullptr, *handle, *mapaddr, *bss, *progdata, *helper;
+  struct PvzOffset *off;
+  Dl_info dl;
+  if (base != nullptr)
+    goto out;
+  handle = dlopen(PVZ_CORE_LIB, RTLD_NOW);
+  mapaddr = (dladdr(dlsym(handle, PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
+  bss = incr(mapaddr, PVZ_CORE_LIB_BSS_MEM_OFF);
+  progdata = getPtr(incrFrom(bss, "private_stack"));
+  // [-0x20, 0x20]
+  off = __getOffset("base_offset");
+#define bound 0x20
+#define magicNumber "\0\0\0\0\0\0\xdd\x81"
+  helper = incr(progdata, off->offset);
+  for (int i = -bound; i <= bound; i += sizeof(void *)) {
+    if (strncmp(reinterpret_cast<const char *>(incr(helper, i)), magicNumber, 8) == 0)
+      base = incr(helper, i + 2 * sizeof(void *));
+  }
+  if (base == nullptr)
+    abort();
+out:
+  return base;
 }
 void *__getStatus() {
-  return reinterpret_cast<void *>(0x2);
+  return getPtr(incrFrom(__getBase(), "game_status"));
+}
+void *incr(void *ptr, long off) {
+  uintptr_t uiptr = reinterpret_cast<intptr_t>(ptr);
+  return reinterpret_cast<void *>(uiptr + off);
 }
 void *incrFrom(void *ptr, const char *name) {
-  uintptr_t uiptr = reinterpret_cast<intptr_t>(ptr);
-  return reinterpret_cast<void *>(uiptr + getOffset(name));
+  return incr(ptr, getOffset(name));
 }
 void *incrFromBase(const char *name) {
   return incrFrom(__getBase(), name);

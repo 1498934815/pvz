@@ -23,12 +23,17 @@ template <typename Ty> Ty readMem(void *ptr, Ty &value) {
 }
 struct PvzOffset {
   const char *name;
-  off_t off;
+  off_t offset;
 };
 PvzOffset *__getOffset(const char *);
 off_t getOffset(const char *);
+
+#define PVZ_CORE_LIB "libpvz.so"
+#define PVZ_CORE_LIB_HELPER "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
+#define PVZ_CORE_LIB_BSS_MEM_OFF 0xc5e000
 void *__getBase();
 void *__getStatus();
+void *incr(void *, long);
 void *incrFrom(void *, const char *);
 void *incrFromBase(const char *);
 void *incrFromStatus(const char *);
