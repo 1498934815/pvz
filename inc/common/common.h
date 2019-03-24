@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#ifndef __DEFS__H
-#define __DEFS__H
+#ifndef INC_COMMON_COMMON_H
+#define INC_COMMON_COMMON_H
 #include <errno.h>
 #include <stdlib.h>
 #define SERVER_ADDR "127.0.0.1"
@@ -87,4 +87,4 @@ template <typename Err = int, typename Ty = int> struct error {
     return except(code, message, []() { exit(1); });
   }
 };
-#endif // __DEFS__H
+#endif // INC_COMMON_COMMON_H
