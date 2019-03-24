@@ -25,7 +25,6 @@ struct PvzOffset {
   const char *name;
   off_t offset;
 };
-PvzOffset *__getOffset(const char *);
 off_t getOffset(const char *);
 
 #define PVZ_CORE_LIB "libpvz.so"

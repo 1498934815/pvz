@@ -10,35 +10,29 @@
 #include <dlfcn.h>
 #include <common/common.h>
 #include <server/Pvz.h>
-struct PvzOffset offsets[] = {
+static struct PvzOffset offsets[] = {
 #include <server/PvzOffset.inc>
 };
-PvzOffset *__getOffset(const char *name) {
-  for (auto &o : offsets) {
-    if (strcmp(o.name, name) == 0)
-      return &o;
-  }
-  return nullptr;
-}
 off_t getOffset(const char *name) {
-  return __getOffset(name)->offset;
+  for (auto &o : offsets)
+    if (strcmp(o.name, name) == 0)
+      return o.offset;
+  return 0;
 }
 void *__getBase() {
   static void *base = nullptr;
+  // Just detect once
   if (base != nullptr)
     return base;
-  void *handle, *mapaddr, *bss, *progdata, *helper;
-  struct PvzOffset *off;
+  void *handle, *mapaddr, *bss, *helper;
   Dl_info dl;
   handle = dlopen(PVZ_CORE_LIB, RTLD_NOW);
   mapaddr = (dladdr(dlsym(handle, PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
   bss = incr(mapaddr, PVZ_CORE_LIB_BSS_MEM_OFF);
-  progdata = getPtr(incrFrom(bss, "private_stack"));
+  helper = incrFrom(getPtr(incrFrom(bss, "private_stack")), "base_offset");
   // [-0x20, 0x20]
-  off = __getOffset("base_offset");
 #define bound 0x20
 #define magicNumber "\0\0\0\0\0\0\xdd\x81"
-  helper = incr(progdata, off->offset);
   for (int i = -bound; i <= bound; i += POINTERSIZE) {
     if (strncmp(reinterpret_cast<const char *>(incr(helper, i)), magicNumber,
                 2 * POINTERSIZE) == 0)
