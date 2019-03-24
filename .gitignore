@@ -8,3 +8,5 @@ lib
 /server.cc
 /test.c
 /test
+/out
+/src/*.out

@@ -15,12 +15,13 @@ client_out := pvz_client
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 git_repo := $(shell git config --get remote.origin.url)
 git_branch := $(shell git symbolic-ref --short -q HEAD)
+local_version := $(shell date +'%y%m%d')
 
 server_src := \
 	$(call src_under,src/server) \
 	$(call src_under,src/module) \
 	$(common)
-server_flag := -shared -ldl
+server_flag := -shared -ldl -lgnustl_shared
 server_out := libpvz_server.so
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DGIT_HASH=\"$(git_hash)\" \
@@ -30,12 +31,12 @@ CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DAUTHOR=\"AS魇梦蚀\"
 
 ifeq ($(NDK_BUILD),true)
-	# We are use NDK-R17 current
+	# We are use NDK-R12b current
 	NDK_STANDALONE ?= $(HOME)/ndk
 	NDK_TOOLCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi-
 	CC := $(NDK_TOOLCHAIN)clang++
 	STRIP := $(NDK_TOOLCHAIN)strip
-	CC_FLAG += -pie -DLOCAL_VERSION=$(shell date +'%y%m%d')
+	CC_FLAG += -pie -DLOCAL_VERSION=$(local_version)
 else
 	CC := g++
 	STRIP := strip
@@ -49,6 +50,14 @@ include build/build.mk
 define make_release
 	make NDK_BUILD=true --no-print-directory
 endef
-.PHONY:release
+.PHONY:release local_install __local_install_build __local_install_build
 release:
 	$(call make_release)
+private_target_libdir := /data/data/com.popcap.pvz_na/lib
+__local_install_build:release
+	@ ./tools/build_release.py $(local_version) src/prebuilts/com.popcap.pvz_na:lib/armeabi:$(server_out) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
+__local_install_install:release
+	@ for i in out/*;do \
+		adb install -r $$i; \
+	done
+local_install:__local_install_build __local_install_install

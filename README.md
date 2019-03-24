@@ -55,8 +55,6 @@
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-    基于JackpalTerminal(https://github.com/jackpal/Android-Terminal-Emulator)
-
     如果您正确的放置了数据包、使用了正确的主程序,则应该类似于
 
     ![cheater_suceess](doc/images/cheater_success.png)
@@ -74,3 +72,7 @@
     如果您使用的主程序版本与修改器版本不匹配,则
 
     ![cheater_mismatch](doc/images/cheater_mismatch.png)
+
+## THANKS
+  tools/uber-apk-signer-1.0.0.jar @ https://github.com/patrickfav/uber-apk-signer
+  JackpalTerminal @ https://github.com/jackpal/Android-Terminal-Emulator
