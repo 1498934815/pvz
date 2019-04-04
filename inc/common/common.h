@@ -9,6 +9,7 @@
  */
 #ifndef INC_COMMON_COMMON_H
 #define INC_COMMON_COMMON_H
+#include <assert.h>
 #include <errno.h>
 #include <stdlib.h>
 #define SERVER_ADDR "127.0.0.1"
@@ -37,6 +38,8 @@
 #else
 #define DEBUG_LOG(...)
 #endif
+
+#define in_range(val, lb, rb) ((val) >= (lb) && (val) <= rb)
 
 #define POINTERSIZE (sizeof(void *))
 
@@ -87,4 +90,38 @@ template <typename Err = int, typename Ty = int> struct error {
     return except(code, message, []() { exit(1); });
   }
 };
+enum class msgStatus : unsigned int {
+  NONE,
+  EOR,
+  COMMAND,
+  REMOTE_ERROR,
+};
+struct msgPack {
+  enum msgStatus status;
+  unsigned id;
+  union {
+    void *ptr;
+    int_least64_t val;
+  };
+  char msg[128];
+};
+
+inline msgPack makeMsgPack(unsigned id, int_least64_t val,
+                           const char *msg = nullptr,
+                           msgStatus status = msgStatus::NONE) {
+  msgPack pack = {
+      .id = id,
+      .status = status,
+      .val = val,
+  };
+  if (msg != nullptr) {
+    assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
+    strcpy(pack.msg, msg);
+  }
+  return pack;
+}
+inline msgPack makeMsgPack(int_least64_t val, const char *msg = nullptr,
+                           msgStatus status = msgStatus::NONE) {
+  return makeMsgPack(0, val, msg, status);
+}
 #endif // INC_COMMON_COMMON_H

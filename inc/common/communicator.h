@@ -9,25 +9,11 @@
  */
 #ifndef INC_COMMON_COMMUNICATOR_H
 #define INC_COMMON_COMMUNICATOR_H
-#include <assert.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <assert.h>
+#include <common/common.h>
+#include <sys/socket.h>
 #include <vector>
-enum class msgFlag : unsigned int {
-  NONE,
-  EOR,
-  COMMAND,
-};
-struct msgPack {
-  enum msgFlag flags;
-  unsigned id;
-  union {
-    int val;
-    void *ptr;
-    int_least64_t _;
-  };
-  char msg[128];
-};
 class Communicator {
   int fd;
   struct sockaddr_in sin;
@@ -45,26 +31,4 @@ public:
   std::vector<msgPack> recvMessages();
   void disconnect();
 };
-
-template <typename Ty>
-msgPack makeMsgPack(unsigned id, Ty val, const char *msg = nullptr,
-                    msgFlag flags = msgFlag::NONE) {
-  msgPack pack = {
-      .id = id,
-      .flags = flags,
-  };
-  static_assert(sizeof(msgPack::_) >= sizeof(val),
-                "sizeof(msgPack::_) >= sizeof(val)");
-  memcpy(&pack._, &val, sizeof(val));
-  if (msg != nullptr) {
-    assert(strlen(msg) < sizeof(msgPack::msg) || !"Out of buffer size");
-    strcpy(pack.msg, msg);
-  }
-  return pack;
-}
-template <typename Ty>
-msgPack makeMsgPack(Ty val, const char *msg = nullptr,
-                    msgFlag flags = msgFlag::NONE) {
-  return makeMsgPack(0, val, msg, flags);
-}
 #endif // INC_COMMON_COMMUNICATOR_H

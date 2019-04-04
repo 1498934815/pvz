@@ -7,18 +7,10 @@
  * Module  :
  * License : MIT
  */
-#include <dlfcn.h>
+#include <common/PvzCommon.h>
 #include <common/common.h>
+#include <dlfcn.h>
 #include <server/Pvz.h>
-static struct PvzOffset offsets[] = {
-#include <server/PvzOffset.inc>
-};
-off_t getOffset(const char *name) {
-  for (auto &o : offsets)
-    if (strcmp(o.name, name) == 0)
-      return o.offset;
-  return 0;
-}
 void *__getBase() {
   static void *base = nullptr;
   // Just detect once
@@ -28,8 +20,8 @@ void *__getBase() {
   Dl_info dl;
   handle = dlopen(PVZ_CORE_LIB, RTLD_NOW);
   mapaddr = (dladdr(dlsym(handle, PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
-  bss = incr(mapaddr, PVZ_CORE_LIB_BSS_MEM_OFF);
-  helper = incrFrom(getPtr(incrFrom(bss, "private_stack")), "base_offset");
+  bss = incr(mapaddr, OFF_BSS_MEM);
+  helper = incr(getPtr(incr(bss, OFF_PRIVATE_STACK)), OFF_BASE);
   // [-0x20, 0x20]
 #define bound 0x20
 #define magicNumber "\0\0\0\0\0\0\xdd\x81"
@@ -43,18 +35,39 @@ void *__getBase() {
   return base;
 }
 void *__getStatus() {
-  return getPtr(incrFrom(__getBase(), "game_status"));
+  return getPtr(incrBase(OFF_GAME_STATUS));
 }
-void *incr(void *ptr, long off) {
+void *__getSaves() {
+  return getPtr(incrBase(OFF_SAVES_ENTRY));
+}
+void *incr(void *ptr, off_t off) {
   uintptr_t uiptr = reinterpret_cast<intptr_t>(ptr);
   return reinterpret_cast<void *>(uiptr + off);
 }
-void *incrFrom(void *ptr, const char *name) {
-  return incr(ptr, getOffset(name));
+void *incrBase(off_t off) {
+  return incr(__getBase(), off);
 }
-void *incrFromBase(const char *name) {
-  return incrFrom(__getBase(), name);
+void *incrStatus(off_t off) {
+  return incr(__getStatus(), off);
 }
-void *incrFromStatus(const char *name) {
-  return incrFrom(__getStatus(), name);
+void *incrSaves(off_t off) {
+  return incr(__getSaves(), off);
+}
+
+void eachObject(Communicator *com, off_t entry_off, off_t count_off,
+                object_callback callback) {
+  size_t cnt = getU32(incrStatus(count_off));
+  int32_t *entry = reinterpret_cast<int32_t *>(getPtr(incrStatus(entry_off)));
+  void *rp;
+  while (cnt != 0) {
+    // 有一些小的数据
+    // 不知道干嘛的
+    rp = getPtr(entry);
+    if (rp > (void *)0x10000000) {
+      callback(com, rp);
+      --cnt;
+      ++entry;
+    }
+    ++entry;
+  }
 }

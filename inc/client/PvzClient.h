@@ -9,8 +9,8 @@
  */
 #ifndef INC_CLIENT_PVZCLIENT_H
 #define INC_CLIENT_PVZCLIENT_H
-#include <common/common.h>
 #include <common/PvzCommon.h>
+#include <common/common.h>
 #include <common/communicator.h>
 class PvzClient : public Singleton<PvzClient>,
                   public Communicator,
@@ -21,6 +21,7 @@ public:
   msgPack sendBuiltinsCommand(BuiltinsCommand);
   virtual void *getBase() override;
   virtual void *getStatus() override;
+  virtual void *getSaves() override;
   virtual pid_t getPid() override;
   virtual int getVersion() override;
 };

@@ -7,13 +7,14 @@
  * Module  :
  * License : MIT
  */
-#include <signal.h>
-#include <pthread.h>
-#include <deque>
 #include <common/common.h>
-#include <common/options.h>
 #include <common/communicator.h>
+#include <common/options.h>
+#include <deque>
+#include <pthread.h>
+#include <server/Pvz.h>
 #include <server/PvzServer.h>
+#include <signal.h>
 static std::deque<pthread_t> *threads;
 #define emplace_front(container)                                               \
   (container->emplace_front(0), container->front())
@@ -37,20 +38,35 @@ void interruptAllThread() {
   }
   delete threads;
 }
+void handleCheatFunction(msgPack *pack, PvzServer *server) {
+  auto *o = Options::getInstance()->getOption(pack->id);
+  DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
+  if (o->attr & (GAMING) && server->getStatus() == nullptr) {
+    server->sendMessage(
+        makeMsgPack(0, "UNINITIALIZED", msgStatus::REMOTE_ERROR));
+    return;
+  }
+  if (o->attr & PLANTS_CALLBACK) {
+    eachPlant(server, o->object_callback);
+  } else if (o->attr & ZOMBIES_CALLBACK) {
+    eachZombie(server, o->object_callback);
+  } else {
+    o->normal_callback(server, pack);
+  }
+}
 void handleClientCommand(msgPack *pack) {
   PvzServer *server = PvzServer::getLocalInstance();
-  if (pack->flags == msgFlag::COMMAND) {
+  if (pack->status == msgStatus::COMMAND) {
     server->handleBuiltinsCommand(pack);
   } else {
-    auto *o = Options::getInstance()->getOption(pack->id);
-    DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
+    handleCheatFunction(pack, server);
   }
   server->sendEOR();
 }
 void *__server_process(void *pfd) {
   PvzServer server(*reinterpret_cast<int *>(pfd));
   while (msgPack *pack = server.recvMessage().getValue()) {
-    if (pack->flags == msgFlag::EOR)
+    if (pack->status == msgStatus::EOR)
       continue;
     handleClientCommand(pack);
   }

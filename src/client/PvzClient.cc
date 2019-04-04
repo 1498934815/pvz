@@ -12,7 +12,7 @@ PvzClient::PvzClient(const char *addr, int port) : Communicator(addr, port) {
   asClient();
 }
 msgPack PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
-  sendMessage(makeMsgPack(command, nullptr, msgFlag::COMMAND));
+  sendMessage(makeMsgPack(command, nullptr, msgStatus::COMMAND));
   auto &&msgs = recvMessages();
   if (msgs.empty())
     error<>(true).except(true, "May Remote Connection Was Already Closed");
@@ -24,6 +24,9 @@ void *PvzClient::getBase() {
 void *PvzClient::getStatus() {
   return sendBuiltinsCommand(BuiltinsCommand::GETSTATUS).ptr;
 }
+void *PvzClient::getSaves() {
+  return sendBuiltinsCommand(BuiltinsCommand::GETSAVES).ptr;
+}
 pid_t PvzClient::getPid() {
   return sendBuiltinsCommand(BuiltinsCommand::GETPID).val;
 }
@@ -32,5 +35,6 @@ int PvzClient::getVersion() {
 }
 
 void PvzClient::printDebugInfo() {
-  uinoticef("PID:%d 基址:%p 状态与信息:%p\n", getPid(), getBase(), getStatus());
+  uinoticef("PID:%d 基址:%p 游戏状态入口:%p 用户信息入口:%p\n", getPid(),
+            getBase(), getStatus(), getSaves());
 }

@@ -7,12 +7,12 @@
  * Module  :
  * License : MIT
  */
-#include <unistd.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <vector>
 #include <common/common.h>
 #include <common/communicator.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <vector>
 Communicator::Communicator(int sfd) : fd(sfd) {}
 Communicator::Communicator(const char *addr, int port)
     : Communicator(socket(AF_INET, SOCK_STREAM, 0)) {
@@ -39,7 +39,7 @@ void Communicator::sendMessage(msgPack &&msg) {
       .except(-1, "Can't send message");
 }
 void Communicator::sendEOR() {
-  sendMessage(makeMsgPack(0, nullptr, msgFlag::EOR));
+  sendMessage(makeMsgPack(0, nullptr, msgStatus::EOR));
 }
 error<int, msgPack *> Communicator::recvMessage() {
   static msgPack msg;
@@ -50,7 +50,7 @@ error<int, msgPack *> Communicator::recvMessage() {
 std::vector<msgPack> Communicator::recvMessages() {
   std::vector<msgPack> result;
   while (msgPack *pack = recvMessage().getValue()) {
-    if (pack->flags == msgFlag::EOR)
+    if (pack->status == msgStatus::EOR)
       break;
     result.emplace_back(std::move(*pack));
   }

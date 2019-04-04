@@ -7,9 +7,9 @@
  * Module  :
  * License : MIT
  */
-#include <unistd.h>
 #include <server/Pvz.h>
 #include <server/PvzServer.h>
+#include <unistd.h>
 thread_local PvzServer *PvzServer::localInstance = nullptr;
 PvzServer::PvzServer(const char *addr, int port) : Communicator(addr, port) {
   localInstance = this;
@@ -27,6 +27,9 @@ void *PvzServer::getBase() {
 void *PvzServer::getStatus() {
   return __getStatus();
 }
+void *PvzServer::getSaves() {
+  return __getSaves();
+}
 pid_t PvzServer::getPid() {
   return getpid();
 }
@@ -39,6 +42,7 @@ void PvzServer::handleBuiltinsCommand(msgPack *pack) {
       [BuiltinsCommand::GETPID] = (intptr_t)getPid(),
       [BuiltinsCommand::GETBASE] = (intptr_t)getBase(),
       [BuiltinsCommand::GETSTATUS] = (intptr_t)getStatus(),
+      [BuiltinsCommand::GETSAVES] = (intptr_t)getSaves(),
   };
   sendMessage(makeMsgPack(commandsMap[pack->val]));
 }

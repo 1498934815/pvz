@@ -9,7 +9,8 @@ common := \
 inc := $(call src_under,inc)
 client_src := \
 	$(call src_under,src/client) \
-	$(common)
+	$(common) \
+	src/server/PvzCheats.cc # Auxiliary options defined
 client_out := pvz_client
 
 git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
@@ -19,9 +20,8 @@ local_version := $(shell date +'%y%m%d')
 
 server_src := \
 	$(call src_under,src/server) \
-	$(call src_under,src/module) \
 	$(common)
-server_flag := -shared -ldl -lgnustl_shared
+server_flag := -shared -ldl -lgnustl_shared -DSERVER
 server_out := libpvz_server.so
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DGIT_HASH=\"$(git_hash)\" \

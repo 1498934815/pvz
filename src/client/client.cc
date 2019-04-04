@@ -7,9 +7,9 @@
  * Module  :
  * License : MIT
  */
+#include <client/PvzClient.h>
 #include <common/common.h>
 #include <common/options.h>
-#include <client/PvzClient.h>
 void printAuthorInfo() {
   uinoticef("Github %s\n", GIT_REPO);
   uinoticef("Tieba %s @%s\n", TIEBA_POST_URL, AUTHOR);
@@ -54,8 +54,11 @@ void handleUserInput(int inputId) {
     val = getUserIntInputSafety();
   }
   client->sendMessage(makeMsgPack(o->id, val, str));
-  for (auto &&v : client->recvMessages())
-    uiprintf("%s\n", v.msg);
+  for (auto &&m : client->recvMessages())
+    if (m.status == msgStatus::REMOTE_ERROR)
+      uierrorf("%s\n", m.msg);
+    else
+      uiprintf("%s\n", m.msg);
 }
 void checkVersion() {
   int version = PvzClient::getInstance()->getVersion();
