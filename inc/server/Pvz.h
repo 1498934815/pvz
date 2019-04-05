@@ -26,6 +26,7 @@ template <typename Ty> Ty readMem(void *ptr, Ty &value) {
 void *__getBase();
 void *__getStatus();
 void *__getSaves();
+bool __isGaming();
 void *incr(void *, off_t);
 void *incrBase(off_t);
 void *incrStatus(off_t);
@@ -57,6 +58,10 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
   eachObject(com, OFF_PLANTS_ENTRY, OFF_PLANTS_COUNT, callback)
 #define eachZombie(com, callback)                                              \
   eachObject(com, OFF_ZOMBIES_ENTRY, OFF_ZOMBIES_COUNT, callback)
+#define eachGood(com, callback)                                                \
+  eachObject(com, OFF_GOODS_ENTRY, OFF_GOODS_COUNT, callback)
+#define eachMower(com, callback)                                               \
+  eachObject(com, OFF_MOWERS_ENTRY, OFF_MOWERS_COUNT, callback)
 
 // Game Private Property
 #define PVZ_CORE_LIB "libpvz.so"
@@ -72,22 +77,42 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_PLANTS_COUNT 0xe0
 #define OFF_ZOMBIES_ENTRY 0xb4
 #define OFF_ZOMBIES_COUNT 0xc4
+#define OFF_GOODS_ENTRY 0x108
+#define OFF_GOODS_COUNT 0x118
+#define OFF_MOWERS_ENTRY 0x124
+#define OFF_MOWERS_COUNT 0x134
 
 // Some Misc Things
+// -- Saves
+#define OFF_COIN 0x4
+#define OFF_LIFE2 0x2c
 #define OFF_STORE_GOOD_START 0x350
 #define OFF_STORE_GOOD_SLOT 0x384
 #define OFF_STORE_GOOD_END 0x3fc
-#define OFF_COIN 0x4
+// -- Status
+#define OFF_FLAGS_HELPER 0x294
+#define OFF_FLAGS 0x6c
+#define OFF_MODE 0x838
 #define OFF_FREE_PLANTS 0x854
-#define OFF_SUN 0x56bc
-#define OFF_LIFE2 0x2c
 #define OFF_FIELD_TYPE 0x56a8
+#define OFF_SUN 0x56bc
+#define OFF_PASS_LEVEL 0x5760
+// -- Goods
+#define OFF_GOOD_PICKUP 0x5c
+#define OFF_GOOD_TYPE 0x64
+// -- Mowers
+#define OFF_MOWER_TRIGGER 0x2c
+// -- Base
 #define OFF_ZOMBIES_LIST 0x810
+// -- Zombies
 #define OFF_ZOMBIE_BUTTER_COVER 0xbc
 
 #define PROP_THIEF_CODE 20
 #define PROP_LADDER_CODE 21
 #define PROP_GARGANTUAR_CODE 23
 #define PROP_RED_CODE 32
+
+#define PROP_TRIGGER_MOWER 2
+#define PROP_NINE_SLOT 3
 
 #endif // INC_SERVER_PVZ_H

@@ -40,6 +40,9 @@ void *__getStatus() {
 void *__getSaves() {
   return getPtr(incrBase(OFF_SAVES_ENTRY));
 }
+bool __isGaming() {
+  return __getStatus() != nullptr;
+}
 void *incr(void *ptr, off_t off) {
   uintptr_t uiptr = reinterpret_cast<intptr_t>(ptr);
   return reinterpret_cast<void *>(uiptr + off);

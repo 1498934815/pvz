@@ -14,7 +14,7 @@ void printAuthorInfo() {
   uinoticef("Github %s\n", GIT_REPO);
   uinoticef("Tieba %s @%s\n", TIEBA_POST_URL, AUTHOR);
   uinoticef("Version v%d(%s)\n", LOCAL_VERSION, GIT_HASH);
-  uinoticef("关于本程序的用法 %s\n", README_MD);
+  uinoticef("本程序的使用手册 %s\n", README_MD);
 }
 void getUserInputSafety(const char *prompt, const char *fmt, ...) {
   uiprintf("%s", prompt);

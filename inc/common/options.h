@@ -11,7 +11,7 @@
 #define INC_COMMON_OPTIONS_H
 #include <common/PvzCommon.h>
 #include <common/common.h>
-#include <vector>
+#include <pthread.h>
 enum attr {
   NONE,
   EXIT = 1,
@@ -19,8 +19,11 @@ enum attr {
   GAMING = 4,
   GETINT = 8,
   GETSTRING = 16,
-  PLANTS_CALLBACK = 32,
-  ZOMBIES_CALLBACK = 64,
+  DAEMON_CALLBACK = 32,
+  CANCEL_DAEMON_CALLBACK = 64,
+  PLANTS_CALLBACK = 128,
+  ZOMBIES_CALLBACK = 256,
+  MOWERS_CALLBACK = 512,
 };
 
 struct option {
@@ -33,11 +36,15 @@ struct option {
     object_callback object_callback;
     daemon_callback daemon_callback;
   };
+  unsigned wide;
   operator int() {
     return id;
   }
 };
 class Options : public Singleton<Options> {
+  unsigned maxname = 0;
+  unsigned lastID = 0;
+
 public:
   Options();
   void addOption(attr, const char *, const char *);
@@ -47,18 +54,10 @@ public:
 extern option externalOptions[];
 #ifdef SERVER
 #define DEFINE_OPTION(attr, name, description, callback)                       \
-  {                                                                            \
-    0, attr, name, description, {                                              \
-      callback                                                                 \
-    }                                                                          \
-  }
+  { 0, attr, name, description, {callback}, 0, }
 #else
 #define DEFINE_OPTION(attr, name, description, callback)                       \
-  {                                                                            \
-    0, attr, name, description, {                                              \
-      nullptr                                                                  \
-    }                                                                          \
-  }
+  { 0, attr, name, description, {nullptr}, 0, }
 #endif
 #define DEFINE_EXTERNAL_OPTIONS(...)                                           \
   option externalOptions[] = {                                                 \

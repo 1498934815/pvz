@@ -10,6 +10,7 @@
 #ifndef INC_COMMON_PVZCOMMON_H
 #define INC_COMMON_PVZCOMMON_H
 #include <common/common.h>
+#include <pthread.h>
 #include <unistd.h>
 
 class PvzCommon {
@@ -39,5 +40,16 @@ enum fieldTypes {
 class Communicator;
 typedef void (*normal_callback)(Communicator *, msgPack *);
 typedef void (*object_callback)(Communicator *, void *);
-typedef void (*daemon_callback)(Communicator *, bool *);
+typedef void (*daemon_callback)(Communicator *);
+
+struct PvzDaemon {
+  daemon_callback callback;
+  unsigned id;
+  pthread_t tid;
+  Communicator *com;
+  bool on;
+  operator pthread_t() {
+    return id;
+  }
+};
 #endif // INC_COMMON_PVZCOMMON_H
