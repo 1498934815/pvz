@@ -14,6 +14,7 @@ void Options::uiPrint() {
   unsigned pad;
   foreachExternalOption(o) {
     // 补充适当的空格
+    pad = maxname - o->wide;
     // 奇数的ID或者已是最后一个时
     // 则换行
     if (o->id % 2 == 1 || o->id == lastID)
@@ -23,7 +24,7 @@ void Options::uiPrint() {
   }
   fflush(stdout);
 }
-const option *Options::getOption(unsigned id) {
+option *Options::getOption(unsigned id) {
   foreachExternalOption(o) {
     if (o->id == id)
       return o;
@@ -37,6 +38,11 @@ Options::Options() {
     o->wide = strlen(o->name) / 3 * 2;
     if (o->wide > maxname)
       maxname = o->wide;
+    if (o->attr & DAEMON_CALLBACK)
+      o->daemon = {
+          .callback = o->daemon_callback,
+          .on = false,
+      };
   }
   lastID = id - 1;
 }

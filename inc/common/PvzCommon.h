@@ -37,19 +37,9 @@ enum fieldTypes {
   ROOF,
   MOONNIGHT,
 };
+
 class Communicator;
 typedef void (*normal_callback)(Communicator *, msgPack *);
 typedef void (*object_callback)(Communicator *, void *);
 typedef void (*daemon_callback)(Communicator *);
-
-struct PvzDaemon {
-  daemon_callback callback;
-  unsigned id;
-  pthread_t tid;
-  Communicator *com;
-  bool on;
-  operator pthread_t() {
-    return id;
-  }
-};
 #endif // INC_COMMON_PVZCOMMON_H

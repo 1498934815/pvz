@@ -7,7 +7,6 @@
  * Module  :
  * License : MIT
  */
-#include <algorithm>
 #include <common/common.h>
 #include <common/communicator.h>
 #include <common/options.h>
@@ -17,7 +16,6 @@
 #include <server/PvzServer.h>
 #include <signal.h>
 static std::deque<pthread_t> *threads;
-static std::deque<PvzDaemon> *daemons;
 #define emplace_front(container, ...)                                          \
   (container->emplace_front(__VA_ARGS__), container->front())
 #define INTERRUPT_SIGNAL SIGUSR1
@@ -39,13 +37,6 @@ void cleanup() {
     pthread_join(tid, nullptr);
   }
   delete threads;
-  delete daemons;
-}
-PvzDaemon *findDaemon(unsigned id) {
-  auto &&it = std::find(daemons->begin(), daemons->end(), id);
-  if (it != daemons->end())
-    return &*it;
-  return nullptr;
 }
 void *__daemon_wrapper(void *arg) {
   PvzDaemon *daemon = reinterpret_cast<PvzDaemon *>(arg);
@@ -57,25 +48,24 @@ void *__daemon_wrapper(void *arg) {
   }
   pthread_exit(nullptr);
 }
-void runasDaemon(Communicator *com, const option *o) {
-  PvzDaemon *daemon;
-  if (!(daemon = findDaemon(o->id)))
-    daemon = &emplace_front(
-        daemons, PvzDaemon{o->daemon_callback, o->id, 0, com, false});
+void runasDaemon(Communicator *com, option *o) {
+  PvzDaemon *daemon = &o->daemon;
+  daemon->com = com;
   if (!daemon->on) {
     daemon->on = true;
     pthread_create(&daemon->tid, nullptr, __daemon_wrapper, daemon);
   }
 }
-void cancelDaemon(const option *o) {
-  PvzDaemon *daemon = findDaemon(o->id - 1);
-  if (daemon && daemon->on) {
+void cancelDaemon(option *o) {
+  PvzDaemon *daemon = &o->daemon;
+  if (daemon->on) {
     daemon->on = false;
     pthread_join(daemon->tid, nullptr);
   }
 }
 void handleCheatFunction(msgPack *pack, PvzServer *server) {
-  auto *o = Options::getInstance()->getOption(pack->id);
+  auto *instance = Options::getInstance();
+  auto *o = instance->getOption(pack->id);
   DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
   if (o->attr & GAMING && !__isGaming()) {
     server->sendMessage(
@@ -91,7 +81,7 @@ void handleCheatFunction(msgPack *pack, PvzServer *server) {
   } else if (o->attr & DAEMON_CALLBACK) {
     runasDaemon(server, o);
   } else if (o->attr & CANCEL_DAEMON_CALLBACK) {
-    cancelDaemon(o);
+    cancelDaemon(instance->getOption(pack->id - 1));
   } else {
     o->normal_callback(server, pack);
   }
@@ -137,7 +127,6 @@ extern "C" void __attribute__((constructor)) __server_main_invocation() {
   // because if it was a global variable
   // it will free automaticly
   threads = new std::deque<pthread_t>();
-  daemons = new std::deque<PvzDaemon>();
   pthread_create(&emplace_front(threads, 0), nullptr, __server_main, nullptr);
 }
 extern "C" void __attribute__((destructor)) __server_cleanup() {

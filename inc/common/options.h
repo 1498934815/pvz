@@ -26,6 +26,13 @@ enum attr {
   MOWERS_CALLBACK = 512,
 };
 
+struct PvzDaemon {
+  daemon_callback callback;
+  pthread_t tid;
+  Communicator *com;
+  bool on;
+};
+
 struct option {
   unsigned id;
   int attr;
@@ -37,6 +44,7 @@ struct option {
     daemon_callback daemon_callback;
   };
   unsigned wide;
+  PvzDaemon daemon;
   operator int() {
     return id;
   }
@@ -49,15 +57,19 @@ public:
   Options();
   void addOption(attr, const char *, const char *);
   void uiPrint();
-  const option *getOption(unsigned);
+  option *getOption(unsigned);
 };
 extern option externalOptions[];
 #ifdef SERVER
 #define DEFINE_OPTION(attr, name, description, callback)                       \
-  { 0, attr, name, description, {callback}, 0, }
+  {                                                                            \
+    0, attr, name, description, {callback}, 0, {}                              \
+  }
 #else
 #define DEFINE_OPTION(attr, name, description, callback)                       \
-  { 0, attr, name, description, {nullptr}, 0, }
+  {                                                                            \
+    0, attr, name, description, {nullptr}, 0, {}                               \
+  }
 #endif
 #define DEFINE_EXTERNAL_OPTIONS(...)                                           \
   option externalOptions[] = {                                                 \
