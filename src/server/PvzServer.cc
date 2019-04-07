@@ -7,8 +7,8 @@
  * Module  :
  * License : MIT
  */
-#include <server/Pvz.h>
-#include <server/PvzServer.h>
+#include "server/PvzServer.h"
+#include "server/Pvz.h"
 #include <unistd.h>
 thread_local PvzServer *PvzServer::localInstance = nullptr;
 PvzServer::PvzServer(const char *addr, int port) : Communicator(addr, port) {

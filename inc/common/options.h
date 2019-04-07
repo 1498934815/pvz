@@ -9,8 +9,8 @@
  */
 #ifndef INC_COMMON_OPTIONS_H
 #define INC_COMMON_OPTIONS_H
-#include <common/PvzCommon.h>
-#include <common/common.h>
+#include "common/PvzCommon.h"
+#include "common/common.h"
 #include <pthread.h>
 enum attr {
   NONE,
@@ -45,9 +45,6 @@ struct option {
   };
   unsigned wide;
   PvzDaemon daemon;
-  operator int() {
-    return id;
-  }
 };
 class Options : public Singleton<Options> {
   unsigned maxname = 0;
@@ -58,6 +55,7 @@ public:
   void addOption(attr, const char *, const char *);
   void uiPrint();
   option *getOption(unsigned);
+  PvzDaemon *getDaemon(unsigned);
 };
 extern option externalOptions[];
 #ifdef SERVER

@@ -9,9 +9,9 @@
  */
 #ifndef INC_SERVER_PVZSERVER_H
 #define INC_SERVER_PVZSERVER_H
-#include <common/PvzCommon.h>
-#include <common/common.h>
-#include <common/communicator.h>
+#include "common/PvzCommon.h"
+#include "common/common.h"
+#include "common/communicator.h"
 class PvzServer : public Singleton<PvzServer>,
                   public Communicator,
                   public PvzCommon {

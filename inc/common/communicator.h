@@ -9,9 +9,9 @@
  */
 #ifndef INC_COMMON_COMMUNICATOR_H
 #define INC_COMMON_COMMUNICATOR_H
+#include "common/common.h"
 #include <arpa/inet.h>
 #include <assert.h>
-#include <common/common.h>
 #include <sys/socket.h>
 #include <vector>
 class Communicator {

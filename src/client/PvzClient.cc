@@ -7,7 +7,7 @@
  * Module  :
  * License : MIT
  */
-#include <client/PvzClient.h>
+#include "client/PvzClient.h"
 PvzClient::PvzClient(const char *addr, int port) : Communicator(addr, port) {
   asClient();
 }

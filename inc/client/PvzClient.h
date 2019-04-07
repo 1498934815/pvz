@@ -9,9 +9,9 @@
  */
 #ifndef INC_CLIENT_PVZCLIENT_H
 #define INC_CLIENT_PVZCLIENT_H
-#include <common/PvzCommon.h>
-#include <common/common.h>
-#include <common/communicator.h>
+#include "common/PvzCommon.h"
+#include "common/common.h"
+#include "common/communicator.h"
 class PvzClient : public Singleton<PvzClient>,
                   public Communicator,
                   public PvzCommon {

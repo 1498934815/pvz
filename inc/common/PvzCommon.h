@@ -9,7 +9,7 @@
  */
 #ifndef INC_COMMON_PVZCOMMON_H
 #define INC_COMMON_PVZCOMMON_H
-#include <common/common.h>
+#include "common/common.h"
 #include <pthread.h>
 #include <unistd.h>
 

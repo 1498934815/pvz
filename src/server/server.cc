@@ -7,13 +7,13 @@
  * Module  :
  * License : MIT
  */
-#include <common/common.h>
-#include <common/communicator.h>
-#include <common/options.h>
+#include "common/common.h"
+#include "common/communicator.h"
+#include "common/options.h"
+#include "server/Pvz.h"
+#include "server/PvzServer.h"
 #include <deque>
 #include <pthread.h>
-#include <server/Pvz.h>
-#include <server/PvzServer.h>
 #include <signal.h>
 static std::deque<pthread_t> *threads;
 #define emplace_front(container, ...)                                          \
@@ -48,16 +48,14 @@ void *__daemon_wrapper(void *arg) {
   }
   pthread_exit(nullptr);
 }
-void runasDaemon(Communicator *com, option *o) {
-  PvzDaemon *daemon = &o->daemon;
+void runasDaemon(Communicator *com, PvzDaemon *daemon) {
   daemon->com = com;
   if (!daemon->on) {
     daemon->on = true;
     pthread_create(&daemon->tid, nullptr, __daemon_wrapper, daemon);
   }
 }
-void cancelDaemon(option *o) {
-  PvzDaemon *daemon = &o->daemon;
+void cancelDaemon(PvzDaemon *daemon) {
   if (daemon->on) {
     daemon->on = false;
     pthread_join(daemon->tid, nullptr);
@@ -79,9 +77,9 @@ void handleCheatFunction(msgPack *pack, PvzServer *server) {
   } else if (o->attr & MOWERS_CALLBACK) {
     eachMower(server, o->object_callback);
   } else if (o->attr & DAEMON_CALLBACK) {
-    runasDaemon(server, o);
+    runasDaemon(server, &o->daemon);
   } else if (o->attr & CANCEL_DAEMON_CALLBACK) {
-    cancelDaemon(instance->getOption(pack->id - 1));
+    cancelDaemon(instance->getDaemon(pack->id - 1));
   } else {
     o->normal_callback(server, pack);
   }

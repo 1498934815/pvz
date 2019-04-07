@@ -7,10 +7,10 @@
  * Module  :
  * License : MIT
  */
-#include <common/PvzCommon.h>
-#include <common/common.h>
+#include "server/Pvz.h"
+#include "common/PvzCommon.h"
+#include "common/common.h"
 #include <dlfcn.h>
-#include <server/Pvz.h>
 void *__getBase() {
   static void *base = nullptr;
   // Just detect once

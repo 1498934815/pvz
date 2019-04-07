@@ -7,7 +7,7 @@
  * Module  :
  * License : MIT
  */
-#include <common/options.h>
+#include "common/options.h"
 #define foreachExternalOption(val)                                             \
   for (option *val = externalOptions; val->name != nullptr; ++val)
 void Options::uiPrint() {
@@ -30,6 +30,9 @@ option *Options::getOption(unsigned id) {
       return o;
   }
   return nullptr;
+}
+PvzDaemon *Options::getDaemon(unsigned id) {
+  return &getOption(id)->daemon;
 }
 Options::Options() {
   unsigned id = 0;

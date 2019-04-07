@@ -9,7 +9,7 @@
  */
 #ifndef INC_SERVER_PVZ_H
 #define INC_SERVER_PVZ_H
-#include <common/PvzCommon.h>
+#include "common/PvzCommon.h"
 #include <stdlib.h>
 
 inline void __writeMem(void *ptr, void *src, size_t size) {
