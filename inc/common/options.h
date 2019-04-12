@@ -13,17 +13,17 @@
 #include "common/common.h"
 #include <pthread.h>
 enum attr {
-  NONE,
-  EXIT = 1,
-  DEBUG_INFO = 2,
-  GAMING = 4,
-  GETINT = 8,
-  GETSTRING = 16,
-  DAEMON_CALLBACK = 32,
-  CANCEL_DAEMON_CALLBACK = 64,
-  PLANTS_CALLBACK = 128,
-  ZOMBIES_CALLBACK = 256,
-  MOWERS_CALLBACK = 512,
+  NONE = 0,
+  EXIT = 1 << 0,
+  DEBUG_INFO = 1 << 1,
+  GAMING = 1 << 2,
+  GETINT = 1 << 3,
+  GETSTRING = 1 << 4,
+  DAEMON_CALLBACK = 1 << 5,
+  CANCEL_DAEMON_CALLBACK = 1 << 6,
+  PLANTS_CALLBACK = 1 << 7,
+  ZOMBIES_CALLBACK = 1 << 8,
+  MOWERS_CALLBACK = 1 << 9,
 };
 
 struct PvzDaemon {

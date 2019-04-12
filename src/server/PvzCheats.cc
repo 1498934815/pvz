@@ -39,7 +39,7 @@ DEFINE_NORMAL_CHEAT(unlockAll) {
     setI32(start, 1);
     start = incr(start, POINTERSIZE);
   }
-  // Nineth plant slot
+  // Nineth slot of plants
   setI32(incrSaves(OFF_STORE_GOOD_SLOT), PROP_NINE_SLOT);
 }
 DEFINE_OBJECT_CHEAT(printObject) {
@@ -48,7 +48,7 @@ DEFINE_OBJECT_CHEAT(printObject) {
   com->sendMessage(makeMsgPack(0, buf));
 }
 bool isProper(int fieldType, int seed) {
-  switch (fieldType) {
+  switch (seed) {
   // 泳池模式得到海豚、潜水
   case 0xe:
   case 0xb:
@@ -57,6 +57,8 @@ bool isProper(int fieldType, int seed) {
   case 0x8:
   case 0x11:
     return !in_range(fieldType, ROOF, MOONNIGHT);
+  case 0xc:
+    return fieldType == NIGHT;
   }
   return true;
 }
@@ -124,8 +126,8 @@ DEFINE_OBJECT_CHEAT(triggerMowers) {
 DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(GAMING | GETINT, "设置阳光", nullptr, setSun),
     DEFINE_OPTION(GETINT, "设置金币", nullptr, setCoin),
-    DEFINE_OPTION(GAMING, "免费植物", nullptr, freePlants),
-    DEFINE_OPTION(GAMING, "禁用免费植物", nullptr, disableFreePlants),
+    DEFINE_OPTION(NONE, "免费植物", nullptr, freePlants),
+    DEFINE_OPTION(NONE, "禁用免费植物", nullptr, disableFreePlants),
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "黄油糊脸", nullptr,
                   .object_callback = zombiesButterCover),
     DEFINE_OPTION(GAMING, "只出梯子", nullptr, callLadders),

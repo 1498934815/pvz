@@ -42,7 +42,7 @@ void *__daemon_wrapper(void *arg) {
   PvzDaemon *daemon = reinterpret_cast<PvzDaemon *>(arg);
   while (daemon->on) {
     if (!__isGaming())
-      usleep(500000);
+      sleep(5);
     else
       daemon->callback(daemon->com);
   }
@@ -66,8 +66,7 @@ void handleCheatFunction(msgPack *pack, PvzServer *server) {
   auto *o = instance->getOption(pack->id);
   DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
   if (o->attr & GAMING && !__isGaming()) {
-    server->sendMessage(
-        makeMsgPack(0, "UNINITIALIZED", msgStatus::REMOTE_ERROR));
+    server->sendMessage(makeMsgPack(0, "NOT GAMING", msgStatus::REMOTE_ERROR));
     return;
   }
   if (o->attr & PLANTS_CALLBACK) {
@@ -119,15 +118,19 @@ void *__server_main(void *) {
   server.disconnect();
   pthread_exit(nullptr);
 }
-extern "C" void __attribute__((constructor)) __server_main_invocation() {
+
+#include <jni.h>
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   DEBUG_LOG("INVOCATION");
   // XXX We create a deque on heaps
   // because if it was a global variable
   // it will free automaticly
   threads = new std::deque<pthread_t>();
   pthread_create(&emplace_front(threads, 0), nullptr, __server_main, nullptr);
+  return JNI_VERSION_1_4;
 }
-extern "C" void __attribute__((destructor)) __server_cleanup() {
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *) {
   DEBUG_LOG("CLEANUP");
   cleanup();
 }
