@@ -74,6 +74,7 @@ int main() {
   Options options;
   checkVersion();
   client.printDebugInfo();
+  signal(SIGINT, SIG_IGN);
   while (true) {
     displayUserInterface();
     handleUserInput(getUserIntInputSafety());
