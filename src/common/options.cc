@@ -14,7 +14,7 @@ void Options::uiPrint() {
   unsigned pad;
   foreachExternalOption(o) {
     // 补充适当的空格
-    pad = maxname - o->wide;
+    pad = maxname - o->width;
     // 奇数的ID或者已是最后一个时
     // 则换行
     if (o->id % 2 == 1 || o->id == lastID)
@@ -38,9 +38,9 @@ Options::Options() {
   unsigned id = 0;
   foreachExternalOption(o) {
     o->id = id++;
-    o->wide = strlen(o->name) / 3 * 2;
-    if (o->wide > maxname)
-      maxname = o->wide;
+    o->width = strlen(o->name) / 3 * 2;
+    if (o->width > maxname)
+      maxname = o->width;
     if (o->attr & DAEMON_CALLBACK)
       o->daemon = {
           .callback = o->daemon_callback,
