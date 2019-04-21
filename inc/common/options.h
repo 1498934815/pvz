@@ -18,12 +18,13 @@ enum attr {
   DEBUG_INFO = 1 << 1,
   GAMING = 1 << 2,
   GETINT = 1 << 3,
-  GETSTRING = 1 << 4,
-  DAEMON_CALLBACK = 1 << 5,
-  CANCEL_DAEMON_CALLBACK = 1 << 6,
-  PLANTS_CALLBACK = 1 << 7,
-  ZOMBIES_CALLBACK = 1 << 8,
-  MOWERS_CALLBACK = 1 << 9,
+  GETPOINTS = 1 << 4,
+  GETINTS = 1 << 5,
+  DAEMON_CALLBACK = 1 << 6,
+  CANCEL_DAEMON_CALLBACK = 1 << 7,
+  PLANTS_CALLBACK = 1 << 8,
+  ZOMBIES_CALLBACK = 1 << 9,
+  MOWERS_CALLBACK = 1 << 10,
 };
 
 struct PvzDaemon {

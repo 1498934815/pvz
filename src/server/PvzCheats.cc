@@ -7,6 +7,7 @@
  * Module  :
  * License : MIT
  */
+#include "common/PvzUtils.h"
 #include "common/communicator.h"
 #include "common/options.h"
 #include "server/Pvz.h"
@@ -95,6 +96,9 @@ DEFINE_NORMAL_CHEAT(callLadders) {
 DEFINE_NORMAL_CHEAT(callGargantuar) {
   replaceSeeds({PROP_GARGANTUAR_CODE}, 10, false, false);
 }
+DEFINE_NORMAL_CHEAT(setZombiesList) {
+  replaceSeeds(parseInts(msg->msg), 50, false, false);
+}
 DEFINE_NORMAL_CHEAT(passLevel) {
   setI32(incrStatus(OFF_PASS_LEVEL), 1);
 }
@@ -105,11 +109,14 @@ DEFINE_NORMAL_CHEAT(switchMode) {
   setI32(incrBase(OFF_MODE), msg->val);
 }
 DEFINE_NORMAL_CHEAT(switchField) {
-  if (!in_range(msg->val, DAY, MOONNIGHT)) {
+  if (!in_range(msg->val, DAY, GARDEN)) {
     com->sendMessage(makeMsgPack(0, "Invalid code of type of field",
                                  msgStatus::REMOTE_ERROR));
   }
   setI32(incrStatus(OFF_FIELD_TYPE), msg->val);
+}
+DEFINE_NORMAL_CHEAT(setAdventureLevel) {
+  setI32(incrSaves(OFF_ADVENTURE_LEVEL), msg->val);
 }
 DEFINE_OBJECT_CHEAT(__pickupGood) {
   if (in_range(getI32(incr(object, OFF_GOOD_TYPE)), 1, 4))
@@ -132,10 +139,12 @@ DEFINE_EXTERNAL_OPTIONS(
                   .object_callback = zombiesButterCover),
     DEFINE_OPTION(GAMING, "只出梯子", nullptr, callLadders),
     DEFINE_OPTION(GAMING, "只出巨人", nullptr, callGargantuar),
+    DEFINE_OPTION(GAMING | GETINTS, "自定义出怪列表", nullptr, setZombiesList),
     DEFINE_OPTION(GAMING, "通过本关", nullptr, passLevel),
     DEFINE_OPTION(GAMING | GETINT, "设置旗数", nullptr, setFlags),
     DEFINE_OPTION(GAMING | GETINT, "设置模式", nullptr, switchMode),
     DEFINE_OPTION(GAMING | GETINT, "设置场景", nullptr, switchField),
+    DEFINE_OPTION(NONE | GETINT, "设置冒险关卡", nullptr, setAdventureLevel),
     DEFINE_OPTION(DAEMON_CALLBACK, "自动拾取", nullptr,
                   .daemon_callback = autoPickup),
     DEFINE_OPTION(CANCEL_DAEMON_CALLBACK, "取消自动拾取", nullptr, nullptr),

@@ -8,6 +8,7 @@
  * License : MIT
  */
 #include "client/PvzClient.h"
+#include "common/PvzUtils.h"
 #include "common/common.h"
 #include "common/options.h"
 void printAuthorInfo() {
@@ -31,6 +32,10 @@ int getUserIntInputSafety() {
   getUserInputSafety("?", "%d", &val);
   return val;
 }
+const char *getUserStringInputSafety(char *buf) {
+  getUserInputSafety("?", "%s", buf);
+  return buf;
+}
 void displayUserInterface() {
   Options::getInstance()->uiPrint();
 }
@@ -41,8 +46,9 @@ void handleUserInput(int inputId) {
     return;
   }
   PvzClient *client = PvzClient::getInstance();
-  int val = 0;
-  const char *str = nullptr;
+  msgPack msg = {
+      .id = o->id,
+  };
   if (o->attr & EXIT) {
     client->disconnect();
     exit(0);
@@ -51,9 +57,15 @@ void handleUserInput(int inputId) {
     return;
   }
   if (o->attr & GETINT) {
-    val = getUserIntInputSafety();
+    msg.val = getUserIntInputSafety();
+  } else if (o->attr & GETINTS) {
+    getUserStringInputSafety(msg.msg);
+    parseInts(msg.msg);
+  } else if (o->attr & GETPOINTS) {
+    getUserStringInputSafety(msg.msg);
+    parsePoints(msg.msg);
   }
-  client->sendMessage(makeMsgPack(o->id, val, str));
+  client->sendMessage(msg);
   for (auto &&m : client->recvMessages())
     if (m.status == msgStatus::REMOTE_ERROR)
       uierrorf("%s\n", m.msg);

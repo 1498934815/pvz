@@ -36,6 +36,13 @@ enum fieldTypes {
   FOG,
   ROOF,
   MOONNIGHT,
+  MUSHROOM_GARDEN,
+  GARDEN,
+};
+
+struct PvzPoint {
+  int x;
+  int y;
 };
 
 class Communicator;

@@ -33,7 +33,7 @@ void Communicator::disconnect() {
     error<>(true).except(true, "socket was already closed");
   }
 }
-void Communicator::sendMessage(msgPack &&msg) {
+void Communicator::sendMessage(const msgPack &msg) {
   error<>(send(fd, &msg, sizeof(msg), 0))
       .when(0, 0)
       .except(-1, "Can't send message");

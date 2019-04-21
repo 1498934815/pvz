@@ -85,6 +85,7 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 // Some Misc Things
 // -- Saves
 #define OFF_COIN 0x4
+#define OFF_ADVENTURE_LEVEL 0x28
 #define OFF_LIFE2 0x2c
 #define OFF_STORE_GOOD_START 0x350
 #define OFF_STORE_GOOD_SLOT 0x384

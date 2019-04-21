@@ -24,7 +24,7 @@ public:
   ~Communicator();
   void asServer();
   void asClient();
-  void sendMessage(msgPack &&);
+  void sendMessage(const msgPack &);
   void sendEOR();
   error<int, msgPack *> recvMessage();
   error<int> doAccept();
