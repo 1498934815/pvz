@@ -44,7 +44,7 @@ struct option {
     object_callback object_callback;
     daemon_callback daemon_callback;
   };
-  unsigned wide;
+  unsigned width;
   PvzDaemon daemon;
 };
 class Options : public Singleton<Options> {

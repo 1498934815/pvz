@@ -59,7 +59,7 @@ bool isProper(int fieldType, int seed) {
   case 0x11:
     return !in_range(fieldType, ROOF, MOONNIGHT);
   case 0xc:
-    return fieldType == NIGHT;
+    return fieldType != NIGHT;
   }
   return true;
 }
