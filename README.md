@@ -37,8 +37,6 @@
 
   无需手动放置数据包
 ## 相关功能的使用文档
-  [部分功能解释](doc/help.txt)
-
   [部分相关代码](doc/code.txt)
 ## 相关安装教程
   [存档的处理教程](http://lonelystar.org/ResDownload/1_Android_Na.htm)
