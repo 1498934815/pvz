@@ -130,21 +130,24 @@ DEFINE_OBJECT_CHEAT(triggerMowers) {
   setI32(incr(object, OFF_MOWER_TRIGGER), PROP_TRIGGER_MOWER);
 }
 #endif
+#define HINT_INT "请输入一个数字"
+#define HINT_INTS "请输入一串以英文逗号分割的数字"
 DEFINE_EXTERNAL_OPTIONS(
-    DEFINE_OPTION(GAMING | GETINT, "设置阳光", nullptr, setSun),
-    DEFINE_OPTION(GETINT, "设置金币", nullptr, setCoin),
+    DEFINE_OPTION(GAMING | GETINT, "设置阳光", HINT_INT, setSun),
+    DEFINE_OPTION(GETINT, "设置金币", HINT_INT, setCoin),
     DEFINE_OPTION(NONE, "免费植物", nullptr, freePlants),
     DEFINE_OPTION(NONE, "禁用免费植物", nullptr, disableFreePlants),
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "黄油糊脸", nullptr,
                   .object_callback = zombiesButterCover),
     DEFINE_OPTION(GAMING, "只出梯子", nullptr, callLadders),
     DEFINE_OPTION(GAMING, "只出巨人", nullptr, callGargantuar),
-    DEFINE_OPTION(GAMING | GETINTS, "自定义出怪列表", nullptr, setZombiesList),
+    DEFINE_OPTION(GAMING | GETINTS, "自定义出怪列表", HINT_INTS,
+                  setZombiesList),
     DEFINE_OPTION(GAMING, "通过本关", nullptr, passLevel),
-    DEFINE_OPTION(GAMING | GETINT, "设置旗数", nullptr, setFlags),
-    DEFINE_OPTION(GAMING | GETINT, "设置模式", nullptr, switchMode),
-    DEFINE_OPTION(GAMING | GETINT, "设置场景", nullptr, switchField),
-    DEFINE_OPTION(NONE | GETINT, "设置冒险关卡", nullptr, setAdventureLevel),
+    DEFINE_OPTION(GAMING | GETINT, "设置旗数", HINT_INT, setFlags),
+    DEFINE_OPTION(GAMING | GETINT, "设置模式", HINT_INT, switchMode),
+    DEFINE_OPTION(GAMING | GETINT, "设置场景", HINT_INT, switchField),
+    DEFINE_OPTION(NONE | GETINT, "设置冒险关卡", HINT_INT, setAdventureLevel),
     DEFINE_OPTION(DAEMON_CALLBACK, "自动拾取", nullptr,
                   .daemon_callback = autoPickup),
     DEFINE_OPTION(CANCEL_DAEMON_CALLBACK, "取消自动拾取", nullptr, nullptr),

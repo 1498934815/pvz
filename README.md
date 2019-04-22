@@ -1,6 +1,8 @@
 # PVZ小工具
   * 本人在aarch64/arm的Android 4.4.4、7.12、8.1、9.0中测试通过
 
+  * 基于PvZ北美版6.1.1修改,基本的功能与6.1.1版一致
+
     ![pvz](doc/images/pvz.png)
 
   * 效果
@@ -47,15 +49,16 @@
   感谢植物大战僵尸吧@囧丫乙 提供的资源
 
 ## 使用步骤
-  * 1.**获取一个北美版的植物大战僵尸**
+  * 1.**下载植物大战僵尸、修改器**
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
-    **请使用链接中的com.popcap.pvz_na_V{修改器版本}.apk,每更新一次修改器就需要再安装一次**
+    |文件名|描述|
+    |:----:|:----:|
+    |PVZ_CHEATER_{更新日期}-aligned-debugSigned.apk|修改器程序|
+    |com.popcap.pvz_na_{更新日期}-aligned-debugSigned.apk|游戏本体|
 
-  * 2.**使用修改器**
-
-    链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
+    **每次更新时都需要一并安装对应的游戏本体**
 
     如果您使用了正确的主程序,则应该类似于
 

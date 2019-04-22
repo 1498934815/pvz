@@ -27,11 +27,11 @@ CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DGIT_HASH=\"$(git_hash)\" \
 	-DGIT_REPO=\"$(git_repo)\" \
 	-DGIT_BRANCH=\"$(git_branch)\" \
-	-DTIEBA_POST_URL=\"https://tieba.baidu.com/p/5645499737\" \
+	-DTIEBA_POST_URL=\"https://tieba.baidu.com/p/6002807834\" \
 	-DAUTHOR=\"AS魇梦蚀\"
 
 ifeq ($(NDK_BUILD),true)
-	# We are use NDK-R12b current
+	# We are use NDK-R12b now
 	NDK_STANDALONE ?= $(HOME)/ndk
 	NDK_TOOLCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi-
 	CC := $(NDK_TOOLCHAIN)clang++
@@ -53,7 +53,6 @@ endef
 .PHONY:release local_install __local_install_build __local_install_build
 release:
 	$(call make_release)
-private_target_libdir := /data/data/com.popcap.pvz_na/lib
 __local_install_build:release
 	@ ./tools/build_release.py $(local_version) src/prebuilts/com.popcap.pvz_na:lib/armeabi:$(server_out) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
 __local_install_install:release

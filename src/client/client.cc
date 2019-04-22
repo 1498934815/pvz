@@ -16,6 +16,7 @@ void printAuthorInfo() {
   uinoticef("Tieba %s @%s\n", TIEBA_POST_URL, AUTHOR);
   uinoticef("Version v%d(%s)\n", LOCAL_VERSION, GIT_HASH);
   uinoticef("本程序的使用手册 %s\n", README_MD);
+  uinoticef("修改时用到的代码 %s\n", CODE_TXT);
 }
 void getUserInputSafety(const char *prompt, const char *fmt, ...) {
   uiprintf("%s", prompt);
@@ -45,6 +46,8 @@ void handleUserInput(int inputId) {
     uierror("您的输入有误");
     return;
   }
+  if (o->description)
+    uihintf("%s\n", o->description);
   PvzClient *client = PvzClient::getInstance();
   msgPack msg = {
       .id = o->id,

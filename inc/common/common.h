@@ -20,11 +20,14 @@
 #define README_MD BLOB "/README.md"
 
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
+#define HINT "\033[32;1m[HINT]\033[0m "
 #define ERR "\033[31;1m[ERR]\033[0m "
 
 #include <stdio.h>
 #define uiprint(...) puts(__VA_ARGS__)
 #define uiprintf(...) printf(__VA_ARGS__)
+#define uihint(...) uiprint(HINT __VA_ARGS__)
+#define uihintf(...) uiprintf(HINT __VA_ARGS__)
 #define uinotice(...) uiprint(NOTICE __VA_ARGS__)
 #define uinoticef(...) uiprintf(NOTICE __VA_ARGS__)
 #define uierror(...) uiprint(ERR __VA_ARGS__)
@@ -39,7 +42,7 @@
 #define DEBUG_LOG(...)
 #endif
 
-#define in_range(val, lb, rb) ((val) >= (lb) && (val) <= rb)
+#define in_range(val, lb, rb) ((val) >= (lb) && (val) <= (rb))
 
 #define POINTERSIZE (sizeof(void *))
 
