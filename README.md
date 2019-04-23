@@ -7,7 +7,9 @@
 
   * 效果
 
-    ![effect](doc/images/effect.png)
+    ![effect_0](doc/images/effect_0.png)
+
+    ![effect_1](doc/images/effect_1.png)
 ## 支持什么功能?
   ```
   0.设置阳光

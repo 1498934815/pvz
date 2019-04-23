@@ -26,9 +26,6 @@ DEFINE_NORMAL_CHEAT(freePlants) {
 DEFINE_NORMAL_CHEAT(disableFreePlants) {
   setI32(incrBase(OFF_FREE_PLANTS), 0);
 }
-DEFINE_OBJECT_CHEAT(zombiesButterCover) {
-  setI32(incr(object, OFF_ZOMBIE_BUTTER_COVER), 5000);
-}
 DEFINE_NORMAL_CHEAT(setCoin) {
   setI32(incrSaves(OFF_COIN), msg->val);
 }
@@ -118,6 +115,20 @@ DEFINE_NORMAL_CHEAT(switchField) {
 DEFINE_NORMAL_CHEAT(setAdventureLevel) {
   setI32(incrSaves(OFF_ADVENTURE_LEVEL), msg->val);
 }
+DEFINE_NORMAL_CHEAT(setCards) {
+  void *card = getPtr(incrStatus(OFF_CARDS_ENTRY));
+  size_t cnt = getU32(incr(card, PROP_CARD_COUNT));
+  std::vector<int> &&seeds = parseInts(msg->msg);
+  if (seeds.size() > cnt)
+    com->sendMessage(
+        makeMsgPack(0, "Seeds count is more than your brought slot count",
+                    msgStatus::REMOTE_ERROR));
+  card = incr(card, PROP_FIRST_CARD_ENTRY);
+  for (auto &&seed : seeds) {
+    setI32(incr(card, PROP_CARD_SEED), seed);
+    card = incr(card, PROP_CARD_OFFSET);
+  }
+}
 DEFINE_OBJECT_CHEAT(__pickupGood) {
   if (in_range(getI32(incr(object, OFF_GOOD_TYPE)), 1, 4))
     setI32(incr(object, OFF_GOOD_PICKUP), 1);
@@ -126,19 +137,38 @@ DEFINE_DAEMON_CHEAT(autoPickup) {
   eachGood(com, __pickupGood);
   usleep(500000);
 }
+static std::vector<PvzPoint> *__ladderPoints;
+DEFINE_OBJECT_CHEAT(__putLadder) {
+  if (__ladderPoints->empty() ||
+      getI32(incr(object, OFF_ZOMBIE_CODE)) != PROP_LADDER_CODE)
+    return;
+  auto &&point = __ladderPoints->back();
+  float y = point.y * 100;
+  setF32(incr(object, OFF_ZOMBIE_POS_X), y);
+  setF32(incr(object, OFF_ZOMBIE_POS_Y), y);
+  setI32(incr(object, OFF_ZOMBIE_ROW), point.x - 1);
+  __ladderPoints->pop_back();
+}
+DEFINE_NORMAL_CHEAT(putLadder) {
+  std::vector<PvzPoint> &&ladderPoints = parsePoints(msg->msg);
+  __ladderPoints = &ladderPoints;
+  eachZombie(com, __putLadder);
+}
 DEFINE_OBJECT_CHEAT(triggerMowers) {
   setI32(incr(object, OFF_MOWER_TRIGGER), PROP_TRIGGER_MOWER);
+}
+DEFINE_OBJECT_CHEAT(zombiesButterCover) {
+  setI32(incr(object, OFF_ZOMBIE_BUTTER_COVER), 5000);
 }
 #endif
 #define HINT_INT "请输入一个数字"
 #define HINT_INTS "请输入一串以英文逗号分割的数字"
+#define HINT_POINTS "请输入行列(两个行列以,分割,行列以.分割)"
 DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(GAMING | GETINT, "设置阳光", HINT_INT, setSun),
     DEFINE_OPTION(GETINT, "设置金币", HINT_INT, setCoin),
     DEFINE_OPTION(NONE, "免费植物", nullptr, freePlants),
     DEFINE_OPTION(NONE, "禁用免费植物", nullptr, disableFreePlants),
-    DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "黄油糊脸", nullptr,
-                  .object_callback = zombiesButterCover),
     DEFINE_OPTION(GAMING, "只出梯子", nullptr, callLadders),
     DEFINE_OPTION(GAMING, "只出巨人", nullptr, callGargantuar),
     DEFINE_OPTION(GAMING | GETINTS, "自定义出怪列表", HINT_INTS,
@@ -147,13 +177,18 @@ DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(GAMING | GETINT, "设置旗数", HINT_INT, setFlags),
     DEFINE_OPTION(GAMING | GETINT, "设置模式", HINT_INT, switchMode),
     DEFINE_OPTION(GAMING | GETINT, "设置场景", HINT_INT, switchField),
-    DEFINE_OPTION(NONE | GETINT, "设置冒险关卡", HINT_INT, setAdventureLevel),
+    DEFINE_OPTION(GAMING | GETINTS, "设置卡槽", HINT_INTS, setCards),
+    DEFINE_OPTION(GETINT, "设置冒险关卡", HINT_INT, setAdventureLevel),
     DEFINE_OPTION(DAEMON_CALLBACK, "自动拾取", nullptr,
                   .daemon_callback = autoPickup),
     DEFINE_OPTION(CANCEL_DAEMON_CALLBACK, "取消自动拾取", nullptr, nullptr),
     DEFINE_OPTION(NONE, "解锁各游戏模式", nullptr, unlockAll),
+    DEFINE_OPTION(GAMING | GETPOINTS, "移动场上梯子僵尸", HINT_POINTS,
+                  putLadder),
     DEFINE_OPTION(GAMING | MOWERS_CALLBACK, "触发推车", nullptr,
                   .object_callback = triggerMowers),
+    DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "黄油糊脸", nullptr,
+                  .object_callback = zombiesButterCover),
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "打印僵尸对象", nullptr,
                   .object_callback = printObject),
     DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "打印植物对象", nullptr,

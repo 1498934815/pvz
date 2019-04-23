@@ -91,6 +91,7 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_STORE_GOOD_SLOT 0x384
 #define OFF_STORE_GOOD_END 0x3fc
 // -- Status
+#define OFF_CARDS_ENTRY 0x168
 #define OFF_FLAGS_HELPER 0x294
 #define OFF_FLAGS 0x6c
 #define OFF_MODE 0x838
@@ -106,6 +107,10 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 // -- Base
 #define OFF_ZOMBIES_LIST 0x810
 // -- Zombies
+#define OFF_ZOMBIE_ROW 0x1c
+#define OFF_ZOMBIE_CODE 0x30
+#define OFF_ZOMBIE_POS_X 0x38
+#define OFF_ZOMBIE_POS_Y 0x3c
 #define OFF_ZOMBIE_BUTTER_COVER 0xbc
 
 #define PROP_THIEF_CODE 20
@@ -115,5 +120,10 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 
 #define PROP_TRIGGER_MOWER 2
 #define PROP_NINE_SLOT 3
+
+#define PROP_FIRST_CARD_ENTRY 0x34
+#define PROP_CARD_COUNT 0x30
+#define PROP_CARD_SEED 0x40
+#define PROP_CARD_OFFSET 0x5c
 
 #endif // INC_SERVER_PVZ_H
