@@ -45,7 +45,7 @@ DEFINE_OBJECT_CHEAT(printObject) {
   sprintf(buf, "OBJECT %p", object);
   com->sendMessage(makeMsgPack(0, buf));
 }
-bool isProper(int fieldType, int seed) {
+bool isProper(int seed, int fieldType) {
   switch (seed) {
   // 泳池模式得到海豚、潜水
   case 0xe:
@@ -92,6 +92,11 @@ DEFINE_NORMAL_CHEAT(callLadders) {
 }
 DEFINE_NORMAL_CHEAT(callGargantuar) {
   replaceSeeds({PROP_GARGANTUAR_CODE}, 10, false, false);
+}
+DEFINE_NORMAL_CHEAT(doLimits) {
+  replaceSeeds({0, 0x4, 0x10, 0xf, 0xc, 0x8, 0xe, 0x7, 0x16, 0xb, 0x11, 0x12,
+                0x3, PROP_GARGANTUAR_CODE, PROP_RED_CODE, PROP_LADDER_CODE},
+               50, true, true);
 }
 DEFINE_NORMAL_CHEAT(setZombiesList) {
   replaceSeeds(parseInts(msg->msg), 50, false, false);
@@ -171,6 +176,7 @@ DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(NONE, "禁用免费植物", nullptr, disableFreePlants),
     DEFINE_OPTION(GAMING, "只出梯子", nullptr, callLadders),
     DEFINE_OPTION(GAMING, "只出巨人", nullptr, callGargantuar),
+    DEFINE_OPTION(GAMING, "阵型压力测试", nullptr, doLimits),
     DEFINE_OPTION(GAMING | GETINTS, "自定义出怪列表", HINT_INTS,
                   setZombiesList),
     DEFINE_OPTION(GAMING, "通过本关", nullptr, passLevel),
