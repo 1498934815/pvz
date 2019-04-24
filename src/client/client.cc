@@ -13,7 +13,7 @@
 #include "common/options.h"
 void printAuthorInfo() {
   uinoticef("Github %s\n", GIT_REPO);
-  uinoticef("Tieba %s @%s\n", TIEBA_POST_URL, AUTHOR);
+  uinoticef("Tieba @%s\n", AUTHOR);
   uinoticef("Version v%d(%s)\n", LOCAL_VERSION, GIT_HASH);
   uinoticef("本程序的使用手册 %s\n", README_MD);
   uinoticef("修改时用到的代码 %s\n", CODE_TXT);
@@ -79,7 +79,7 @@ void checkVersion() {
   int version = PvzClient::getInstance()->getVersion();
   if (version != LOCAL_VERSION) {
     uierrorf("修改器(v%d)与主程序(v%d)版本不一致!\n", LOCAL_VERSION, version);
-    uierror("请于" TIEBA_POST_URL "下载最新版本的主程序与修改器");
+    uierror("请看" README_MD ",下载最新版本的主程序与修改器");
     exit(-1);
   }
 }

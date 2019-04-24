@@ -27,7 +27,6 @@ CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DGIT_HASH=\"$(git_hash)\" \
 	-DGIT_REPO=\"$(git_repo)\" \
 	-DGIT_BRANCH=\"$(git_branch)\" \
-	-DTIEBA_POST_URL=\"https://tieba.baidu.com/p/6002807834\" \
 	-DAUTHOR=\"AS魇梦蚀\"
 
 ifeq ($(NDK_BUILD),true)

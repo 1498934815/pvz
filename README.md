@@ -30,6 +30,8 @@
   * 无需手动放置数据包
 ## 相关功能的使用文档
   [部分相关代码](doc/code.txt)
+## 在百度贴吧的发布帖
+  [【重制】PvZ北美版修改器](https://tieba.baidu.com/p/6111235972)
 ## 相关安装教程
   [存档的处理教程](http://lonelystar.org/ResDownload/1_Android_Na.htm)
 
