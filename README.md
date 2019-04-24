@@ -25,9 +25,9 @@
   |18.黄油糊脸|19.打印僵尸对象|
   |20.打印植物对象|21.输出调试信息|
 ## 对游戏本体的修改之处
-  此版本有五个无尽(购买了第一个游戏礼包后可以从Mini Games里进入)
+  * 此版本有五个无尽(购买了第一个游戏礼包后可以从Mini Games里进入)
 
-  无需手动放置数据包
+  * 无需手动放置数据包
 ## 相关功能的使用文档
   [部分相关代码](doc/code.txt)
 ## 相关安装教程
@@ -61,4 +61,5 @@
 
 ## THANKS
   tools/uber-apk-signer-1.0.0.jar @ https://github.com/patrickfav/uber-apk-signer
+
   JackpalTerminal @ https://github.com/jackpal/Android-Terminal-Emulator
