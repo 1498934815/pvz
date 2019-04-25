@@ -11,6 +11,7 @@
 #include "common/PvzUtils.h"
 #include "common/common.h"
 #include "common/options.h"
+#include <setjmp.h>
 void printAuthorInfo() {
   uinoticef("Github %s\n", GIT_REPO);
   uinoticef("Tieba @%s\n", AUTHOR);
@@ -83,13 +84,19 @@ void checkVersion() {
     exit(-1);
   }
 }
+static jmp_buf env;
+#define JMP_RET 0xff
+void recoveryEnv(int) {
+  longjmp(env, JMP_RET);
+}
 int main() {
   printAuthorInfo();
   PvzClient client(SERVER_ADDR, SERVER_PORT);
   Options options;
   checkVersion();
   client.printDebugInfo();
-  signal(SIGINT, SIG_IGN);
+  signal(SIGINT, recoveryEnv);
+  setjmp(env);
   while (true) {
     displayUserInterface();
     handleUserInput(getUserIntInputSafety());

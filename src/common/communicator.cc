@@ -15,7 +15,7 @@
 #include <vector>
 Communicator::Communicator(int sfd) : fd(sfd) {}
 Communicator::Communicator(const char *addr, int port)
-    : Communicator(socket(AF_INET, SOCK_STREAM, 0)) {
+    : Communicator(startSocket()) {
   sin = {
       .sin_family = AF_INET,
       .sin_port = htons(port),
@@ -25,6 +25,9 @@ Communicator::Communicator(const char *addr, int port)
 Communicator::~Communicator() {
   disconnect();
 }
+int Communicator::startSocket() {
+  return fd = socket(AF_INET, SOCK_STREAM, 0);
+}
 void Communicator::disconnect() {
   if (fd != 0) {
     close(fd);
@@ -33,9 +36,8 @@ void Communicator::disconnect() {
     error<>(true).except(true, "socket was already closed");
   }
 }
-void Communicator::sendMessage(const msgPack &msg) {
-  error<>(send(fd, &msg, sizeof(msg), 0))
-      .when(0, 0)
+error<> Communicator::sendMessage(const msgPack &msg) {
+  return error<>(send(fd, &msg, sizeof(msg), 0))
       .except(-1, "Can't send message");
 }
 void Communicator::sendEOR() {

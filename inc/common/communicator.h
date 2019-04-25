@@ -24,11 +24,12 @@ public:
   ~Communicator();
   void asServer();
   void asClient();
-  void sendMessage(const msgPack &);
   void sendEOR();
+  int startSocket();
+  error<> sendMessage(const msgPack &);
   error<int, msgPack *> recvMessage();
-  error<int> doAccept();
   std::vector<msgPack> recvMessages();
+  error<int> doAccept();
   void disconnect();
 };
 #endif // INC_COMMON_COMMUNICATOR_H
