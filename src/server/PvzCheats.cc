@@ -99,7 +99,15 @@ DEFINE_NORMAL_CHEAT(doLimits) {
                50, true, true);
 }
 DEFINE_NORMAL_CHEAT(setZombiesList) {
-  replaceSeeds(parseInts(msg->msg), 50, false, false);
+  auto &&seeds = parseInts(msg->msg);
+  for (auto &&seed : seeds) {
+    if (!in_range(seed, 0, PROP_RED_CODE)) {
+      com->sendMessage(makeMsgPack(0, "Invalid code that out of range(0-32)",
+                                   msgStatus::REMOTE_ERROR));
+      break;
+    }
+  }
+  replaceSeeds(std::move(seeds), 50, false, false);
 }
 DEFINE_NORMAL_CHEAT(passLevel) {
   setI32(incrStatus(OFF_PASS_LEVEL), 1);

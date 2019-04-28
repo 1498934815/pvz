@@ -119,18 +119,13 @@ void *__server_main(void *) {
   pthread_exit(nullptr);
 }
 
-#include <jni.h>
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
+#define NATIVE_NAME(name) Java_com_popcap_pvz_1na_PvZActivity_##name
+extern "C" void NATIVE_NAME(invokePvzServer)() {
   DEBUG_LOG("INVOCATION");
   // XXX We create a deque on heaps
   // because if it was a global variable
   // it will free automaticly
   threads = new std::deque<pthread_t>();
   pthread_create(&emplace_front(threads, 0), nullptr, __server_main, nullptr);
-  return JNI_VERSION_1_4;
-}
-
-JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *) {
-  DEBUG_LOG("CLEANUP");
-  cleanup();
+  atexit(cleanup);
 }

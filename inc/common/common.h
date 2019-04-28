@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 0x7a65
 
@@ -75,8 +76,7 @@ template <typename Err = int, typename Ty = int> struct error {
   Ty &getValue() {
     return value;
   }
-  template <typename Callable>
-  error &except(Err code, const char *message, Callable callable) {
+  error &except(Err code, const char *message) {
     // XXX We will send a INTERRUPT_SIGNAL to all child threads and then the
     // syscall will produce a EINTR, we should ignore it on this time and set
     // the value as a defaultt
@@ -85,12 +85,9 @@ template <typename Err = int, typename Ty = int> struct error {
     } else if (errcode == code) {
       uierrorf("PANIC, code:%d, errno:%d(%s), message:'%s'\n", errcode, reason,
                strerror(reason), message);
-      callable();
+      exit(1);
     }
     return *this;
-  }
-  error &except(Err code, const char *message) {
-    return except(code, message, []() { exit(1); });
   }
 };
 enum class msgStatus : unsigned int {

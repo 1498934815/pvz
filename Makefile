@@ -21,20 +21,21 @@ local_version := $(shell date +'%y%m%d')
 server_src := \
 	$(call src_under,src/server) \
 	$(common)
-server_flag := -shared -ldl -lgnustl_shared -DSERVER
+server_flag := -shared -ldl -DSERVER
 server_out := libpvz_server.so
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
+	-static-libstdc++ \
 	-DGIT_HASH=\"$(git_hash)\" \
 	-DGIT_REPO=\"$(git_repo)\" \
 	-DGIT_BRANCH=\"$(git_branch)\" \
 	-DAUTHOR=\"AS魇梦蚀\"
 
 ifeq ($(NDK_BUILD),true)
-	# We are use NDK-R12b now
-	NDK_STANDALONE ?= $(HOME)/ndk
-	NDK_TOOLCHAIN ?= $(NDK_STANDALONE)/bin/arm-linux-androideabi-
-	CC := $(NDK_TOOLCHAIN)clang++
-	STRIP := $(NDK_TOOLCHAIN)strip
+	# We are use NDK-R19c now
+	NDK ?= $(HOME)/android-ndk-r19c
+	NDK_TOOLCHAIN ?= $(NDK)/toolchains/llvm/prebuilt/linux-x86_64/bin
+	CC := $(NDK_TOOLCHAIN)/armv7a-linux-androideabi16-clang++
+	STRIP := $(NDK_TOOLCHAIN)/arm-linux-androideabi-strip
 	CC_FLAG += -pie -DLOCAL_VERSION=$(local_version)
 else
 	CC := g++
