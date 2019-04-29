@@ -1,0 +1,11 @@
+--- PvZActivity.smali	2019-04-28 20:17:16.899923758 +0800
++++ src/com.popcap.pvz_na.out/smali/com/popcap/pvz_na/PvZActivity.smali	2019-04-28 20:17:36.309922572 +0800
+@@ -187,6 +187,8 @@
+ 
+     invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+ 
++    invoke-static {}, Lze00/PvzCheater/Helper;->loadPvzServer()V
++
+     .line 1068
+     return-void
+ .end method

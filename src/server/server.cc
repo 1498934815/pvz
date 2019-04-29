@@ -119,7 +119,7 @@ void *__server_main(void *) {
   pthread_exit(nullptr);
 }
 
-#define NATIVE_NAME(name) Java_com_popcap_pvz_1na_PvZActivity_##name
+#define NATIVE_NAME(name) Java_ze00_PvzCheater_Helper_##name
 extern "C" void NATIVE_NAME(invokePvzServer)() {
   DEBUG_LOG("INVOCATION");
   // XXX We create a deque on heaps

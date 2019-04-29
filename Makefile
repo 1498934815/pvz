@@ -55,6 +55,7 @@ release:
 	$(call make_release)
 __local_install_build:release
 	@ ./tools/build_release.py $(local_version) src/prebuilts/com.popcap.pvz_na:lib/armeabi:$(server_out) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
+	@ zip -j out/PVZ_CHEATER_$(local_version).zip out/*
 __local_install_install:release
 	@ for i in out/*;do \
 		adb install -r $$i; \

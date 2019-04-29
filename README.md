@@ -43,6 +43,8 @@
 
     链接: https://pan.baidu.com/s/1kWUH3Kj 密码: 4hby
 
+    下载链接中的PVZ_CHEATER_{更新日期}.zip解压后一并安装里边两个文件就可以了
+
     |文件名|描述|
     |:----:|:----:|
     |PVZ_CHEATER_{更新日期}-aligned-debugSigned.apk|修改器程序|
