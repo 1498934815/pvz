@@ -51,7 +51,7 @@ ifneq ($(DEBUG),)
 endif
 include build/build.mk
 define make_release
-	make NDK_BUILD=true --no-print-directory
+	make DEBUG=true NDK_BUILD=true --no-print-directory
 endef
 .PHONY:release local_install __local_install_build __local_install_build
 release:
