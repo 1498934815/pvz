@@ -107,11 +107,17 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 // -- Base
 #define OFF_ZOMBIES_LIST 0x810
 // -- Zombies
-#define OFF_ZOMBIE_ROW 0x1c
 #define OFF_ZOMBIE_CODE 0x30
+#define OFF_ZOMBIE_HP 0xd4
+#define OFF_ZOMBIE_ROW 0x1c
 #define OFF_ZOMBIE_POS_X 0x38
 #define OFF_ZOMBIE_POS_Y 0x3c
 #define OFF_ZOMBIE_BUTTER_COVER 0xbc
+// -- Plants
+#define OFF_PLANT_CODE 0x30
+#define OFF_PLANT_HP 0x4c
+#define OFF_PLANT_X 0x8
+#define OFF_PLANT_Y 0xc
 
 #define PROP_THIEF_CODE 20
 #define PROP_LADDER_CODE 21

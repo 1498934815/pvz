@@ -14,5 +14,6 @@
 
 std::vector<PvzPoint> parsePoints(const char *);
 std::vector<int> parseInts(const char *);
+const char *formatBuffer(const char *, ...);
 
 #endif // INC_COMMON_PVZUTILS_H

@@ -22,6 +22,9 @@ server_src := \
 	$(call src_under,src/server) \
 	$(common)
 server_flag := -shared -ldl -DSERVER
+ifneq ($(DEBUG),)
+	server_flag += -llog
+endif
 server_out := libpvz_server.so
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-static-libstdc++ \
@@ -32,7 +35,7 @@ CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 
 ifeq ($(NDK_BUILD),true)
 	# We are use NDK-R19c now
-	NDK ?= $(HOME)/android-ndk-r19c
+	NDK ?= $(HOME)/android-ndk-r20
 	NDK_TOOLCHAIN ?= $(NDK)/toolchains/llvm/prebuilt/linux-x86_64/bin
 	CC := $(NDK_TOOLCHAIN)/armv7a-linux-androideabi16-clang++
 	STRIP := $(NDK_TOOLCHAIN)/arm-linux-androideabi-strip
@@ -55,9 +58,9 @@ release:
 	$(call make_release)
 __local_install_build:release
 	@ ./tools/build_release.py $(local_version) src/prebuilts/com.popcap.pvz_na:lib/armeabi:$(server_out) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
-	@ zip -j out/PVZ_CHEATER_$(local_version).zip out/*
+	@ zip -j out/PVZ_CHEATER_$(local_version)-$(git_hash).zip out/*.apk
 __local_install_install:release
-	@ for i in out/*;do \
+	@ for i in out/*.apk;do \
 		adb install -r $$i; \
 	done
 local_install:__local_install_build __local_install_install

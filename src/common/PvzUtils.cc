@@ -41,3 +41,10 @@ std::vector<int> parseInts(const char *expr) {
     vec.emplace_back(atoi(intsString.c_str()));
   return vec;
 }
+const char *formatBuffer(const char *fmt, ...) {
+  static char buffer[256];
+  va_list va;
+  va_start(va, fmt);
+  vsnprintf(buffer, sizeof(buffer) - 1, fmt, va);
+  return buffer;
+}

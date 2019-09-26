@@ -40,10 +40,21 @@ DEFINE_NORMAL_CHEAT(unlockAll) {
   // Nineth slot of plants
   setI32(incrSaves(OFF_STORE_GOOD_SLOT), PROP_NINE_SLOT);
 }
-DEFINE_OBJECT_CHEAT(printObject) {
-  static char buf[255];
-  sprintf(buf, "OBJECT %p", object);
-  com->sendMessage(makeMsgPack(0, buf));
+DEFINE_OBJECT_CHEAT(printPlantsObject) {
+  com->sendMessage(
+      makeMsgPack(0, formatBuffer("PLANT@%p TYPE:%d X:%d Y:%d HP:%d", object,
+                                  getI32(incr(object, OFF_PLANT_CODE)),
+                                  getI32(incr(object, OFF_PLANT_X)),
+                                  getI32(incr(object, OFF_PLANT_Y)),
+                                  getI32(incr(object, OFF_PLANT_HP)))));
+}
+DEFINE_OBJECT_CHEAT(printZombiesObject) {
+  com->sendMessage(
+      makeMsgPack(0, formatBuffer("ZOMBIE@%p TYPE:%d X:%f Y:%f HP:%d", object,
+                                  getI32(incr(object, OFF_ZOMBIE_CODE)),
+                                  getF32(incr(object, OFF_ZOMBIE_POS_X)),
+                                  getF32(incr(object, OFF_ZOMBIE_POS_Y)),
+                                  getI32(incr(object, OFF_ZOMBIE_HP)))));
 }
 bool isProper(int seed, int fieldType) {
   switch (seed) {
@@ -72,7 +83,7 @@ void replaceSeeds(std::vector<int> &&seeds, unsigned end, bool hasThief,
                   bool hasRed) {
   void *seedAddr = incrStatus(OFF_ZOMBIES_LIST);
   int fieldType = getI32(incrStatus(OFF_FIELD_TYPE));
-  for (size_t wave = 0; wave < 20; ++wave) {
+  for (size_t wave = 0; wave < 40; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
       if (i >= end)
         setI32(seedAddr, -1);
@@ -122,6 +133,7 @@ DEFINE_NORMAL_CHEAT(switchField) {
   if (!in_range(msg->val, DAY, GARDEN)) {
     com->sendMessage(makeMsgPack(0, "Invalid code of type of field",
                                  msgStatus::REMOTE_ERROR));
+    return;
   }
   setI32(incrStatus(OFF_FIELD_TYPE), msg->val);
 }
@@ -132,10 +144,12 @@ DEFINE_NORMAL_CHEAT(setCards) {
   void *card = getPtr(incrStatus(OFF_CARDS_ENTRY));
   size_t cnt = getU32(incr(card, PROP_CARD_COUNT));
   std::vector<int> &&seeds = parseInts(msg->msg);
-  if (seeds.size() > cnt)
+  if (seeds.size() > cnt) {
     com->sendMessage(
         makeMsgPack(0, "Seeds count is more than your brought slot count",
                     msgStatus::REMOTE_ERROR));
+    return;
+  }
   card = incr(card, PROP_FIRST_CARD_ENTRY);
   for (auto &&seed : seeds) {
     setI32(incr(card, PROP_CARD_SEED), seed);
@@ -204,6 +218,6 @@ DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "黄油糊脸", nullptr,
                   .object_callback = zombiesButterCover),
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "打印僵尸对象", nullptr,
-                  .object_callback = printObject),
+                  .object_callback = printZombiesObject),
     DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "打印植物对象", nullptr,
-                  .object_callback = printObject))
+                  .object_callback = printPlantsObject))

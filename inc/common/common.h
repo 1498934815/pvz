@@ -14,19 +14,30 @@
 #include <stdlib.h>
 #include <string.h>
 #define SERVER_ADDR "127.0.0.1"
-#define SERVER_PORT 0x7a65
+#define SERVER_PORT 0x6b65
 
 #define BLOB GIT_REPO "/blob/" GIT_BRANCH
 #define CODE_TXT BLOB "/doc/code.txt"
 #define README_MD BLOB "/README.md"
 
+#include <stdio.h>
+
+#ifdef SERVER
+#include <android/log.h>
+#define TAG "ZEROZAKI"
+#define uiprint(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+#define uiprintf(...) uiprint(__VA_ARGS__)
+#define NOTICE
+#define HINT
+#define ERR
+#else
+#define uiprint(...) puts(__VA_ARGS__)
+#define uiprintf(...) printf(__VA_ARGS__)
 #define NOTICE "\033[33;1m[NOTICE]\033[0m "
 #define HINT "\033[32;1m[HINT]\033[0m "
 #define ERR "\033[31;1m[ERR]\033[0m "
+#endif
 
-#include <stdio.h>
-#define uiprint(...) puts(__VA_ARGS__)
-#define uiprintf(...) printf(__VA_ARGS__)
 #define uihint(...) uiprint(HINT __VA_ARGS__)
 #define uihintf(...) uiprintf(HINT __VA_ARGS__)
 #define uinotice(...) uiprint(NOTICE __VA_ARGS__)
@@ -37,8 +48,11 @@
 #define uivscanf(...) vscanf(__VA_ARGS__)
 
 #ifdef DEBUG
-#include <stdio.h>
-#define DEBUG_LOG(fmt, args...) printf(fmt "\n", ##args)
+#ifdef SERVER
+#define DEBUG_LOG(fmt, args...) uiprintf(fmt, ##args)
+#else
+#define DEBUG_LOG(fmt, args...) uiprintf(fmt "\n", ##args)
+#endif
 #else
 #define DEBUG_LOG(...)
 #endif
