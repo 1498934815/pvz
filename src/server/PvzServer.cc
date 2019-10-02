@@ -21,28 +21,39 @@ PvzServer::PvzServer(int fd) : Communicator(fd) {
 PvzServer *PvzServer::getLocalInstance() {
   return localInstance;
 }
-void *PvzServer::getBase() {
-  return __getBase();
-}
-void *PvzServer::getStatus() {
-  return __getStatus();
-}
-void *PvzServer::getSaves() {
-  return __getSaves();
-}
-pid_t PvzServer::getPid() {
-  return getpid();
-}
-int PvzServer::getVersion() {
-  return LOCAL_VERSION;
-}
 void PvzServer::handleBuiltinsCommand(msgPack *pack) {
-  intptr_t commandsMap[] = {
-      [BuiltinsCommand::GETVERSION] = (intptr_t)getVersion(),
-      [BuiltinsCommand::GETPID] = (intptr_t)getPid(),
-      [BuiltinsCommand::GETBASE] = (intptr_t)getBase(),
-      [BuiltinsCommand::GETSTATUS] = (intptr_t)getStatus(),
-      [BuiltinsCommand::GETSAVES] = (intptr_t)getSaves(),
-  };
-  sendMessage(makeMsgPack(commandsMap[pack->val]));
+  intptr_t val;
+  switch (pack->val) {
+  case BuiltinsCommand::GETVERSION:
+    val = (intptr_t)LOCAL_VERSION;
+    break;
+  case BuiltinsCommand::GETPID:
+    val = (intptr_t)getpid();
+    break;
+  case BuiltinsCommand::GETBASE:
+    val = (intptr_t)__getBase();
+    break;
+  case BuiltinsCommand::GETSTATUS:
+    val = (intptr_t)__getStatus();
+    break;
+  case BuiltinsCommand::GETSAVES:
+    val = (intptr_t)__getSaves();
+    break;
+  case BuiltinsCommand::GETWAVE:
+    val = (intptr_t)getI32(incrStatus(OFF_CURRENT_WAVE));
+    break;
+  case BuiltinsCommand::GET_TOTAL_HITPOINT:
+    val = (intptr_t)getI32(incrStatus(OFF_WAVE_HITPOINT_TOTAL));
+    break;
+  case BuiltinsCommand::GET_HITPOINT_BOUNDARY:
+    val = (intptr_t)getI32(incrStatus(OFF_WAVE_HITPOINT_BOUNDARY));
+    break;
+  case BuiltinsCommand::GET_TOTAL_FRESH_COUNTDOWN:
+    val = (intptr_t)getI32(incrStatus(OFF_FRESH_COUNTDOWN_TOTAL));
+    break;
+  case BuiltinsCommand::GET_FRESH_COUNTDOWN:
+    val = (intptr_t)getI32(incrStatus(OFF_FRESH_COUNTDOWN_REMAIN));
+    break;
+  }
+  sendMessage(makeMsgPack(val));
 }

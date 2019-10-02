@@ -13,9 +13,7 @@
 #include "common/common.h"
 #include "common/communicator.h"
 #include <vector>
-class PvzClient : public Singleton<PvzClient>,
-                  public Communicator,
-                  public PvzCommon {
+class PvzClient : public Singleton<PvzClient>, public Communicator {
 public:
   PvzClient(const char *, int);
   void printDebugInfo();
@@ -24,10 +22,15 @@ public:
   void sendMessage(const msgPack &);
   error<int, msgPack *> recvMessage();
   std::vector<msgPack> recvMessages();
-  virtual void *getBase() override;
-  virtual void *getStatus() override;
-  virtual void *getSaves() override;
-  virtual pid_t getPid() override;
-  virtual int getVersion() override;
+  void *getBase();
+  void *getStatus();
+  void *getSaves();
+  pid_t getPid();
+  int getVersion();
+  int getWave();
+  int getTotalHitpoint();
+  int getHitpointBoundary();
+  int getTotalFreshCountdown();
+  int getFreshCountdown();
 };
 #endif // INC_CLIENT_PVZCLIENT_H

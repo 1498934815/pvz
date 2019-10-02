@@ -16,22 +16,12 @@ void *__getBase() {
   // Just detect once
   if (base != nullptr)
     return base;
-  void *handle, *mapaddr, *bss, *helper;
+  void *handle, *mapaddr;
   Dl_info dl;
-  handle = dlopen(PVZ_CORE_LIB, RTLD_NOW);
-  mapaddr = (dladdr(dlsym(handle, PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
-  bss = incr(mapaddr, OFF_BSS_MEM);
-  helper = incr(getPtr(incr(bss, OFF_PRIVATE_STACK)), OFF_BASE);
-  // [-0x20, 0x20]
-#define bound 0x20
-#define magicNumber "\0\0\0\0\0\0\xdd\x81"
-  for (int i = -bound; i <= bound; i += POINTERSIZE) {
-    if (strncmp(reinterpret_cast<const char *>(incr(helper, i)), magicNumber,
-                2 * POINTERSIZE) == 0)
-      base = incr(helper, i + 2 * POINTERSIZE);
-  }
-  if (base == nullptr)
-    abort();
+  handle = dlopen(PROP_PVZ_CORE_LIB, RTLD_NOW);
+  mapaddr =
+      (dladdr(dlsym(handle, PROP_PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
+  base = getPtr(incr(mapaddr, OFF_BASE));
   return base;
 }
 void *__getStatus() {

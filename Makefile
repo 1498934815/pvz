@@ -21,10 +21,7 @@ local_version := $(shell date +'%y%m%d')
 server_src := \
 	$(call src_under,src/server) \
 	$(common)
-server_flag := -shared -ldl -DSERVER
-ifneq ($(DEBUG),)
-	server_flag += -llog
-endif
+server_flag := -shared -ldl -llog -DSERVER
 server_out := libpvz_server.so
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-static-libstdc++ \
@@ -51,7 +48,7 @@ ifneq ($(DEBUG),)
 endif
 include build/build.mk
 define make_release
-	make DEBUG=true NDK_BUILD=true --no-print-directory
+	make NDK_BUILD=true --no-print-directory
 endef
 .PHONY:release local_install __local_install_build __local_install_build
 release:

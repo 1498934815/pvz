@@ -43,9 +43,7 @@ std::vector<msgPack> PvzClient::recvMessages() {
 msgPack PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
   this->sendMessage(makeMsgPack(command, nullptr, msgStatus::COMMAND));
   auto &&msgs = this->recvMessages();
-  if (msgs.empty())
-    return makeMsgPack(0, nullptr);
-  return msgs.front();
+  return msgs.empty() ? makeMsgPack(0) : msgs.front();
 }
 void *PvzClient::getBase() {
   return sendBuiltinsCommand(BuiltinsCommand::GETBASE).ptr;
@@ -62,8 +60,35 @@ pid_t PvzClient::getPid() {
 int PvzClient::getVersion() {
   return sendBuiltinsCommand(BuiltinsCommand::GETVERSION).val;
 }
+int PvzClient::getWave() {
+  return sendBuiltinsCommand(BuiltinsCommand::GETWAVE).val;
+}
+int PvzClient::getTotalHitpoint() {
+  return sendBuiltinsCommand(BuiltinsCommand::GET_TOTAL_HITPOINT).val;
+}
+int PvzClient::getHitpointBoundary() {
+  return sendBuiltinsCommand(BuiltinsCommand::GET_HITPOINT_BOUNDARY).val;
+}
+int PvzClient::getTotalFreshCountdown() {
+  return sendBuiltinsCommand(BuiltinsCommand::GET_TOTAL_FRESH_COUNTDOWN).val;
+}
+int PvzClient::getFreshCountdown() {
+  return sendBuiltinsCommand(BuiltinsCommand::GET_FRESH_COUNTDOWN).val;
+}
 
 void PvzClient::printDebugInfo() {
-  uinoticef("PID:%d 基址:%p 游戏状态入口:%p 用户信息入口:%p\n", getPid(),
-            getBase(), getStatus(), getSaves());
+  void *status = getStatus();
+#define STATICLY_GAME_INFO_TITLE "静态游戏信息 "
+#define DYNAMICLY_GAME_INFO_TITLE "动态游戏信息 "
+  uinoticef(STATICLY_GAME_INFO_TITLE "PID:%d 基址:%p 用户信息入口:%p\n",
+            getPid(), getBase(), getSaves());
+  if (status != nullptr) {
+    uinoticef(DYNAMICLY_GAME_INFO_TITLE "游戏中状态入口:%p 当前波数:%d\n",
+              status, getWave());
+    uinoticef(DYNAMICLY_GAME_INFO_TITLE "本波总血量:%d 达到%d后刷新\n",
+              getTotalHitpoint(), getHitpointBoundary());
+    uinoticef(DYNAMICLY_GAME_INFO_TITLE "本波总倒计时:%dcs 刷新倒计时:%dcs\n",
+              getTotalFreshCountdown(), getFreshCountdown());
+  } else
+    uinoticef(DYNAMICLY_GAME_INFO_TITLE "未在游戏中\n");
 }

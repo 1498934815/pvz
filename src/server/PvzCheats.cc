@@ -115,7 +115,7 @@ DEFINE_NORMAL_CHEAT(setZombiesList) {
     if (!in_range(seed, 0, PROP_RED_CODE)) {
       com->sendMessage(makeMsgPack(0, "Invalid code that out of range(0-32)",
                                    msgStatus::REMOTE_ERROR));
-      break;
+      return;
     }
   }
   replaceSeeds(std::move(seeds), 50, false, false);
@@ -217,7 +217,7 @@ DEFINE_EXTERNAL_OPTIONS(
                   .object_callback = triggerMowers),
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "黄油糊脸", nullptr,
                   .object_callback = zombiesButterCover),
-    DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "打印僵尸对象", nullptr,
+    DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "打印僵尸信息", nullptr,
                   .object_callback = printZombiesObject),
-    DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "打印植物对象", nullptr,
+    DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "打印植物信息", nullptr,
                   .object_callback = printPlantsObject))

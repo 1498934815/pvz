@@ -13,20 +13,17 @@
 #include <pthread.h>
 #include <unistd.h>
 
-class PvzCommon {
-public:
-  virtual void *getBase() = 0;
-  virtual void *getStatus() = 0;
-  virtual void *getSaves() = 0;
-  virtual pid_t getPid() = 0;
-  virtual int getVersion() = 0;
-};
 enum BuiltinsCommand {
   GETVERSION,
   GETPID,
   GETBASE,
   GETSTATUS,
   GETSAVES,
+  GETWAVE,
+  GET_TOTAL_HITPOINT,
+  GET_HITPOINT_BOUNDARY,
+  GET_TOTAL_FRESH_COUNTDOWN,
+  GET_FRESH_COUNTDOWN,
 };
 
 enum fieldTypes {

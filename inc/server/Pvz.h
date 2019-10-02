@@ -64,11 +64,10 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
   eachObject(com, OFF_MOWERS_ENTRY, OFF_MOWERS_COUNT, callback)
 
 // Game Private Property
-#define PVZ_CORE_LIB "libpvz.so"
-#define PVZ_CORE_LIB_HELPER "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
-#define OFF_BSS_MEM 0xc5e000
-#define OFF_PRIVATE_STACK 0x5138c8
-#define OFF_BASE 0x2dfa0
+#define PROP_PVZ_CORE_LIB "libpvz.so"
+#define PROP_PVZ_CORE_LIB_HELPER                                               \
+  "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
+#define OFF_BASE 0xceb8cc
 
 // Game Objects Property
 #define OFF_GAME_STATUS 0x7c8
@@ -99,6 +98,11 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_FIELD_TYPE 0x56a8
 #define OFF_SUN 0x56bc
 #define OFF_PASS_LEVEL 0x5760
+#define OFF_CURRENT_WAVE 0x56d8
+#define OFF_FRESH_COUNTDOWN_TOTAL 0x56fc
+#define OFF_FRESH_COUNTDOWN_REMAIN 0x56f8
+#define OFF_WAVE_HITPOINT_TOTAL 0x56f4
+#define OFF_WAVE_HITPOINT_BOUNDARY 0x56f0
 // -- Goods
 #define OFF_GOOD_PICKUP 0x5c
 #define OFF_GOOD_TYPE 0x64
