@@ -27,18 +27,18 @@ std::vector<PvzPoint> parsePoints(const char *expr) {
   std::vector<PvzPoint> vec;
   for (auto &&pointString : splitBy(expr, ',')) {
     auto &&pointVec = splitBy(pointString, '.');
-    error<bool>(pointVec.size() != 2).except(true, "Invalid format");
-    // XXX We are use atoi now...
-    // because the stoi function is not support in android-ndk-r12b...
-    int x = atoi(pointVec[0].c_str()), y = atoi(pointVec[1].c_str());
-    vec.emplace_back(PvzPoint{x, y});
+    if (pointVec.size() != 2) {
+      uierror("Invalid format");
+      clientPanic();
+    }
+    vec.emplace_back(PvzPoint{std::stoi(pointVec[0]), std::stoi(pointVec[1])});
   }
   return vec;
 }
 std::vector<int> parseInts(const char *expr) {
   std::vector<int> vec;
   for (auto &&intsString : splitBy(expr, ','))
-    vec.emplace_back(atoi(intsString.c_str()));
+    vec.emplace_back(std::stoi(intsString));
   return vec;
 }
 const char *formatBuffer(const char *fmt, ...) {
@@ -46,5 +46,6 @@ const char *formatBuffer(const char *fmt, ...) {
   va_list va;
   va_start(va, fmt);
   vsnprintf(buffer, sizeof(buffer) - 1, fmt, va);
+  va_end(va);
   return buffer;
 }

@@ -11,16 +11,24 @@
 #include "common/PvzCommon.h"
 #include "common/common.h"
 #include <dlfcn.h>
+#include <libgen.h>
+#include <link.h>
+extern "C" int dl_iterate_phdr(int (*)(struct dl_phdr_info *, size_t, void *),
+                               void *);
+int __detect_corelib_address(struct dl_phdr_info *info, size_t, void *mapaddr) {
+  if (strcmp(basename(info->dlpi_name), PROP_PVZ_CORE_LIB) == 0) {
+    *static_cast<void **>(mapaddr) = reinterpret_cast<void *>(info->dlpi_addr);
+    return 1;
+  }
+  return 0;
+}
 void *__getBase() {
   static void *base = nullptr;
   // Just detect once
   if (base != nullptr)
     return base;
-  void *handle, *mapaddr;
-  Dl_info dl;
-  handle = dlopen(PROP_PVZ_CORE_LIB, RTLD_NOW);
-  mapaddr =
-      (dladdr(dlsym(handle, PROP_PVZ_CORE_LIB_HELPER), &dl), dl.dli_fbase);
+  void *mapaddr;
+  dl_iterate_phdr(__detect_corelib_address, &mapaddr);
   base = getPtr(incr(mapaddr, OFF_BASE));
   return base;
 }

@@ -11,6 +11,7 @@
 #define INC_COMMON_COMMON_H
 #include <assert.h>
 #include <errno.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #define SERVER_ADDR "127.0.0.1"
@@ -104,6 +105,9 @@ template <typename Err = int, typename Ty = int> struct error {
     return *this;
   }
 };
+inline void clientPanic() {
+  raise(SIGINT);
+}
 enum class msgStatus : unsigned int {
   NONE,
   EOR,

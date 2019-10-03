@@ -65,8 +65,6 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 
 // Game Private Property
 #define PROP_PVZ_CORE_LIB "libpvz.so"
-#define PROP_PVZ_CORE_LIB_HELPER                                               \
-  "Java_com_popcap_pvz_1na_PvZActivity_onPVZCreate"
 #define OFF_BASE 0xceb8cc
 
 // Game Objects Property
