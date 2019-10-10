@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #define SERVER_ADDR "127.0.0.1"
@@ -128,8 +129,8 @@ inline msgPack makeMsgPack(unsigned id, int_least64_t val,
                            const char *msg = nullptr,
                            msgStatus status = msgStatus::NONE) {
   msgPack pack = {
-      .id = id,
       .status = status,
+      .id = id,
       .val = val,
   };
   if (msg != nullptr) {

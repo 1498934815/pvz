@@ -9,6 +9,7 @@
  */
 #include "common/PvzUtils.h"
 #include "common/common.h"
+#include <stdarg.h>
 #include <string.h>
 #include <string>
 #include <vector>

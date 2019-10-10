@@ -12,6 +12,7 @@
 #include "common/common.h"
 #include "common/options.h"
 #include <setjmp.h>
+#include <stdarg.h>
 void printAuthorInfo() {
   uinoticef("Github %s\n", GIT_REPO);
   uinoticef("Tieba @%s\n", AUTHOR);
