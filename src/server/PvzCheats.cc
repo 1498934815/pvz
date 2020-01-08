@@ -38,7 +38,7 @@ DEFINE_NORMAL_CHEAT(unlockAll) {
     start = incr(start, POINTERSIZE);
   }
   // Nineth slot of plants
-  setI32(incrSaves(OFF_STORE_GOOD_SLOT), PROP_NINE_SLOT);
+  setI32(incrSaves(OFF_STORE_GOOD_SLOT), PROP_NINETH_SLOT);
 }
 DEFINE_OBJECT_CHEAT(printPlantsObject) {
   com->sendMessage(
@@ -188,9 +188,9 @@ DEFINE_OBJECT_CHEAT(zombiesButterCover) {
   setI32(incr(object, OFF_ZOMBIE_BUTTER_COVER), 5000);
 }
 #endif
-#define HINT_INT "请输入一个数字"
-#define HINT_INTS "请输入一串以英文逗号分割的数字"
-#define HINT_POINTS "请输入行列(两个行列以,分割,行列以.分割)"
+#define HINT_INT "请输入一个数据"
+#define HINT_INTS "请输入一串以英文逗号分割的数据"
+#define HINT_POINTS "请输入行列数据(多个行列以,分割,行与列以.分割)"
 DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(GAMING | GETINT, "设置阳光", HINT_INT, setSun),
     DEFINE_OPTION(GETINT, "设置金币", HINT_INT, setCoin),

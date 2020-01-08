@@ -18,6 +18,7 @@ public:
   PvzClient(const char *, int);
   void printDebugInfo();
   msgPack sendBuiltinsCommand(BuiltinsCommand);
+  void asClient();
   void restartClient();
   void sendMessage(const msgPack &);
   error<int, msgPack *> recvMessage();

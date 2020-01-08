@@ -15,15 +15,13 @@
 #include <sys/socket.h>
 #include <vector>
 class Communicator {
+public:
   int fd;
   struct sockaddr_in sin;
-
-public:
   Communicator(const char *, int);
   Communicator(int);
   ~Communicator();
   void asServer();
-  void asClient();
   void sendEOR();
   int startSocket();
   error<> sendMessage(const msgPack &);

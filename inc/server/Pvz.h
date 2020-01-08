@@ -22,7 +22,6 @@ template <typename Ty> Ty readMem(void *ptr, Ty &value) {
   __writeMem(reinterpret_cast<void *>(&value), ptr, sizeof(value));
   return value;
 }
-
 void *__getBase();
 void *__getStatus();
 void *__getSaves();
@@ -67,7 +66,7 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define PROP_PVZ_CORE_LIB "libpvz.so"
 #define OFF_BASE 0xceb8cc
 
-// Game Objects Property
+// Game Objects Properties
 #define OFF_GAME_STATUS 0x7c8
 #define OFF_SAVES_ENTRY 0x868
 #define OFF_PLANTS_ENTRY 0xd0
@@ -87,13 +86,14 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_STORE_GOOD_START 0x350
 #define OFF_STORE_GOOD_SLOT 0x384
 #define OFF_STORE_GOOD_END 0x3fc
+// -- Base
+#define OFF_MODE 0x838
+#define OFF_FREE_PLANTS 0x854
+#define OFF_FIELD_TYPE 0x56a8
 // -- Status
 #define OFF_CARDS_ENTRY 0x168
 #define OFF_FLAGS_HELPER 0x294
 #define OFF_FLAGS 0x6c
-#define OFF_MODE 0x838
-#define OFF_FREE_PLANTS 0x854
-#define OFF_FIELD_TYPE 0x56a8
 #define OFF_SUN 0x56bc
 #define OFF_PASS_LEVEL 0x5760
 #define OFF_CURRENT_WAVE 0x56d8
@@ -121,13 +121,14 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_PLANT_X 0x8
 #define OFF_PLANT_Y 0xc
 
+// -- Properties
 #define PROP_THIEF_CODE 20
 #define PROP_LADDER_CODE 21
 #define PROP_GARGANTUAR_CODE 23
 #define PROP_RED_CODE 32
 
 #define PROP_TRIGGER_MOWER 2
-#define PROP_NINE_SLOT 3
+#define PROP_NINETH_SLOT 3
 
 #define PROP_FIRST_CARD_ENTRY 0x34
 #define PROP_CARD_COUNT 0x30

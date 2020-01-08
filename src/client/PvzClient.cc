@@ -12,15 +12,20 @@ PvzClient::PvzClient(const char *addr, int port) : Communicator(addr, port) {
   asClient();
 }
 void PvzClient::restartClient() {
-  uierror("Trying reconnect to server");
+  uinotice("游戏已退出,尝试重新寻找进程....");
   disconnect();
   startSocket();
   asClient();
+  uinotice("成功找到新进程");
+}
+void PvzClient::asClient() {
+  error<>(connect(fd, (struct sockaddr *)&sin, sizeof(sin)))
+      .except(-1, "找不到可用的进程!必须启动配套的PvZ客户端打开本程序");
 }
 void PvzClient::sendMessage(const msgPack &msg) {
   if (Communicator::sendMessage(msg) == -1) {
     restartClient();
-    Communicator::sendMessage(msg);
+    sendMessage(msg);
   }
 }
 error<int, msgPack *> PvzClient::recvMessage() {

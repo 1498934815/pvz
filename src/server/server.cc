@@ -66,7 +66,7 @@ void handleCheatFunction(msgPack *pack, PvzServer *server) {
   auto *o = instance->getOption(pack->id);
   DEBUG_LOG("GOT ID:%d NAME:%s", pack->id, o->name);
   if (o->attr & GAMING && !__isGaming()) {
-    server->sendMessage(makeMsgPack(0, "NOT GAMING", msgStatus::REMOTE_ERROR));
+    server->sendMessage(makeMsgPack(0, "未在游戏中", msgStatus::REMOTE_ERROR));
     return;
   }
   if (o->attr & PLANTS_CALLBACK) {

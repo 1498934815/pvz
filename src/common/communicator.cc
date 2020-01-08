@@ -68,7 +68,3 @@ void Communicator::asServer() {
       .except(-1, "Can't bind to server");
   listen(fd, 1024);
 }
-void Communicator::asClient() {
-  error<>(connect(fd, (struct sockaddr *)&sin, sizeof(sin)))
-      .except(-1, "Can't connect to server");
-}
