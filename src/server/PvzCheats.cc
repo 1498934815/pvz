@@ -218,26 +218,24 @@ DEFINE_NORMAL_CHEAT(switchChomperFast) {
   setByte(chomperFast, on ? 0xfa : 0);
   com->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
+/*
 DEFINE_OBJECT_CHEAT(enforceStarFruit) {
-  void *codeaddr = incr(object, OFF_PLANT_CODE);
-  int code = rand() % 48;
-  switch (code) {
-  case PROP_SUNFLOWER_CODE:
-  case PROP_TWICE_SUNFLOWER_CODE:
-  case PROP_SUN_MUSHROOM_CODE:
+  // 减少概率
+  if (rand() % 10 != 9)
     return;
-  }
+  void *codeaddr = incr(object, OFF_PLANT_CODE);
   if (getI32(codeaddr) == PROP_STARFRULT_CODE)
     setI32(codeaddr, rand() % 2 == 1 ? 44 : 43);
 }
 DEFINE_OBJECT_CHEAT(enforceNewsPaper) {
-  void *codeaddr = incr(object, OFF_ZOMBIE_CODE);
-  int code = rand() % 33;
-  if (code == PROP_ZOMBIE_BOSS)
+  // 减少概率
+  if (rand() % 10 != 9)
     return;
+  void *codeaddr = incr(object, OFF_ZOMBIE_CODE);
   if (getI32(codeaddr) == PROP_NEWSPAPER_CODE)
-    setI32(codeaddr, code);
+    setI32(codeaddr, rand() % 2 == 1 ? 32 : 29);
 }
+*/
 #endif
 
 const char *cardsCodesMap[] = {
@@ -451,9 +449,11 @@ DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(NONE, "开关额外无尽入口", nullptr,
                   switchOnOffExtraEndlessEntires),
     DEFINE_OPTION(NONE, "开关食人花秒吞", nullptr, switchChomperFast),
+    /*
     DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "增强杨桃", nullptr,
                   .object_callback = enforceStarFruit),
     DEFINE_OPTION(GAMING | ZOMBIES_CALLBACK, "增强读纸僵尸", nullptr,
                   .object_callback = enforceNewsPaper),
+                  */
     DEFINE_OPTION(GAMING, "打印场上调试信息", HINT_USED_TO_DEBUG,
                   printProperties))
