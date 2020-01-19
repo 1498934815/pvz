@@ -39,6 +39,9 @@ void PvzServer::handleBuiltinsCommand(msgPack *pack) {
   case BuiltinsCommand::GETSAVES:
     val = (intptr_t)__getSaves();
     break;
+  case BuiltinsCommand::GETCORELIB:
+    val = (intptr_t)__getCoreLib();
+    break;
   case BuiltinsCommand::GETWAVE:
     val = (intptr_t)getI32(incrStatus(OFF_CURRENT_WAVE));
     break;

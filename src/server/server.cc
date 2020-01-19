@@ -53,12 +53,11 @@ void runasDaemon(Communicator *com, PvzDaemon *daemon) {
   if (!daemon->on) {
     daemon->on = true;
     pthread_create(&daemon->tid, nullptr, __daemon_wrapper, daemon);
-  }
-}
-void cancelDaemon(PvzDaemon *daemon) {
-  if (daemon->on) {
+    com->sendMessage(makeMsgPack(0, "现在 开"));
+  } else {
     daemon->on = false;
     pthread_join(daemon->tid, nullptr);
+    com->sendMessage(makeMsgPack(0, "现在 关"));
   }
 }
 void handleCheatFunction(msgPack *pack, PvzServer *server) {
@@ -75,10 +74,10 @@ void handleCheatFunction(msgPack *pack, PvzServer *server) {
     eachZombie(server, o->object_callback);
   } else if (o->attr & MOWERS_CALLBACK) {
     eachMower(server, o->object_callback);
+  } else if (o->attr & ITEMS_CALLBACK) {
+    eachItem(server, o->object_callback);
   } else if (o->attr & DAEMON_CALLBACK) {
     runasDaemon(server, &o->daemon);
-  } else if (o->attr & CANCEL_DAEMON_CALLBACK) {
-    cancelDaemon(instance->getDaemon(pack->id - 1));
   } else {
     o->normal_callback(server, pack);
   }

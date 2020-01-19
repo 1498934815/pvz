@@ -22,6 +22,7 @@ template <typename Ty> Ty readMem(void *ptr, Ty &value) {
   __writeMem(reinterpret_cast<void *>(&value), ptr, sizeof(value));
   return value;
 }
+void *__getCoreLib();
 void *__getBase();
 void *__getStatus();
 void *__getSaves();
@@ -43,6 +44,7 @@ void *incrSaves(off_t);
     writeMem<type>(ptr, value);                                                \
   }
 #define implGetSet(name, type) implGet(name, type) implSet(name, type)
+implGetSet(Byte, unsigned char);
 implGetSet(I32, int32_t);
 implGetSet(U32, uint32_t);
 implGetSet(F32, float);
@@ -57,14 +59,18 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
   eachObject(com, OFF_PLANTS_ENTRY, OFF_PLANTS_COUNT, callback)
 #define eachZombie(com, callback)                                              \
   eachObject(com, OFF_ZOMBIES_ENTRY, OFF_ZOMBIES_COUNT, callback)
-#define eachGood(com, callback)                                                \
-  eachObject(com, OFF_GOODS_ENTRY, OFF_GOODS_COUNT, callback)
+#define eachItem(com, callback)                                                \
+  eachObject(com, OFF_ITEMS_ENTRY, OFF_ITEMS_COUNT, callback)
 #define eachMower(com, callback)                                               \
   eachObject(com, OFF_MOWERS_ENTRY, OFF_MOWERS_COUNT, callback)
 
 // Game Private Property
 #define PROP_PVZ_CORE_LIB "libpvz.so"
+#define PROP_PVZ_CORE_LIB_LENGTH 0xc17000
 #define OFF_BASE 0xceb8cc
+
+#define OFF_CHOMPER_TIME 0x23bf98
+#define OFF_GAMEPACK1_GAMES 0xc4b284
 
 // Game Objects Properties
 #define OFF_GAME_STATUS 0x7c8
@@ -73,8 +79,8 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_PLANTS_COUNT 0xe0
 #define OFF_ZOMBIES_ENTRY 0xb4
 #define OFF_ZOMBIES_COUNT 0xc4
-#define OFF_GOODS_ENTRY 0x108
-#define OFF_GOODS_COUNT 0x118
+#define OFF_ITEMS_ENTRY 0x108
+#define OFF_ITEMS_COUNT 0x118
 #define OFF_MOWERS_ENTRY 0x124
 #define OFF_MOWERS_COUNT 0x134
 
@@ -83,9 +89,9 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_COIN 0x4
 #define OFF_ADVENTURE_LEVEL 0x28
 #define OFF_LIFE2 0x2c
-#define OFF_STORE_GOOD_START 0x350
-#define OFF_STORE_GOOD_SLOT 0x384
-#define OFF_STORE_GOOD_END 0x3fc
+#define OFF_STORE_ITEM_START 0x350
+#define OFF_STORE_ITEM_SLOT 0x384
+#define OFF_STORE_ITEM_END 0x3fc
 // -- Base
 #define OFF_MODE 0x838
 #define OFF_FREE_PLANTS 0x854
@@ -101,9 +107,9 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_FRESH_COUNTDOWN_REMAIN 0x56f8
 #define OFF_WAVE_HITPOINT_TOTAL 0x56f4
 #define OFF_WAVE_HITPOINT_BOUNDARY 0x56f0
-// -- Goods
-#define OFF_GOOD_PICKUP 0x5c
-#define OFF_GOOD_TYPE 0x64
+// -- Itemss
+#define OFF_ITEM_PICKUP 0x5c
+#define OFF_ITEM_TYPE 0x64
 // -- Mowers
 #define OFF_MOWER_TRIGGER 0x2c
 // -- Base
@@ -122,10 +128,17 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_PLANT_Y 0xc
 
 // -- Properties
+#define PROP_NEWSPAPER_CODE 5
 #define PROP_THIEF_CODE 20
 #define PROP_LADDER_CODE 21
 #define PROP_GARGANTUAR_CODE 23
+#define PROP_ZOMBIE_BOSS 25
 #define PROP_RED_CODE 32
+
+#define PROP_SUNFLOWER_CODE 1
+#define PROP_TWICE_SUNFLOWER_CODE 41
+#define PROP_SUN_MUSHROOM_CODE 9
+#define PROP_STARFRULT_CODE 29
 
 #define PROP_TRIGGER_MOWER 2
 #define PROP_NINETH_SLOT 3

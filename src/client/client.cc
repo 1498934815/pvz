@@ -15,7 +15,7 @@
 #include <stdarg.h>
 void printAuthorInfo() {
   uinoticef("Github %s\n", GIT_REPO);
-  uinoticef("Tieba @%s\n", AUTHOR);
+  uinoticef("Tieba 植物大战僵尸吧@%s\n", AUTHOR);
   uinoticef("Version v%d(%s)\n", LOCAL_VERSION, GIT_HASH);
   uinoticef("本程序的使用手册 %s\n", README_MD);
   uinoticef("修改时用到的代码 %s\n", CODE_TXT);
@@ -42,6 +42,24 @@ const char *getUserStringInputSafety(char *buf) {
 void displayUserInterface() {
   Options::getInstance()->uiPrint();
 }
+void printCodes(struct option *o, std::vector<int> &&codes) {
+  const char **codesMap;
+  if (o->attr & ZOMBIES_CODE)
+    codesMap = zombiesCodesMap;
+  else if (o->attr & CARDS_CODE)
+    codesMap = cardsCodesMap;
+  uiprintf(HINT);
+  for (int &c : codes)
+    uiprintf("%s ", codesMap[c]);
+  uiprint("");
+}
+void printCode(struct option *o, int code) {
+  const char **codesMap;
+  if (o->attr & GAMES_CODE)
+    codesMap = gamesCodesMap;
+  else if (o->attr & FIELDS_CODE)
+    codesMap = fieldsCodesMap;
+}
 void handleUserInput(int inputId) {
   auto *o = Options::getInstance()->getOption(inputId);
   if (o == nullptr) {
@@ -63,9 +81,10 @@ void handleUserInput(int inputId) {
   }
   if (o->attr & GETINT) {
     msg.val = getUserIntInputSafety();
+    printCode(o, msg.val);
   } else if (o->attr & GETINTS) {
     getUserStringInputSafety(msg.msg);
-    parseInts(msg.msg);
+    printCodes(o, parseInts(msg.msg));
   } else if (o->attr & GETPOINTS) {
     getUserStringInputSafety(msg.msg);
     parsePoints(msg.msg);
@@ -75,7 +94,7 @@ void handleUserInput(int inputId) {
     if (m.status == msgStatus::REMOTE_ERROR)
       uierrorf("%s\n", m.msg);
     else
-      uiprintf("%s\n", m.msg);
+      uihintf("%s\n", m.msg);
 }
 void checkVersion() {
   int version = PvzClient::getInstance()->getVersion();
@@ -87,7 +106,7 @@ void checkVersion() {
 }
 static jmp_buf env;
 #define JMP_RET 0xff
-void recoveryEnv(int) {
+void recoverEnv(int) {
   longjmp(env, JMP_RET);
 }
 int main() {
@@ -96,7 +115,7 @@ int main() {
   Options options;
   checkVersion();
   client.printDebugInfo();
-  signal(SIGINT, recoveryEnv);
+  signal(SIGINT, recoverEnv);
   setjmp(env);
   while (true) {
     displayUserInterface();

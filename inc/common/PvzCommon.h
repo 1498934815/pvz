@@ -19,6 +19,7 @@ enum BuiltinsCommand {
   GETBASE,
   GETSTATUS,
   GETSAVES,
+  GETCORELIB,
   GETWAVE,
   GET_TOTAL_HITPOINT,
   GET_HITPOINT_BOUNDARY,
@@ -46,4 +47,9 @@ class Communicator;
 typedef void (*normal_callback)(Communicator *, msgPack *);
 typedef void (*object_callback)(Communicator *, void *);
 typedef void (*daemon_callback)(Communicator *);
+
+extern const char *zombiesCodesMap[];
+extern const char *gamesCodesMap[];
+extern const char *cardsCodesMap[];
+extern const char *fieldsCodesMap[];
 #endif // INC_COMMON_PVZCOMMON_H

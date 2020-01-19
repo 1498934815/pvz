@@ -59,6 +59,9 @@ void *PvzClient::getStatus() {
 void *PvzClient::getSaves() {
   return sendBuiltinsCommand(BuiltinsCommand::GETSAVES).ptr;
 }
+void *PvzClient::getCoreLib() {
+  return sendBuiltinsCommand(BuiltinsCommand::GETCORELIB).ptr;
+}
 pid_t PvzClient::getPid() {
   return sendBuiltinsCommand(BuiltinsCommand::GETPID).val;
 }
@@ -85,8 +88,9 @@ void PvzClient::printDebugInfo() {
   void *status = getStatus();
 #define STATICLY_GAME_INFO_TITLE "静态游戏信息 "
 #define DYNAMICLY_GAME_INFO_TITLE "动态游戏信息 "
-  uinoticef(STATICLY_GAME_INFO_TITLE "PID:%d 基址:%p 用户信息入口:%p\n",
-            getPid(), getBase(), getSaves());
+  uinoticef(STATICLY_GAME_INFO_TITLE
+            "PID:%d 核心库:%p 基址:%p 用户信息入口:%p\n",
+            getPid(), getCoreLib(), getBase(), getSaves());
   if (status != nullptr) {
     uinoticef(DYNAMICLY_GAME_INFO_TITLE "游戏中状态入口:%p 当前波数:%d\n",
               status, getWave());

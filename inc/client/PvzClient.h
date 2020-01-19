@@ -26,6 +26,7 @@ public:
   void *getBase();
   void *getStatus();
   void *getSaves();
+  void *getCoreLib();
   pid_t getPid();
   int getVersion();
   int getWave();

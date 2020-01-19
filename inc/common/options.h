@@ -21,10 +21,16 @@ enum attr {
   GETPOINTS = 1 << 4,
   GETINTS = 1 << 5,
   DAEMON_CALLBACK = 1 << 6,
+  // Keep it
   CANCEL_DAEMON_CALLBACK = 1 << 7,
   PLANTS_CALLBACK = 1 << 8,
   ZOMBIES_CALLBACK = 1 << 9,
   MOWERS_CALLBACK = 1 << 10,
+  ITEMS_CALLBACK = 1 << 11,
+  GAMES_CODE = 1 << 12,
+  CARDS_CODE = 1 << 13,
+  ZOMBIES_CODE = 1 << 14,
+  FIELDS_CODE = 1 << 15,
 };
 
 struct PvzDaemon {

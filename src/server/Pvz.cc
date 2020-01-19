@@ -13,24 +13,31 @@
 #include <dlfcn.h>
 #include <libgen.h>
 #include <link.h>
+#include <sys/mman.h>
 extern "C" int dl_iterate_phdr(int (*)(struct dl_phdr_info *, size_t, void *),
                                void *);
-int __detect_corelib_address(struct dl_phdr_info *info, size_t, void *mapaddr) {
+int __detect_corelib_address(struct dl_phdr_info *info, size_t, void *corelib) {
   if (strcmp(basename(info->dlpi_name), PROP_PVZ_CORE_LIB) == 0) {
-    *static_cast<void **>(mapaddr) = reinterpret_cast<void *>(info->dlpi_addr);
+    *static_cast<void **>(corelib) = reinterpret_cast<void *>(info->dlpi_addr);
     return 1;
   }
   return 0;
 }
+static void *__corelib;
 void *__getBase() {
   static void *base = nullptr;
   // Just detect once
   if (base != nullptr)
     return base;
-  void *mapaddr;
-  dl_iterate_phdr(__detect_corelib_address, &mapaddr);
-  base = getPtr(incr(mapaddr, OFF_BASE));
+  dl_iterate_phdr(__detect_corelib_address, &__corelib);
+  // make it readable/writeable
+  mprotect(__corelib, PROP_PVZ_CORE_LIB_LENGTH,
+           PROT_READ | PROT_WRITE | PROT_EXEC);
+  base = getPtr(incr(__corelib, OFF_BASE));
   return base;
+}
+void *__getCoreLib() {
+  return __corelib;
 }
 void *__getStatus() {
   return getPtr(incrBase(OFF_GAME_STATUS));
