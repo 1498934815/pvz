@@ -43,7 +43,7 @@ void displayUserInterface() {
   Options::getInstance()->uiPrint();
 }
 void printCodes(struct option *o, std::vector<int> &&codes) {
-  const char **codesMap;
+  const char **codesMap = nullptr;
   if (o->attr & ZOMBIES_CODE)
     codesMap = zombiesCodesMap;
   else if (o->attr & CARDS_CODE)
@@ -54,11 +54,12 @@ void printCodes(struct option *o, std::vector<int> &&codes) {
   uiprint("");
 }
 void printCode(struct option *o, int code) {
-  const char **codesMap;
+  const char **codesMap = nullptr;
   if (o->attr & GAMES_CODE)
     codesMap = gamesCodesMap;
   else if (o->attr & FIELDS_CODE)
     codesMap = fieldsCodesMap;
+  uihintf("%s\n", codesMap[code]);
 }
 void handleUserInput(int inputId) {
   auto *o = Options::getInstance()->getOption(inputId);
