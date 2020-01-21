@@ -44,22 +44,41 @@ void displayUserInterface() {
 }
 void printCodes(struct option *o, std::vector<int> &&codes) {
   const char **codesMap = nullptr;
-  if (o->attr & ZOMBIES_CODE)
+  size_t max;
+  if (o->attr & ZOMBIES_CODE) {
     codesMap = zombiesCodesMap;
-  else if (o->attr & CARDS_CODE)
+    max = (sizeof(zombiesCodesMap) / sizeof(*(zombiesCodesMap)));
+  } else if (o->attr & CARDS_CODE) {
     codesMap = cardsCodesMap;
+    max = (sizeof(cardsCodesMap) / sizeof(*(cardsCodesMap)));
+  }
+  if (codesMap == nullptr)
+    return;
   uiprintf(HINT);
-  for (int &c : codes)
-    uiprintf("%s ", codesMap[c]);
+  for (int &c : codes) {
+    if (c >= max)
+      uiprintf("无效代码:%d ", c);
+    else
+      uiprintf("%s ", codesMap[c]);
+  }
   uiprint("");
 }
 void printCode(struct option *o, int code) {
   const char **codesMap = nullptr;
-  if (o->attr & GAMES_CODE)
+  size_t max;
+  if (o->attr & GAMES_CODE) {
     codesMap = gamesCodesMap;
-  else if (o->attr & FIELDS_CODE)
+    max = (sizeof(gamesCodesMap) / sizeof(*(gamesCodesMap)));
+  } else if (o->attr & FIELDS_CODE) {
     codesMap = fieldsCodesMap;
-  uihintf("%s\n", codesMap[code]);
+    max = (sizeof(fieldsCodesMap) / sizeof(*(fieldsCodesMap)));
+  }
+  if (codesMap == nullptr)
+    return;
+  if (code >= max)
+    uierrorf("无效代码:%d", code);
+  else
+    uihintf("%s ", codesMap[code]);
 }
 void handleUserInput(int inputId) {
   auto *o = Options::getInstance()->getOption(inputId);

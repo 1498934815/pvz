@@ -17,7 +17,8 @@ std::vector<std::string> splitBy(std::string expr, char separator) {
   std::vector<std::string> vec;
   std::string::size_type bpos = 0, epos = 0;
   while ((epos = expr.find(separator, bpos)) != std::string::npos) {
-    vec.emplace_back(expr.substr(bpos, epos - bpos));
+    if (epos != 0)
+      vec.emplace_back(expr.substr(bpos, epos - bpos));
     bpos = epos + 1;
   }
   if (expr.back() != separator)
