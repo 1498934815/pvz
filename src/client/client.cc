@@ -79,6 +79,7 @@ void printCode(struct option *o, int code) {
     uierrorf("无效代码:%d", code);
   else
     uihintf("%s ", codesMap[code]);
+  uiprint("");
 }
 void handleUserInput(int inputId) {
   auto *o = Options::getInstance()->getOption(inputId);
