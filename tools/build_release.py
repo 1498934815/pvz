@@ -19,7 +19,8 @@ def build_release(arg):
     tempf = '/tmp/{}_{}.apk'.format(path.basename(origin), version)
     os.system('cp {} {}'.format(origin, tempf))
     o = zipfile.ZipFile(tempf, mode='a')
-    o.write(lib, path.join(prefix, lib))
+    for i in lib.split(','):
+        o.write(i, path.join(prefix, i))
     o.close()
     os.system('java  -jar {} -a {} -o {}'.format(signapk, tempf, out))
     os.remove(tempf)

@@ -20,6 +20,7 @@ local_version := $(shell date +'%y%m%d')
 
 server_src := \
 	$(call src_under,src/server) \
+	$(call src_under,src/features) \
 	$(common)
 server_flag := -shared -ldl -llog -DSERVER
 server_out := libpvz_server.so

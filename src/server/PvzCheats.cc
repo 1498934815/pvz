@@ -229,7 +229,34 @@ DEFINE_NORMAL_CHEAT(switchChomperFast) {
   setByte(chomperFast, on ? 0xfa : 0);
   getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
-DEFINE_NORMAL_CHEAT(switchOnOffFeatures) {}
+#include <features/features.h>
+DEFINE_NORMAL_CHEAT(switchOnOffFeatures) {
+  for (struct feature *feature = features; feature->offset != 0; ++feature) {
+    void *codeptr = incr(__getCoreLib(), feature->offset);
+    void *buffer = incr(__getCoreLib(), feature->buffer);
+    ptrdiff_t diff = (uintptr_t)buffer - (uintptr_t)codeptr - 8;
+    unsigned blCode = 0xeb000000 | (0xffffff & (diff >> 2));
+    if (getI32(codeptr) != blCode) {
+      if (feature->originalcode == 0) {
+        feature->originalcode = getI32(codeptr);
+#if DEBUG
+        ptrdiff_t decode = ((0xffffff & blCode) << 2) | 0xff000000;
+        DEBUG_LOG("CODEPTR %p codeptr %p code %x delta %x/%d decode %x\n",
+                  codeptr, feature->code, blCode, diff, diff, decode);
+        DEBUG_LOG("TO %p/%d", buffer, feature->codesize);
+#endif
+        memcpy((void *)buffer, (void *)feature->code, feature->codesize);
+      }
+      setI32(codeptr, blCode);
+      getCommunicator()->sendMessage(
+          makeMsgPack(0, formatBuffer("%s 现在 开", feature->name)));
+    } else {
+      setI32(codeptr, feature->originalcode);
+      getCommunicator()->sendMessage(
+          makeMsgPack(0, formatBuffer("%s 现在 关", feature->name)));
+    }
+  }
+}
 /*
 DEFINE_OBJECT_CHEAT(enforceStarFruit) {
   // 减少概率
@@ -302,7 +329,7 @@ DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(NONE, "开关额外无尽入口", nullptr,
                   switchOnOffExtraEndlessEntires),
     DEFINE_OPTION(NONE, "开关食人花秒吞", nullptr, switchChomperFast),
-    DEFINE_OPTION(NONE, "额外特性", nullptr, switchOnOffFeatures),
+    DEFINE_OPTION(NONE, "开关额外特性", nullptr, switchOnOffFeatures),
     /*
     DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "增强杨桃", nullptr,
                   .object_callback = enforceStarFruit),

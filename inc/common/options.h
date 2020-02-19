@@ -79,7 +79,7 @@ extern option externalOptions[];
 #define DEFINE_EXTERNAL_OPTIONS(...)                                           \
   option externalOptions[] = {                                                 \
       __VA_ARGS__,                                                             \
-      DEFINE_OPTION(DEBUG_INFO, "输出调试信息", nullptr, nullptr),             \
+      DEFINE_OPTION(DEBUG_INFO, "打印调试信息", nullptr, nullptr),             \
       DEFINE_OPTION(EXIT, "退出", nullptr, nullptr),                           \
       DEFINE_OPTION(NONE, nullptr, nullptr, nullptr),                          \
   };
