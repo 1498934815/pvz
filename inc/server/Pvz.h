@@ -10,18 +10,9 @@
 #ifndef INC_SERVER_PVZ_H
 #define INC_SERVER_PVZ_H
 #include "common/PvzCommon.h"
+#include <initializer_list>
+#include <iterator>
 #include <stdlib.h>
-
-inline void __writeMem(void *ptr, void *src, size_t size) {
-  memcpy(ptr, src, size);
-}
-template <typename Ty> void writeMem(void *ptr, Ty value) {
-  __writeMem(ptr, reinterpret_cast<void *>(&value), sizeof(value));
-}
-template <typename Ty> Ty readMem(void *ptr, Ty &value) {
-  __writeMem(reinterpret_cast<void *>(&value), ptr, sizeof(value));
-  return value;
-}
 void *__getCoreLib();
 void *__getBase();
 void *__getStatus();
@@ -31,17 +22,38 @@ void *incr(void *, off_t);
 void *incrBase(off_t);
 void *incrStatus(off_t);
 void *incrSaves(off_t);
+
+inline void __writeMem(void *ptr, void *src, size_t size) {
+  memcpy(ptr, src, size);
+}
+template <typename... Args> inline void *__calculate(void *ptr, Args... args) {
+  const auto &offs = {args...};
+  auto it = offs.begin();
+  for (; std::next(it) != offs.end(); ++it)
+    __writeMem(&ptr, incr(ptr, *it), sizeof(ptr));
+  return incr(ptr, *it);
+}
+inline void *__calculate(void *ptr) {
+  return ptr;
+}
+template <typename Ty, typename... Args>
+inline void writeMem(const Ty &value, void *ptr, Args... args) {
+  __writeMem(__calculate(ptr, args...), (void *)&value, sizeof(value));
+}
+template <typename Ty, typename... Args>
+inline Ty &readMem(Ty &value, void *ptr, Args... args) {
+  __writeMem((void *)&value, __calculate(ptr, args...), sizeof(value));
+  return value;
+}
 #define implGet(name, type)                                                    \
-  inline type get##name(void *ptr, type &value) {                              \
-    return readMem<type>(ptr, value);                                          \
-  }                                                                            \
-  inline type get##name(void *ptr) {                                           \
+  template <typename... Args> inline type get##name(void *ptr, Args... args) { \
     static type buf;                                                           \
-    return get##name(ptr, buf);                                                \
+    return readMem<type, Args...>(buf, ptr, args...);                          \
   }
 #define implSet(name, type)                                                    \
-  inline void set##name(void *ptr, type value) {                               \
-    writeMem<type>(ptr, value);                                                \
+  template <typename... Args>                                                  \
+  inline void set##name(const type &value, void *ptr, Args... args) {          \
+    writeMem<type, Args...>(value, ptr, args...);                              \
   }
 #define implGetSet(name, type) implGet(name, type) implSet(name, type)
 implGetSet(Byte, unsigned char);
@@ -52,7 +64,6 @@ implGetSet(Ptr, void *);
 #undef implGet
 #undef implSet
 #undef implGetset
-
 class Communicator;
 void eachObject(Communicator *, off_t, off_t, object_callback);
 #define eachPlant(com, callback)                                               \

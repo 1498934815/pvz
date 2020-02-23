@@ -15,8 +15,8 @@
 #include <stdarg.h>
 void printAuthorInfo() {
   uinoticef("项目地址 %s\n", GIT_REPO);
-  uinoticef("修改器作者 植物大战僵尸吧@%s\n", AUTHOR);
-  uinoticef("版本号 v%d(%s)\n", LOCAL_VERSION, GIT_HASH);
+  uinoticef("Tieba 植物大战僵尸吧@%s\n", AUTHOR);
+  uinoticef("Version v%d(%s)\n", LOCAL_VERSION, GIT_HASH);
   uinoticef("本程序的使用手册 %s\n", README_MD);
   uinoticef("修改时用到的代码 %s\n", CODE_TXT);
 }

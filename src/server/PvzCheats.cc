@@ -28,31 +28,31 @@
 #define getObject() (OBJECT_ARG)
 #define incrThisObject(off) incr(getObject(), off)
 DEFINE_NORMAL_CHEAT(setSun) {
-  setI32(incrStatus(OFF_SUN), getMessage()->val);
+  setI32(getMessage()->val, incrStatus(OFF_SUN));
 }
 DEFINE_NORMAL_CHEAT(switchFreePlants) {
   void *freePlants = incrBase(OFF_FREE_PLANTS);
   bool on = getI32(freePlants) == 1;
-  setI32(freePlants, on ? 0 : 1);
+  setI32(on ? 0 : 1, freePlants);
   getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
 DEFINE_NORMAL_CHEAT(setCoin) {
-  setI32(incrSaves(OFF_COIN), getMessage()->val);
+  setI32(getMessage()->val, incrSaves(OFF_COIN));
 }
 DEFINE_NORMAL_CHEAT(unlockAll) {
-  setI32(incrSaves(OFF_LIFE2), 2);
+  setI32(2, incrSaves(OFF_LIFE2));
   void *start = incrSaves(OFF_STORE_ITEM_START),
        *end = incrSaves(OFF_STORE_ITEM_END);
   while (start != end) {
-    setI32(start, 1);
+    setI32(1, start);
     start = incr(start, POINTERSIZE);
   }
   // Nineth slot of plants
-  setI32(incrSaves(OFF_STORE_ITEM_SLOT), PROP_NINETH_SLOT);
+  setI32(PROP_NINETH_SLOT, incrSaves(OFF_STORE_ITEM_SLOT));
 }
 DEFINE_OBJECT_CHEAT(printItemssObject) {
   getCommunicator()->sendMessage(
-      makeMsgPack(0, formatBuffer("ITEMS@%p TYPE:%d", getObject(),
+      makeMsgPack(0, formatBuffer("ITEM@%p TYPE:%d", getObject(),
                                   getI32(incrThisObject(OFF_ITEM_TYPE)))));
 }
 DEFINE_OBJECT_CHEAT(printPlantsObject) {
@@ -113,14 +113,14 @@ void replaceSeeds(std::vector<int> &&seeds, unsigned end, bool hasThief,
   for (size_t wave = 0; wave < 40; ++wave) {
     for (size_t i = 0; i < 50; ++i) {
       if (i >= end)
-        setI32(seedAddr, -1);
+        setI32(-1, seedAddr);
       // 如果尾数是9
       else if (hasThief && (wave % 10 == 9) && i < 3)
-        setI32(seedAddr, PROP_THIEF_CODE);
+        setI32(PROP_THIEF_CODE, seedAddr);
       else if (hasRed && i >= 40)
-        setI32(seedAddr, PROP_RED_CODE);
+        setI32(PROP_RED_CODE, seedAddr);
       else
-        setI32(seedAddr, generateZombiesSeed(fieldType, std::move(seeds)));
+        setI32(generateZombiesSeed(fieldType, std::move(seeds)), seedAddr);
       seedAddr = incr(seedAddr, POINTERSIZE);
     }
   }
@@ -148,14 +148,13 @@ DEFINE_NORMAL_CHEAT(setZombiesList) {
   replaceSeeds(std::move(seeds), 50, false, false);
 }
 DEFINE_NORMAL_CHEAT(passLevel) {
-  setI32(incrStatus(OFF_PASS_LEVEL), 1);
+  setI32(1, incrStatus(OFF_PASS_LEVEL));
 }
 DEFINE_NORMAL_CHEAT(setFlags) {
-  setI32(incr(getPtr(incrStatus(OFF_FLAGS_HELPER)), OFF_FLAGS),
-         getMessage()->val);
+  setI32(getMessage()->val, getPtr(incrStatus(OFF_FLAGS_HELPER)), OFF_FLAGS);
 }
 DEFINE_NORMAL_CHEAT(switchMode) {
-  setI32(incrBase(OFF_MODE), getMessage()->val);
+  setI32(getMessage()->val, incrBase(OFF_MODE));
 }
 DEFINE_NORMAL_CHEAT(switchField) {
   if (!in_range(getMessage()->val, DAY, GARDEN)) {
@@ -163,10 +162,10 @@ DEFINE_NORMAL_CHEAT(switchField) {
         0, "Invalid code of type of field", msgStatus::REMOTE_ERROR));
     return;
   }
-  setI32(incrStatus(OFF_FIELD_TYPE), getMessage()->val);
+  setI32(getMessage()->val, incrStatus(OFF_FIELD_TYPE));
 }
 DEFINE_NORMAL_CHEAT(setAdventureLevel) {
-  setI32(incrSaves(OFF_ADVENTURE_LEVEL), getMessage()->val);
+  setI32(getMessage()->val, incrSaves(OFF_ADVENTURE_LEVEL));
 }
 DEFINE_NORMAL_CHEAT(setCards) {
   void *card = getPtr(incrStatus(OFF_CARDS_ENTRY));
@@ -180,13 +179,13 @@ DEFINE_NORMAL_CHEAT(setCards) {
   }
   card = incr(card, PROP_FIRST_CARD_ENTRY);
   for (auto &&seed : seeds) {
-    setI32(incr(card, PROP_CARD_SEED), seed);
+    setI32(seed, incr(card, PROP_CARD_SEED));
     card = incr(card, PROP_CARD_OFFSET);
   }
 }
 DEFINE_OBJECT_CHEAT(__pickupItems) {
   if (in_range(getI32(incrThisObject(OFF_ITEM_TYPE)), 1, 4))
-    setI32(incrThisObject(OFF_ITEM_PICKUP), 1);
+    setI32(1, incrThisObject(OFF_ITEM_PICKUP));
 }
 DEFINE_DAEMON_CHEAT(autoPickup) {
   eachItem(getCommunicator(), __pickupItems);
@@ -199,9 +198,9 @@ DEFINE_OBJECT_CHEAT(__putLadder) {
     return;
   auto &&point = __ladderPoints->back();
   float y = point.y * 100;
-  setF32(incrThisObject(OFF_ZOMBIE_POS_X), y);
-  setF32(incrThisObject(OFF_ZOMBIE_POS_Y), y);
-  setI32(incrThisObject(OFF_ZOMBIE_ROW), point.x - 1);
+  setF32(y, incrThisObject(OFF_ZOMBIE_POS_X));
+  setF32(y, incrThisObject(OFF_ZOMBIE_POS_Y));
+  setI32(point.x - 1, incrThisObject(OFF_ZOMBIE_ROW));
   __ladderPoints->pop_back();
 }
 DEFINE_NORMAL_CHEAT(putLadder) {
@@ -210,10 +209,10 @@ DEFINE_NORMAL_CHEAT(putLadder) {
   eachZombie(getCommunicator(), __putLadder);
 }
 DEFINE_OBJECT_CHEAT(triggerMowers) {
-  setI32(incrThisObject(OFF_MOWER_TRIGGER), PROP_TRIGGER_MOWER);
+  setI32(PROP_TRIGGER_MOWER, incrThisObject(OFF_MOWER_TRIGGER));
 }
 DEFINE_OBJECT_CHEAT(zombiesButterCover) {
-  setI32(incrThisObject(OFF_ZOMBIE_BUTTER_COVER), 5000);
+  setI32(5000, incrThisObject(OFF_ZOMBIE_BUTTER_COVER));
 }
 DEFINE_NORMAL_CHEAT(switchOnOffExtraEndlessEntires) {
   void *gameEntries = incr(__getCoreLib(), OFF_GAMEPACK1_GAMES);
@@ -226,7 +225,7 @@ DEFINE_NORMAL_CHEAT(switchOnOffExtraEndlessEntires) {
 DEFINE_NORMAL_CHEAT(switchChomperFast) {
   void *chomperFast = incr(__getCoreLib(), OFF_CHOMPER_TIME);
   bool on = getByte(chomperFast) == 0;
-  setByte(chomperFast, on ? 0xfa : 0);
+  setByte(on ? 0xfa : 0, chomperFast);
   getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
 #include <features/features.h>
@@ -247,11 +246,11 @@ DEFINE_NORMAL_CHEAT(switchOnOffFeatures) {
 #endif
         memcpy((void *)buffer, (void *)feature->code, feature->codesize);
       }
-      setI32(codeptr, blCode);
+      setI32(blCode, codeptr);
       getCommunicator()->sendMessage(
           makeMsgPack(0, formatBuffer("%s 现在 开", feature->name)));
     } else {
-      setI32(codeptr, feature->originalcode);
+      setI32(feature->originalcode, codeptr);
       getCommunicator()->sendMessage(
           makeMsgPack(0, formatBuffer("%s 现在 关", feature->name)));
     }
@@ -264,7 +263,7 @@ DEFINE_OBJECT_CHEAT(enforceStarFruit) {
     return;
   void *codeaddr = incrThisObject(OFF_PLANT_CODE);
   if (getI32(codeaddr) == PROP_STARFRULT_CODE)
-    setI32(codeaddr, rand() % 2 == 1 ? 44 : 43);
+    setI32(rand() % 2 == 1 ? 44 : 43, codeaddr);
 }
 DEFINE_OBJECT_CHEAT(enforceNewsPaper) {
   // 减少概率
@@ -272,7 +271,7 @@ DEFINE_OBJECT_CHEAT(enforceNewsPaper) {
     return;
   void *codeaddr = incrThisObject(OFF_ZOMBIE_CODE);
   if (getI32(codeaddr) == PROP_NEWSPAPER_CODE)
-    setI32(codeaddr, rand() % 2 == 1 ? 32 : 29);
+    setI32(rand() % 2 == 1 ? 32 : 29, codeaddr);
 }
 */
 #endif
