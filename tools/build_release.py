@@ -13,7 +13,6 @@ tools = path.dirname(__file__)
 out = path.join(tools, os.pardir, 'out')
 signapk = path.join(tools, 'uber-apk-signer-1.0.0.jar')
 version = sys.argv[1]
-os.system('mkdir -p {0}; rm -rf {0}/*'.format(out))
 def build_release(arg):
     (origin, prefix, lib) = arg.split(':')
     tempf = '/tmp/{}_{}.apk'.format(path.basename(origin), version)

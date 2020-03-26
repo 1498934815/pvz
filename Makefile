@@ -55,16 +55,24 @@ include build/build.mk
 define make_release
 	make NDK_BUILD=true --no-print-directory
 endef
+define make_feature_release
+	rm $(server_out)
+	make NDK_BUILD=true STANDALONE_FEATURES=true --no-print-directory
+endef
 .PHONY:release local_install __local_install_build __local_install_build
 release:
 	$(call make_release)
 __local_install_build:release
-	@ ./tools/build_release.py $(local_version) src/prebuilts/com.popcap.pvz_na:lib/armeabi:$(server_out) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
+	mkdir -p out
+	rm out/*
+	@ ./tools/build_release.py $(local_version) src/prebuilts/PVZ_NA:lib/armeabi:$(server_out) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
+	$(call make_feature_release)
+	@ ./tools/build_release.py $(local_version) src/prebuilts/PVZ_NA_XI:lib/armeabi:$(server_out)
 __local_install_install:release
 	@ for i in out/*.apk;do \
 		adb install -r $$i; \
 	done
 __local_install_archive:__local_install_build
-	@ zip -j out/PVZ_CHEATER_$(local_version)-$(git_hash).zip out/*.apk
+	@ zip -j out/PVZ_CHEATER_$(local_version)-$(git_hash).zip out/*.apk doc/README.md
 local_install:__local_install_build __local_install_install
 local_release:__local_install_archive

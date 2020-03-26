@@ -4,6 +4,7 @@
   * 基于PvZ北美版6.1.1修改,基本的功能与6.1.1版一致
 
     ![app_info](doc/images/app_info.jpg)
+    ![app_info_XI](doc/images/app_info_XI.jpg)
     ![pvz](doc/images/pvz.png)
 
   * 效果
@@ -24,11 +25,12 @@
   |14.解锁各游戏模式|15.移动场上梯子僵尸|
   |16.触发推车|17.黄油糊脸|
   |18.开关额外无尽入口|19.开关食人花秒吞|
-  |20.打印场上调试信息|21.输出调试信息|
+  |20.开关额外特性|21.打印场上调试信息|
+  |22.输出调试信息|
 ## 对游戏本体的修改之处
   * 此版本有五个无尽(购买了第一个游戏礼包后可以从Mini Games里进入)
 
-  * 应用名是[植物大战僵尸北美修改版]
+  * 应用名是[植物大战僵尸北美修改版]/[植物大战僵尸北美XI版]
 
   * 无需手动放置数据包
 ## 相关功能的使用文档
@@ -49,8 +51,9 @@
 
     |文件名|描述|
     |:----:|:----:|
-    |PVZ_CHEATER_{更新日期}-aligned-debugSigned.apk|修改器程序|
-    |com.popcap.pvz_na_{更新日期}-aligned-debugSigned.apk|游戏本体|
+    |PVZ_CHEATER_${更新日期}-aligned-debugSigned.apk|修改器程序|
+    |PVZ_NA_XI_${更新日期}-aligned-debugSigned.apk|可用修改器,默认开启额外特性|
+    |PVZ_NA_${更新日期}-aligned-debugSigned.apk|可用修改器,但是不默认开启额外特性的版本|
 
     **每次更新时都需要一并安装对应的游戏本体**
 

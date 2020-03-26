@@ -107,9 +107,7 @@ void *injectFeaturesCodeThread(void *) {
   sleep(5);
   __getBase();
   extern void switchOnOffFeatures(Communicator *, msgPack *);
-  extern void switchFreePlants(Communicator *, msgPack *);
   switchOnOffFeatures(nullptr, nullptr);
-  switchFreePlants(nullptr, nullptr);
   pthread_exit(nullptr);
 }
 #endif

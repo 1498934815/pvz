@@ -20,7 +20,7 @@ void PvzClient::restartClient() {
 }
 void PvzClient::asClient() {
   error<>(connect(fd, (struct sockaddr *)&sin, sizeof(sin)))
-      .except(-1, "找不到[植物大战僵尸北美修改版]!"
+      .except(-1, "找不到[植物大战僵尸北美{修改/XI}版]!"
                   "必须启动与本修改器同时发布的PvZ客户端再打开本程序,"
                   "如果您不确定是配套的,请从项目地址重新下载安装");
 }
