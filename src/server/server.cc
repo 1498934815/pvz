@@ -102,12 +102,30 @@ void *__server_process(void *pfd) {
   server.disconnect();
   pthread_exit(nullptr);
 }
+#ifdef STANDALONE_FEATURES
+void *injectFeaturesCodeThread(void *) {
+  sleep(5);
+  __getBase();
+  extern void switchOnOffFeatures(Communicator *, msgPack *);
+  extern void switchFreePlants(Communicator *, msgPack *);
+  switchOnOffFeatures(nullptr, nullptr);
+  switchFreePlants(nullptr, nullptr);
+  pthread_exit(nullptr);
+}
+#endif
 void *__server_main(void *) {
   PvzServer server(SERVER_ADDR, SERVER_PORT);
   // Initialize options
   Options option;
   int csock;
   registerSignalMask();
+#ifdef STANDALONE_FEATURES
+  {
+    pthread_t tid;
+    pthread_create(&tid, nullptr, injectFeaturesCodeThread, nullptr);
+    pthread_detach(tid);
+  }
+#endif
   while ((csock = server.doAccept()) != -1) {
     DEBUG_LOG("GONNA A CLIENT");
     pthread_create(&emplace_front(threads, 0), nullptr, __server_process,

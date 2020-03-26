@@ -8,6 +8,7 @@
  * License : MIT
  */
 #include "common/PvzUtils.h"
+#include "common/common.h"
 #include "common/communicator.h"
 #include "common/options.h"
 #include "server/Pvz.h"
@@ -34,7 +35,8 @@ DEFINE_NORMAL_CHEAT(switchFreePlants) {
   void *freePlants = incrBase(OFF_FREE_PLANTS);
   bool on = getI32(freePlants) == 1;
   setI32(on ? 0 : 1, freePlants);
-  getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
+  if (getCommunicator() != nullptr)
+    getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
 DEFINE_NORMAL_CHEAT(setCoin) {
   setI32(getMessage()->val, incrSaves(OFF_COIN));
@@ -50,23 +52,24 @@ DEFINE_NORMAL_CHEAT(unlockAll) {
   // Nineth slot of plants
   setI32(PROP_NINETH_SLOT, incrSaves(OFF_STORE_ITEM_SLOT));
 }
-DEFINE_OBJECT_CHEAT(printItemssObject) {
+DEFINE_OBJECT_CHEAT(printItemsObject) {
   getCommunicator()->sendMessage(
-      makeMsgPack(0, formatBuffer("ITEM@%p TYPE:%d", getObject(),
+      makeMsgPack(0, formatBuffer("物品@%p 代码:%d", getObject(),
                                   getI32(incrThisObject(OFF_ITEM_TYPE)))));
 }
 DEFINE_OBJECT_CHEAT(printPlantsObject) {
   int code = getI32(incrThisObject(OFF_PLANT_CODE));
-  getCommunicator()->sendMessage(makeMsgPack(
-      0, formatBuffer("PLANT@%p TYPE:%d(%s) X:%d Y:%d HP:%d", getObject(), code,
-                      cardsCodesMap[code], getI32(incrThisObject(OFF_PLANT_X)),
-                      getI32(incrThisObject(OFF_PLANT_Y)),
-                      getI32(incrThisObject(OFF_PLANT_HP)))));
+  getCommunicator()->sendMessage(
+      makeMsgPack(0, formatBuffer("植物@%p 代码:%d(%s) X:%d Y:%d 血量:%d",
+                                  getObject(), code, cardsCodesMap[code],
+                                  getI32(incrThisObject(OFF_PLANT_X)),
+                                  getI32(incrThisObject(OFF_PLANT_Y)),
+                                  getI32(incrThisObject(OFF_PLANT_HP)))));
 }
 DEFINE_OBJECT_CHEAT(printZombiesObject) {
   int code = getI32(incrThisObject(OFF_ZOMBIE_CODE));
   getCommunicator()->sendMessage(
-      makeMsgPack(0, formatBuffer("ZOMBIE@%p TYPE:%d(%s) X:%f Y:%f HP:%d",
+      makeMsgPack(0, formatBuffer("僵尸@%p 代码:%d(%s) X:%f Y:%f 血量:%d",
                                   getObject(), code, zombiesCodesMap[code],
                                   getF32(incrThisObject(OFF_ZOMBIE_POS_X)),
                                   getF32(incrThisObject(OFF_ZOMBIE_POS_Y)),
@@ -75,7 +78,7 @@ DEFINE_OBJECT_CHEAT(printZombiesObject) {
 DEFINE_NORMAL_CHEAT(printProperties) {
   eachZombie(getCommunicator(), printZombiesObject);
   eachPlant(getCommunicator(), printPlantsObject);
-  eachItem(getCommunicator(), printItemssObject);
+  eachItem(getCommunicator(), printItemsObject);
 }
 bool isProper(int seed, int fieldType) {
   switch (seed) {
@@ -140,8 +143,8 @@ DEFINE_NORMAL_CHEAT(setZombiesList) {
   auto &&seeds = parseInts(getMessage()->msg);
   for (auto &&seed : seeds) {
     if (!in_range(seed, 0, PROP_RED_CODE)) {
-      getCommunicator()->sendMessage(makeMsgPack(
-          0, "Invalid code that out of range(0-32)", msgStatus::REMOTE_ERROR));
+      getCommunicator()->sendMessage(
+          makeMsgPack(0, "代码超出了范围(0-32)", msgStatus::REMOTE_ERROR));
       return;
     }
   }
@@ -158,8 +161,8 @@ DEFINE_NORMAL_CHEAT(switchMode) {
 }
 DEFINE_NORMAL_CHEAT(switchField) {
   if (!in_range(getMessage()->val, DAY, GARDEN)) {
-    getCommunicator()->sendMessage(makeMsgPack(
-        0, "Invalid code of type of field", msgStatus::REMOTE_ERROR));
+    getCommunicator()->sendMessage(
+        makeMsgPack(0, "无效场景类型", msgStatus::REMOTE_ERROR));
     return;
   }
   setI32(getMessage()->val, incrStatus(OFF_FIELD_TYPE));
@@ -173,8 +176,7 @@ DEFINE_NORMAL_CHEAT(setCards) {
   std::vector<int> &&seeds = parseInts(getMessage()->msg);
   if (seeds.size() > cnt) {
     getCommunicator()->sendMessage(
-        makeMsgPack(0, "Seeds count is more than your brought slot count",
-                    msgStatus::REMOTE_ERROR));
+        makeMsgPack(0, "代码个数比已有卡槽多", msgStatus::REMOTE_ERROR));
     return;
   }
   card = incr(card, PROP_FIRST_CARD_ENTRY);
@@ -228,33 +230,9 @@ DEFINE_NORMAL_CHEAT(switchChomperFast) {
   setByte(on ? 0xfa : 0, chomperFast);
   getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
-#include <features/features.h>
+#include "features/features.h"
 DEFINE_NORMAL_CHEAT(switchOnOffFeatures) {
-  for (struct feature *feature = features; feature->offset != 0; ++feature) {
-    void *codeptr = incr(__getCoreLib(), feature->offset);
-    void *buffer = incr(__getCoreLib(), feature->buffer);
-    ptrdiff_t diff = (uintptr_t)buffer - (uintptr_t)codeptr - 8;
-    unsigned blCode = 0xeb000000 | (0xffffff & (diff >> 2));
-    if (getI32(codeptr) != blCode) {
-      if (feature->originalcode == 0) {
-        feature->originalcode = getI32(codeptr);
-#if DEBUG
-        ptrdiff_t decode = ((0xffffff & blCode) << 2) | 0xff000000;
-        DEBUG_LOG("CODEPTR %p codeptr %p code %x delta %x/%d decode %x\n",
-                  codeptr, feature->code, blCode, diff, diff, decode);
-        DEBUG_LOG("TO %p/%d", buffer, feature->codesize);
-#endif
-        memcpy((void *)buffer, (void *)feature->code, feature->codesize);
-      }
-      setI32(blCode, codeptr);
-      getCommunicator()->sendMessage(
-          makeMsgPack(0, formatBuffer("%s 现在 开", feature->name)));
-    } else {
-      setI32(feature->originalcode, codeptr);
-      getCommunicator()->sendMessage(
-          makeMsgPack(0, formatBuffer("%s 现在 关", feature->name)));
-    }
-  }
+  loadPvzFeatures(getCommunicator());
 }
 /*
 DEFINE_OBJECT_CHEAT(enforceStarFruit) {

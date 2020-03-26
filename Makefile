@@ -31,6 +31,10 @@ CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-DGIT_BRANCH=\"$(git_branch)\" \
 	-DAUTHOR=\"AS魇梦蚀\"
 
+ifneq ($(STANDALONE_FEATURES),)
+CC_FLAG += -DSTANDALONE_FEATURES
+endif
+
 ifeq ($(NDK_BUILD),true)
 	# We are use NDK-R20 now
 	NDK ?= $(ANDROID_NDK)

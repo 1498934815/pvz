@@ -30,7 +30,7 @@ std::vector<PvzPoint> parsePoints(const char *expr) {
   for (auto &&pointString : splitBy(expr, ',')) {
     auto &&pointVec = splitBy(pointString, '.');
     if (pointVec.size() != 2) {
-      uierror("Invalid format");
+      uierror("格式错误");
       clientPanic();
     }
     vec.emplace_back(PvzPoint{std::stoi(pointVec[0]), std::stoi(pointVec[1])});

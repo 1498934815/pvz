@@ -63,6 +63,8 @@
 
 #define POINTERSIZE (sizeof(void *))
 
+#define POINTER_DIFFERENCE(p1, p2) ((uintptr_t)p1 - (uintptr_t)p2)
+
 template <typename Ty> class Singleton {
   static Ty *instance;
 
