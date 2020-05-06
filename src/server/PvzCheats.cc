@@ -29,7 +29,14 @@
 #define getObject() (OBJECT_ARG)
 #define incrThisObject(off) incr(getObject(), off)
 DEFINE_NORMAL_CHEAT(setSun) {
+#ifdef DEBUG
+  void replaceSeeds(std::vector<int> && seeds, unsigned end, bool hasThief,
+                    bool);
+#warning 现在setSun是只出6只某种僵尸
+  replaceSeeds({static_cast<int>(getMessage()->val)}, 6, false, false);
+#else
   setI32(getMessage()->val, incrStatus(OFF_SUN));
+#endif
 }
 DEFINE_NORMAL_CHEAT(switchFreePlants) {
   void *freePlants = incrBase(OFF_FREE_PLANTS);

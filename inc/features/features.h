@@ -14,9 +14,9 @@
 extern "C" {
 struct feature {
   off_t offset;
+  int extracode;
   void *code;
-  size_t codesize;
-  int originalcode;
+  int originalcode[2];
   off_t buffer;
 };
 struct features_group {
@@ -27,5 +27,8 @@ struct features_group {
 extern struct features_group features[];
 extern void loadPvzFeatures(Communicator *);
 }
-#define FEATURES_BUFFER_BASE 0x8e5ddc
+// JNI_OnUnload
+// #define FEATURES_BUFFER_BASE 0x8e5ddc
+// 0076c21c T __gnu_Unwind_RaiseException
+#define FEATURES_BUFFER_BASE 0x76c21c
 #endif // INC_FEATURES_FEATURES_H

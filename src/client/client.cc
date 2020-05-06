@@ -122,7 +122,7 @@ void checkVersion() {
   if (version != LOCAL_VERSION) {
     uierrorf("修改器(v%d)与主程序(v%d)版本不一致!\n", LOCAL_VERSION, version);
     uierror("请看" README_MD ",下载最新版本的主程序与修改器");
-    exit(-1);
+    // exit(-1);
   }
 }
 static jmp_buf env;
