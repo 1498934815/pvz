@@ -11,6 +11,7 @@ DEFINE_EXTERNAL_FUNCTION whenPoleVaultingJump
 DEFINE_EXTERNAL_FUNCTION whenZombiePropertiesInit
 DEFINE_EXTERNAL_FUNCTION judgeAdventureLevel
 DEFINE_EXTERNAL_FUNCTION judgeAdventureScene
+DEFINE_EXTERNAL_FUNCTION whenCardsSelectionInit
 DEFINE_EXTERNAL_FUNCTION whenPlantHurtting
 DEFINE_EXTERNAL_FUNCTION whenPlantShotting
 DEFINE_EXTERNAL_FUNCTION oneOfThree // 存放1/3的rand函数指针
@@ -58,9 +59,10 @@ restoreR0:
 ret:
   bx lr
 tallnut1:
-//  callCFunction oneOfThree
-//  cmp r0, #1
-//  bne restoreR0
+  callCFunction oneOfThree
+  cmp r0, #1
+  bne restoreR0
+  restoreRegisters
   mov r2, #14
   str r2, [r3, #0x30]
   mov r2, #1
@@ -180,5 +182,26 @@ DEFINE_FEATURE bringGrave
   mov r2, #1 // 墓碑
   bx lr
 DEFINE_FEATURE noScaredMushroom
+  mov r2, #0
+  bx lr
+DEFINE_FEATURE cardsSelectionInit
+  str r4, [r3, #2004]
+  FUNCTIONCALLGUARD whenCardsSelectionInit
+  FUNCTIONEXIT
+DEFINE_FEATURE alterGardensZombiesType
+  mov r2, #1
+  push {r1}
+  ldr r1, [r3, #0x838]
+  cmp r1, #0
+  bne out
+  ldr r1, [r3, #0x7c4]
+  add r1, r3, #0x5600
+  add r1, r1, #0xac
+  ldr r1, [r1]
+  cmp r1, #60
+  blt out
+  mov r2, #2
+  out:
+  pop {r1}
   bx lr
 DEFINE_FEATURE_END asm_features_region_end

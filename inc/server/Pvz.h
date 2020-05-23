@@ -74,6 +74,8 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
   eachObject(com, OFF_ITEMS_ENTRY, OFF_ITEMS_COUNT, callback)
 #define eachMower(com, callback)                                               \
   eachObject(com, OFF_MOWERS_ENTRY, OFF_MOWERS_COUNT, callback)
+#define eachVase(com, callback)                                                \
+  eachObject(com, OFF_VASES_ENTRY, OFF_VASES_COUNT, callback)
 
 // Game Private Property
 #define PROP_PVZ_CORE_LIB "libpvz.so"
@@ -99,6 +101,8 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_MOWERS_COUNT 0x134
 #define OFF_PROJECTILES_ENTRY 0xec
 #define OFF_PROJECTILES_COUNT 0xfc
+#define OFF_VASES_ENTRY 0x140
+#define OFF_VASES_COUNT 0x150
 
 // Some Misc Things
 // -- Saves
@@ -109,6 +113,7 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_STORE_ITEM_SLOT 0x384
 #define OFF_STORE_ITEM_END 0x3fc
 // -- Base
+#define OFF_CARDS_SELECTION 0x7d4
 #define OFF_MODE 0x838
 #define OFF_FREE_PLANTS 0x854
 // -- Status
@@ -153,11 +158,30 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_ZOMBIE_SIZE 0x128
 // -- Plants
 #define OFF_PLANT_CODE 0x30
+#define OFF_PLANT_ACTION 0x48
 #define OFF_PLANT_HP 0x4c
 #define OFF_PLANT_X 0x8
 #define OFF_PLANT_Y 0xc
+// 墓碑吞噬者
+#define OFF_PLANT_ACTION_REMAIN_TIME 0x60
 #define OFF_PLANT_SHOOT_REMAIN_TIME 0x64
 #define OFF_PLANT_LIGHT 0xc4
+
+// Vases
+#define OFF_VASES_ZOMBIE_CODE 0x3c
+#define OFF_VASES_PLANT_CODE 0x40
+// 罐子里是什么
+// 1 植物
+// 2 僵尸
+#define OFF_VASES_ITEM_TYPE 0x44
+// 罐子透视时间
+#define OFF_VASES_VISIBLE_TIME 0x4C
+#define PROP_VASE_ITEM_TYPE_PLANT 1
+#define PROP_VASE_ITEM_TYPE_ZOMBIE 2
+
+// 选卡
+#define OFF_CARDS_SELECTION_FIRST_SELECT_BY_DAVE 0x110
+#define OFF_CARDS_SELECTION_NEXT_SELECT_BY_DAVE 0x3c
 
 // -- Properties
 #define PROP_FLAG_CODE 1
@@ -236,7 +260,8 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define PROP_PLANT_ICE_MELON_PRICE 50
 
 // Internal values
-#define PROP_INITIALZE_SUN_FOR_HARD_LEVEL 150
+#define PROP_PLANTS_COUNT 48
+#define PROP_INITIAL_SUN_FOR_HARD_LEVEL 150
 #define PROP_PER_COLUMN 80.0
 #define PROP_GRID_TYPE_POOL 3
 #define PROP_ROW_POOLZOMBIES 2

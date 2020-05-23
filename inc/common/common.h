@@ -111,6 +111,27 @@ template <typename Err = int, typename Ty = int> struct error {
 inline void clientPanic() {
   raise(SIGINT);
 }
+template <size_t max> static inline int __rate() {
+  return rand() % max;
+}
+static inline int oneOfThree() {
+  return __rate<3>() == 1;
+}
+static inline int oneOfFifteen() {
+  return __rate<15>() == 1;
+}
+static inline int oneOfFifty() {
+  return __rate<50>() == 1;
+}
+static inline int oneOfOneHundred() {
+  return __rate<100>() == 1;
+}
+static inline int oneOfOneThousand() {
+  return __rate<1000>() == 1;
+}
+static inline int rateOneHalf() {
+  return __rate<2>() == 1;
+}
 enum class msgStatus : unsigned int {
   NONE,
   EOR,

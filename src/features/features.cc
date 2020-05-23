@@ -44,8 +44,10 @@ struct feature plantFeatures[] = {
     FEATURE(0x35a860, zombieIce),
     FEATURE(0x238cd4, plantHurtting),
     FEATURE(0x254b38, randomProjectile),
-    FEATURE(0x1416d0, bringGrave),
+    // FEATURE(0x1416d0, bringGrave),
     FEATURE(0x23e0cc, meanPlant),
+    // bx lr
+    __FEATURE(0x23a2b4, static_cast<int>(0xe12fff1e), noScaredMushroom),
     FEATURE(0x23a4b0, noScaredMushroom),
     FEATURE(0x23a454, noScaredMushroom),
     FEATURE_END,
@@ -77,11 +79,15 @@ struct feature zombieFeatures[] = {
 DEFINE_FEATURE(adventureSixthLevelScene)
 DEFINE_FEATURE(adventureSixthLevel)
 DEFINE_FEATURE(replaceZombiesSeed)
+DEFINE_FEATURE(cardsSelectionInit)
+DEFINE_FEATURE(alterGardensZombiesType)
 struct feature levelsFeatures[] = {
     FEATURE(0x1438c4, adventureSixthLevelScene),
     FEATURE(0x141ad4, replaceZombiesSeed),
     // push {lr}
     __FEATURE(0x24cb10, static_cast<int>(0xe52de004), adventureSixthLevel),
+    FEATURE(0x1cf04c, cardsSelectionInit),
+    FEATURE(0x1439cc, alterGardensZombiesType),
     FEATURE_END,
 };
 DEFINE_FEATURE(dropSeedsCard)
@@ -96,27 +102,6 @@ struct features_group features[] = {
     FEATURE_GROUP("掉落物品修改", itemsFeatures),
     {nullptr},
 };
-template <size_t max> static inline int __rate() {
-  return rand() % max;
-}
-static inline int oneOfThree() {
-  return __rate<3>() == 1;
-}
-static inline int oneOfFifteen() {
-  return __rate<15>() == 1;
-}
-static inline int oneOfFifty() {
-  return __rate<50>() == 1;
-}
-static inline int oneOfOneHundred() {
-  return __rate<100>() == 1;
-}
-static inline int oneOfOneThousand() {
-  return __rate<1000>() == 1;
-}
-static inline int rateOneHalf() {
-  return __rate<2>() == 1;
-}
 static void whenZombieBorn(int, int, void *zombie, int hp) {
   int code = getI32(incr(zombie, OFF_ZOMBIE_CODE));
   setI32(hp, incr(zombie, OFF_ZOMBIE_HP));
@@ -206,9 +191,13 @@ static void judgeHittingEffects(int code, int hit, int flags, void *zombie) {
   case PROP_ZOMBIE_BOSS:
   case PROP_THIEF_CODE:
   case PROP_ZOMBONI_CODE:
+    break;
   case PROP_ZOMBIE_JALAPENO_CODE:
   case PROP_CATAPULT_CODE:
-    break;
+    // 投篮、辣椒不可被魅惑
+    if (hit == PROP_PLANT_CARBAGE_PROJECTILE_HIT ||
+        hit == PROP_PLANT_FIRE_PEA_HIT)
+      break;
   default:
     if (rateFunction())
       produceHittingEffects(zombie, hit, flags);
@@ -277,20 +266,30 @@ static void setSeed(void *codeaddr, int level, int wave, int fieldType,
   }
 }
 static void __takeGrave() {
-  static void (*takeGrave)(void *, int, int, void *) = (void(*)(void *, int, int, void *))incr(__getCoreLib(), 0x141724);
+  static void (*takeGrave)(void *, int, int, void *) =
+      (void (*)(void *, int, int, void *))incr(__getCoreLib(), 0x141724);
   for (int i = 0; i < 6; ++i) {
     takeGrave(__getStatus(), 1, i, incrStatus(0x140));
   }
 }
 static void giveSomeSun() {
-  setI32(PROP_INITIALZE_SUN_FOR_HARD_LEVEL, incrStatus(OFF_SUN));
+  setI32(PROP_INITIAL_SUN_FOR_HARD_LEVEL, incrStatus(OFF_SUN));
+}
+static void unlockDavesCards() {
+  void *selected = incr(getPtr(incrBase(OFF_CARDS_SELECTION)),
+                        OFF_CARDS_SELECTION_FIRST_SELECT_BY_DAVE);
+  for (size_t i = 0; i < PROP_PLANTS_COUNT; ++i) {
+    setI32(0, selected);
+    selected = incr(selected, OFF_CARDS_SELECTION_NEXT_SELECT_BY_DAVE);
+  }
 }
 static void alterGridsAsPool(void *status) {
   void *grid = incr(status, OFF_BATTLEGROUND_GRID_TYPE);
-  setI32(PROP_ROW_POOLZOMBIES, incr(status, OFF_ROW_ZOMBIESTYPE));
+  int types[] = {PROP_ROW_POOLZOMBIES, 1, 1, 1, 1, 0};
+  memcpy(incr(status, OFF_ROW_ZOMBIESTYPE), types, sizeof(types));
   // void *grid = incr(status, OFF_BATTLEGROUND_GRID_TYPE + 5 * POINTERSIZE);
-  // setI32(PROP_ROW_POOLZOMBIES,
-         // incr(status, OFF_ROW_ZOMBIESTYPE + 5 * POINTERSIZE));
+  // setI32(PROP_ROW_POOLZOMBIES, incr(status, OFF_ROW_ZOMBIESTYPE + 5 *
+  // POINTERSIZE));
   for (unsigned cnt = 0; cnt < 9; ++cnt) {
     setI32(PROP_GRID_TYPE_POOL, grid);
     // 跳下一个右边的格子
@@ -302,18 +301,15 @@ static void judgeAdventureScene(int, int, void *status, off_t sceneOff) {
   switch (getI32(incr(status, OFF_CURRENT_ADVENTURE_LEVEL))) {
   case 51 ... 60:
     setI32(fieldTypes::MOONNIGHT, incr(status, sceneOff));
-    giveSomeSun();
     break;
   case 61 ... 70:
     // setI32(fieldTypes::DAY, incr(status, sceneOff));
     setI32(fieldTypes::GARDEN, incr(status, sceneOff));
     alterGridsAsPool(status);
-    giveSomeSun();
     break;
   case 71 ... 80:
-    setI32(fieldTypes::NIGHT, incr(status, sceneOff));
+    setI32(fieldTypes::MUSHROOM_GARDEN, incr(status, sceneOff));
     alterGridsAsPool(status);
-    giveSomeSun();
     break;
   }
 }
@@ -329,6 +325,11 @@ static void judgeAdventureLevel(int, int, int level, void *saves) {
     setI32(level, incr(saves, OFF_ADVENTURE_LEVEL));
     break;
   }
+}
+static void whenCardsSelectionInit() {
+  unlockDavesCards();
+  if (in_range(getI32(incrStatus(OFF_CURRENT_ADVENTURE_LEVEL)), 50, 80))
+    giveSomeSun();
 }
 static void whenZombiesListInit(int count, int code, int pos, void *list) {
   // R1, 波数
@@ -439,6 +440,7 @@ uintptr_t helpers[] = {
     HELPER(whenZombiePropertiesInit),
     HELPER(judgeAdventureLevel),
     HELPER(judgeAdventureScene),
+    HELPER(whenCardsSelectionInit),
     HELPER(whenPlantHurtting),
     HELPER(whenPlantShotting),
     HELPER(oneOfThree),
@@ -499,7 +501,7 @@ static void alterPlantsPrice() {
       {PROP_PLANT_MELON, PROP_PLANT_MELON_PRICE},
   };
   void *ptr = incr(__getCoreLib(), OFF_PLANTS_SLOT_INFO);
-  for (int i = 0; i < 52; ++i) {
+  for (int i = 0; i < PROP_PLANTS_COUNT; ++i) {
     if (pricesMap.find(getI32(ptr)) != pricesMap.end()) {
       setI32(pricesMap[getI32(ptr)], incr(ptr, 0x10));
     }

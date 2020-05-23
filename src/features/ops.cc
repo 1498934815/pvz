@@ -25,5 +25,7 @@ void back(void *zombie, float distance) {
 void advance(void *zombie, float distance) {
   back(zombie, -distance);
 }
-
+void butter(void *zombie) {
+  setI32(500, incr(zombie, OFF_ZOMBIE_BUTTER_COVER));
+}
 } // namespace ops

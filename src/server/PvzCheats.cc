@@ -237,6 +237,48 @@ DEFINE_NORMAL_CHEAT(switchChomperFast) {
   setByte(on ? 0xfa : 0, chomperFast);
   getCommunicator()->sendMessage(makeMsgPack(0, on ? "现在 关" : "现在 开"));
 }
+#include "features/ops.h"
+DEFINE_OBJECT_CHEAT(__vaseBreakerZombieCallback) {
+  switch (__rate<5>()) {
+  case 0:
+    ops::back(getObject(), 2 * PROP_PER_COLUMN);
+  case 1:
+    ops::ice(getObject(), getI32(incrThisObject(OFF_ZOMBIE_FLAGS1)));
+  case 2:
+    ops::butter(getObject());
+  }
+}
+DEFINE_OBJECT_CHEAT(__vaseBreakerPlantCallback) {}
+DEFINE_OBJECT_CHEAT(__vaseBreakerVaseCallback) {
+  if (oneOfFifteen()) {
+    switch (getI32(incrThisObject(OFF_VASES_ITEM_TYPE))) {
+    case PROP_VASE_ITEM_TYPE_PLANT:
+      setI32(__rate<PROP_PLANTS_COUNT>(), incrThisObject(OFF_VASES_PLANT_CODE));
+      break;
+    case PROP_VASE_ITEM_TYPE_ZOMBIE:
+      setI32(__rate<25>(), incrThisObject(OFF_VASES_ZOMBIE_CODE));
+      break;
+    }
+    setI32(500, incrThisObject(OFF_VASES_VISIBLE_TIME));
+  }
+}
+DEFINE_DAEMON_CHEAT(switchVaseBreakEffects) {
+  // 所有砸罐子模式
+  if (in_range(getI32(incrBase(OFF_MODE)), 50, 59)) {
+    switch (__rate<5>()) {
+    case 0:
+      eachPlant(getCommunicator(), __vaseBreakerPlantCallback);
+      break;
+    case 1:
+      eachZombie(getCommunicator(), __vaseBreakerZombieCallback);
+      break;
+    case 2:
+      eachVase(getCommunicator(), __vaseBreakerVaseCallback);
+      break;
+    }
+  }
+  sleep(5);
+}
 #include "features/features.h"
 DEFINE_NORMAL_CHEAT(switchOnOffFeatures) {
   loadPvzFeatures(getCommunicator());
@@ -314,6 +356,9 @@ DEFINE_EXTERNAL_OPTIONS(
                   switchOnOffExtraEndlessEntires),
     DEFINE_OPTION(NONE, "开关食人花秒吞", nullptr, switchChomperFast),
     DEFINE_OPTION(NONE, "开关额外特性", nullptr, switchOnOffFeatures),
+    DEFINE_OPTION(DAEMON_CALLBACK | CANCEL_DAEMON_CALLBACK,
+                  "开关砸罐子随机效果", nullptr,
+                  .daemon_callback = switchVaseBreakEffects),
     /*
     DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "增强杨桃", nullptr,
                   .object_callback = enforceStarFruit),

@@ -71,6 +71,10 @@
 
     ![cheater_mismatch](doc/images/cheater_mismatch.png)
 
+## XI相关
+  见![必读](doc/使用必读.txt)
+  见![更新日志](更新日志.txt)
+
 ## THANKS
   tools/uber-apk-signer-1.0.0.jar @ https://github.com/patrickfav/uber-apk-signer
 
