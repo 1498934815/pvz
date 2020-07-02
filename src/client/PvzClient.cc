@@ -47,9 +47,14 @@ std::vector<msgPack> PvzClient::recvMessages() {
   }
   return result;
 }
-msgPack PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
+std::vector<msgPack> PvzClient::sendBuiltinsCommandEx(BuiltinsCommand command) {
   this->sendMessage(makeMsgPack(command, nullptr, msgStatus::COMMAND));
   auto &&msgs = this->recvMessages();
+  return std::move(msgs);
+}
+
+msgPack PvzClient::sendBuiltinsCommand(BuiltinsCommand command) {
+  auto &&msgs = sendBuiltinsCommandEx(command);
   return msgs.empty() ? makeMsgPack(0) : msgs.front();
 }
 void *PvzClient::getBase() {
@@ -90,6 +95,7 @@ void PvzClient::printDebugInfo() {
   void *status = getStatus();
 #define STATICLY_GAME_INFO_TITLE "静态游戏信息 "
 #define DYNAMICLY_GAME_INFO_TITLE "动态游戏信息 "
+#define SCRIPT_TITLE "Lua脚本 "
   uinoticef(STATICLY_GAME_INFO_TITLE
             "PID:%d 核心库:%p 基址:%p 用户信息入口:%p\n",
             getPid(), getCoreLib(), getBase(), getSaves());
@@ -102,4 +108,7 @@ void PvzClient::printDebugInfo() {
               getTotalFreshCountdown(), getFreshCountdown());
   } else
     uinoticef(DYNAMICLY_GAME_INFO_TITLE "未在游戏中\n");
+  for (auto &msg : sendBuiltinsCommandEx(BuiltinsCommand::GET_SCRIPTS_LIST)) {
+    uinoticef(SCRIPT_TITLE "%s\n", msg.msg);
+  }
 }

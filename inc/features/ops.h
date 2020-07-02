@@ -12,6 +12,8 @@
 namespace ops {
 void hypno(void *zombie, int flags);
 void ice(void *zombie, int flags);
+void iceLongTime(void *zombie, int flags);
+void fly(void *zombie, int flags);
 void back(void *zombie, float distance);
 void advance(void *zombie, float distance);
 void butter(void *zombie);

@@ -17,6 +17,7 @@ class PvzClient : public Singleton<PvzClient>, public Communicator {
 public:
   PvzClient(const char *, int);
   void printDebugInfo();
+  std::vector<msgPack> sendBuiltinsCommandEx(BuiltinsCommand);
   msgPack sendBuiltinsCommand(BuiltinsCommand);
   void asClient();
   void restartClient();

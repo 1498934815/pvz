@@ -10,6 +10,8 @@
 #include "common/common.h"
 #include "common/communicator.h"
 #include "common/options.h"
+#include "features/features.h"
+#include "features/scripts.h"
 #include "server/Pvz.h"
 #include "server/PvzServer.h"
 #include <deque>
@@ -102,28 +104,28 @@ void *__server_process(void *pfd) {
   server.disconnect();
   pthread_exit(nullptr);
 }
-#ifdef STANDALONE_FEATURES
 void *injectFeaturesCodeThread(void *) {
   sleep(5);
   __getBase();
+  enableAllHidenGames();
+#ifdef STANDALONE_FEATURES
   extern void switchOnOffFeatures(Communicator *, msgPack *);
   switchOnOffFeatures(nullptr, nullptr);
+#endif
   pthread_exit(nullptr);
 }
-#endif
 void *__server_main(void *) {
   PvzServer server(SERVER_ADDR, SERVER_PORT);
   // Initialize options
   Options option;
   int csock;
   registerSignalMask();
-#ifdef STANDALONE_FEATURES
   {
     pthread_t tid;
     pthread_create(&tid, nullptr, injectFeaturesCodeThread, nullptr);
     pthread_detach(tid);
   }
-#endif
+  loadLuaScripts();
   while ((csock = server.doAccept()) != -1) {
     DEBUG_LOG("GONNA A CLIENT");
     pthread_create(&emplace_front(threads, 0), nullptr, __server_process,

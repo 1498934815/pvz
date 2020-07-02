@@ -1,0 +1,6 @@
+log = io.output("/sdcard/Android/data/com.popcap.pvz_na/scripts/LOG")
+log:write(string.format("LUA SCRIPT LOADED, CORELIB %8x\n", getCoreLib()))
+log:write(string.format("BASE %8x\n", getBase()))
+log:write(string.format("STATUS %8x\n", getStatus()))
+setI32(0xe3a0200b, getCoreLib() + 0x238b74)
+log:close()

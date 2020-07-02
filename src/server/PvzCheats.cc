@@ -92,7 +92,8 @@ bool isProper(int seed, int fieldType) {
   // 泳池模式得到海豚、潜水
   case 0xe:
   case 0xb:
-    return in_range(fieldType, POOL, FOG);
+    return in_range(fieldType, POOL, FOG) ||
+           in_range(fieldType, GARDEN, AQUARIUM);
   // 非屋顶、月夜得到舞王、矿工
   case 0x8:
   case 0x11:
@@ -279,6 +280,37 @@ DEFINE_DAEMON_CHEAT(switchVaseBreakEffects) {
   }
   sleep(5);
 }
+#include "features/scripts.h"
+DEFINE_NORMAL_CHEAT(runUserScript) {
+  luaScript *luaScript = &luaScripts[getMessage()->val];
+  if (luaScript->name == nullptr) {
+    getCommunicator()->sendMessage(
+        makeMsgPack(0, "脚本不存在", msgStatus::REMOTE_ERROR));
+    return;
+  }
+  if (luaScript->type == luaScriptType::continuous) {
+    if (luaScript->tid != 0) {
+      getCommunicator()->sendMessage(
+          makeMsgPack(0, "脚本还在运行", msgStatus::REMOTE_ERROR));
+      return;
+    } else if (luaScript->ret != LUA_OK) {
+      getCommunicator()->sendMessage(makeMsgPack(
+          0, "脚本上次运行出错,再执行一次", msgStatus::REMOTE_ERROR));
+      if (lua_gettop(luaScript->state) != 0)
+        getCommunicator()->sendMessage(makeMsgPack(
+            0, lua_tostring(luaScript->state, 1), msgStatus::REMOTE_ERROR));
+    }
+    runLuaScriptOnNewThread(luaScript);
+  } else {
+    int ret = runLuaScript(luaScript);
+    if (ret != LUA_OK)
+      getCommunicator()->sendMessage(
+          makeMsgPack(0, "运行脚本时出错", msgStatus::REMOTE_ERROR));
+    if (lua_gettop(luaScript->state) != 0)
+      getCommunicator()->sendMessage(makeMsgPack(
+          0, lua_tostring(luaScript->state, 1), msgStatus::REMOTE_ERROR));
+  }
+}
 #include "features/features.h"
 DEFINE_NORMAL_CHEAT(switchOnOffFeatures) {
   loadPvzFeatures(getCommunicator());
@@ -359,6 +391,7 @@ DEFINE_EXTERNAL_OPTIONS(
     DEFINE_OPTION(DAEMON_CALLBACK | CANCEL_DAEMON_CALLBACK,
                   "开关砸罐子随机效果", nullptr,
                   .daemon_callback = switchVaseBreakEffects),
+    DEFINE_OPTION(GETINT, "运行脚本", "请输入脚本序号", runUserScript),
     /*
     DEFINE_OPTION(GAMING | PLANTS_CALLBACK, "增强杨桃", nullptr,
                   .object_callback = enforceStarFruit),

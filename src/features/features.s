@@ -1,43 +1,30 @@
 .include "src/features/macro.s"
 DEFINE_FEATURE asm_features_region
-DEFINE_EXTERNAL_FUNCTION whenZombieBorn // 存放whenZombieBorn的函数地址
+DEFINE_EXTERNAL_FUNCTION CWhenZombieBorn // 存放whenZombieBorn的函数地址
 DEFINE_EXTERNAL_FUNCTION whenPaperZombieBorn // 存放whenPaperZombieBorn的函数地址
-DEFINE_EXTERNAL_FUNCTION whenZombieHitting // 存放whenZombieHitting的函数地址
-DEFINE_EXTERNAL_FUNCTION whenZombiesListInit // 存放whenZombiesListInit的函数地址
+DEFINE_EXTERNAL_FUNCTION CWhenZombieHitting// 存放whenZombieHitting的函数地址
+DEFINE_EXTERNAL_FUNCTION CWhenZombiesListInit // 存放CWhenZombiesListInit的函数地址
 DEFINE_EXTERNAL_FUNCTION whenPogoJump
 DEFINE_EXTERNAL_FUNCTION whenPogoJumpOverTallnut
 DEFINE_EXTERNAL_FUNCTION whenPogoPaperDroped
 DEFINE_EXTERNAL_FUNCTION whenPoleVaultingJump
 DEFINE_EXTERNAL_FUNCTION whenZombiePropertiesInit
+DEFINE_EXTERNAL_FUNCTION detectZombiesVelocity
 DEFINE_EXTERNAL_FUNCTION judgeAdventureLevel
 DEFINE_EXTERNAL_FUNCTION judgeAdventureScene
+DEFINE_EXTERNAL_FUNCTION CJudgeNewLevelFreshCountdown
+DEFINE_EXTERNAL_FUNCTION CWhenNewWave
 DEFINE_EXTERNAL_FUNCTION whenCardsSelectionInit
-DEFINE_EXTERNAL_FUNCTION whenPlantHurtting
-DEFINE_EXTERNAL_FUNCTION whenPlantShotting
+DEFINE_EXTERNAL_FUNCTION whenPlantDiyingEffects
+DEFINE_EXTERNAL_FUNCTION CWhenPlantHurtting
+DEFINE_EXTERNAL_FUNCTION CWhenPlantShotProjectile
 DEFINE_EXTERNAL_FUNCTION oneOfThree // 存放1/3的rand函数指针
 DEFINE_EXTERNAL_FUNCTION oneOfFifteen // 存放1/3的rand函数指针
 DEFINE_EXTERNAL_FUNCTION oneOfOneHundred // 存放rand函数的指针
 // 植物被咬死时效果
 DEFINE_FEATURE whenPlantDiying
-  str r2, [r3, #76]
-  cmp r2, #10
-  bge ret
-  ldr r2, [r3, #0x30]
-  cmp r2, #3
-  beq littlenut
-  cmp r2, #23
-  beq tallnut
-  cmp r2, #8
-  beq littlemushroom
-  cmp r2, #24 // 水兵菇
-  beq littlemushroom
-  b ret
-littlenut:
-  mov r2, #2
-  str r2, [r3, #0x30]
-  mov r2, #1
-  str r2, [r3, #0x5c]
-  b ret
+  FUNCTIONCALLGUARD whenPlantDiyingEffects
+  FUNCTIONEXIT
 tallnut:
   mov r2, #17
   str r2, [r3, #0x30]
@@ -47,12 +34,6 @@ littlemushroom:
   cmp r0, #1
   bne restoreR0
   restoreRegisters
-  mov r2, #9
-  str r2, [r3, #0x30]
-  mov r2, #1
-  str r2, [r3, #0x64]
-  mov r2, #3000
-  str r2, [r3, #0x68]
   b ret
 restoreR0:
   restoreRegisters
@@ -112,30 +93,30 @@ set:
   b ret
 DEFINE_FEATURE dropSeedsCard_end
 // 僵尸一类饰品
-DEFINE_FEATURE zombieHat
-  FUNCTIONCALLGUARD whenZombieBorn
+DEFINE_FEATURE whenZombieBorn
+  FUNCTIONCALLGUARD CWhenZombieBorn
   FUNCTIONEXIT
 DEFINE_FEATURE paperHP
   FUNCTIONCALLGUARD whenPaperZombieBorn // whenPaperZombieBorn
   FUNCTIONEXIT
-DEFINE_FEATURE zombieHypno
-  push {r1}
+DEFINE_FEATURE whenZombieHitting
+  push {r0, r1}
   str r2, [r3, #212] // 僵尸当前血量
   ldr	r1, [r11, #-52]
-  callCFunction whenZombieHitting // whenZombieHitting
+  callCFunction CWhenZombieHitting // whenZombieHitting
   restoreRegisters
-  pop {r1}
+  pop {r0, r1}
   b ret
 DEFINE_FEATURE zombieIce
-  push {r1}
+  push {r0, r1}
   str r2, [r3, #220] // 僵尸一级防具
   ldr	r1, [r11, #-44]
-  callCFunction whenZombieHitting // whenZombieHitting
+  callCFunction CWhenZombieHitting // CWhenZombieHitting
   restoreRegisters
-  pop {r1}
+  pop {r0, r1}
   b ret
-DEFINE_FEATURE replaceZombiesSeed
-  FUNCTIONCALLGUARD whenZombiesListInit // whenZombiesListInit
+DEFINE_FEATURE whenZombiesListInit
+  FUNCTIONCALLGUARD CWhenZombiesListInit // CWhenZombiesListInit
   FUNCTIONEXIT
 DEFINE_FEATURE pogoNewLine
   FUNCTIONCALLGUARD whenPogoJump // whenPogoJump
@@ -149,11 +130,18 @@ DEFINE_FEATURE pogoPaperDroped
 DEFINE_FEATURE poleVaultingJumpTwice
   FUNCTIONCALLGUARD whenPoleVaultingJump
   FUNCTIONEXIT
-DEFINE_FEATURE plantHurtting
-  FUNCTIONCALLGUARD whenPlantHurtting
+DEFINE_FEATURE whenPlantHurtting
+  mov r0, #15
+  FUNCTIONCALLGUARD CWhenPlantHurtting
   FUNCTIONEXIT
 DEFINE_FEATURE zombieEatting
-  mov r3, #8
+  ldr r3, [sp, #0xc] // 僵尸地址,3c是上下文中得出的
+  ldr r3, [r3, #0x30] // 僵尸代码
+  cmp r3, #5 // 报纸
+  bne 0x4
+  mov r3, #12 // 每次12点
+  b ret
+  mov r3, r0
   b ret
 DEFINE_FEATURE thiefQuickly
   mov r2, #1
@@ -170,13 +158,14 @@ DEFINE_FEATURE zombiePropertiesInit
   str r2, [fp, #-232]
   pop {pc}
   // ldr	r2, [r11, #-232]
-DEFINE_FEATURE randomProjectile
-  FUNCTIONCALLGUARD whenPlantShotting
+DEFINE_FEATURE whenPlantShotProjectile
+  FUNCTIONCALLGUARD CWhenPlantShotProjectile
   FUNCTIONEXIT
-  mov r2, #8
-  str r2, [r3, #104]
-  mov r2, #9
-  str r2, [r3, #100]
+  // 仿香蒲,无用
+  // mov r2, #8
+  // str r2, [r3, #104]
+  // mov r2, #1
+  // str r2, [r3, #100]
   bx lr
 DEFINE_FEATURE bringGrave
   mov r2, #1 // 墓碑
@@ -188,6 +177,7 @@ DEFINE_FEATURE cardsSelectionInit
   str r4, [r3, #2004]
   FUNCTIONCALLGUARD whenCardsSelectionInit
   FUNCTIONEXIT
+// 出怪判定，花园
 DEFINE_FEATURE alterGardensZombiesType
   mov r2, #1
   push {r1}
@@ -204,4 +194,51 @@ DEFINE_FEATURE alterGardensZombiesType
   out:
   pop {r1}
   bx lr
+// VELOCITY:.word 0x3fb33333 // 1.3
+//
+// VELOCITY0:.word 0x3d4ccccd // 1.3
+// DEFINE_FEATURE alterZombiesVelocity
+//   FUNCTIONCALLGUARD detectZombiesVelocity
+//   cmp r0, #1
+//   bne _1out
+//   // vmov.f32 s14, #1.5
+//   // vldr.f32 s13, VELOCITY
+//   // vmul.f32 s15, s15, s13
+//   vmov.f32 s15, #1.5
+//   b _2out
+//   _1out:
+//   vldr  s15, [r3, #296]
+//   _2out:
+//   restoreRegisters1
+//   // 需使用上层函数的fp
+//   // UGLY CODE
+//   mov sp, fp
+//   pop {fp}
+//   pop {pc}
+DEFINE_FEATURE alterZombiesVelocity
+  vldr s15, [r3, #64]
+  FUNCTIONCALLGUARD detectZombiesVelocity
+  // vmov.f32 s14, #1.5
+  // vldr.f32 s13, VELOCITY
+  // vmul.f32 s15, s15, s13
+  vmov s14, r0
+  vmul.f32 s15, s14
+  restoreRegisters1
+  vstr s15, [r3, #64]
+  pop {fp, pc}
+DEFINE_FEATURE judgeNewLevelFreshCountdown
+  FUNCTIONCALLGUARD CJudgeNewLevelFreshCountdown
+  FUNCTIONEXIT
+DEFINE_FEATURE whenNewWave
+  str r1, [r2, r3]
+  FUNCTIONCALLGUARD CWhenNewWave
+  FUNCTIONEXIT
+DEFINE_FEATURE whenBloverBlowed
+  mov r1, #0
+  ldr r3, [r11, #-16]
+  FUNCTIONCALLGUARD CWhenPlantHurtting
+  restoreRegisters1
+  mov r3, #0
+  mov sp, fp
+  pop {fp, pc}
 DEFINE_FEATURE_END asm_features_region_end

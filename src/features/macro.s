@@ -15,9 +15,8 @@
 .macro restoreRegisters1
   pop {r0 - r3}
 .endm
-.macro globalizeSymbol name end
+.macro globalizeSymbol name
   .global \name
-  .global \end
 .endm
 .macro DEFINE_EXTERNAL_FUNCTION name
   \name: .word 0
@@ -38,4 +37,11 @@ DEFINE_FEATURE \name
   restoreRegisters1
   mov sp, fp
   pop {fp, pc}
+.endm
+// .word 0x0这里是手工加一个NULL
+.macro DEFINE_EXT_GAME name file
+globalizeSymbol extgames_\name
+extgames_\name:
+.incbin "\file"
+.word 0x0
 .endm

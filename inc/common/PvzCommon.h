@@ -25,6 +25,7 @@ enum BuiltinsCommand {
   GET_HITPOINT_BOUNDARY,
   GET_TOTAL_FRESH_COUNTDOWN,
   GET_FRESH_COUNTDOWN,
+  GET_SCRIPTS_LIST,
 };
 
 enum fieldTypes {
@@ -36,6 +37,7 @@ enum fieldTypes {
   MOONNIGHT,
   MUSHROOM_GARDEN,
   GARDEN,
+  AQUARIUM,
 };
 
 struct PvzPoint {

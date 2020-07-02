@@ -11,6 +11,7 @@
 #include "common/PvzUtils.h"
 #include "common/common.h"
 #include "features/ops.h"
+#include "features/scripts.h"
 #include "server/Pvz.h"
 #include "server/PvzServer.h"
 #include <map>
@@ -31,19 +32,21 @@ struct feature features_region =
 
 DEFINE_FEATURE(whenPlantDiying)
 DEFINE_FEATURE(meanPlant)
-DEFINE_FEATURE(zombieHypno)
+DEFINE_FEATURE(whenZombieHitting)
 DEFINE_FEATURE(zombieIce)
-DEFINE_FEATURE(plantHurtting)
-DEFINE_FEATURE(randomProjectile)
+DEFINE_FEATURE(whenPlantHurtting)
+DEFINE_FEATURE(whenBloverBlowed)
+DEFINE_FEATURE(whenPlantShotProjectile)
 DEFINE_FEATURE(bringGrave)
 DEFINE_FEATURE(noScaredMushroom)
 struct feature plantFeatures[] = {
     FEATURE(0x255c88, whenPlantDiying),
     FEATURE(0x358490, whenPlantDiying),
-    FEATURE(0x35adec, zombieHypno),
+    FEATURE(0x35adec, whenZombieHitting),
     FEATURE(0x35a860, zombieIce),
-    FEATURE(0x238cd4, plantHurtting),
-    FEATURE(0x254b38, randomProjectile),
+    FEATURE(0x238cf0, whenPlantHurtting),
+    FEATURE(0x23efdc, whenBloverBlowed),
+    FEATURE(0x254b38, whenPlantShotProjectile),
     // FEATURE(0x1416d0, bringGrave),
     FEATURE(0x23e0cc, meanPlant),
     // bx lr
@@ -52,7 +55,7 @@ struct feature plantFeatures[] = {
     FEATURE(0x23a454, noScaredMushroom),
     FEATURE_END,
 };
-DEFINE_FEATURE(zombieHat)
+DEFINE_FEATURE(whenZombieBorn)
 DEFINE_FEATURE(paperHP)
 DEFINE_FEATURE(pogoNewLine)
 DEFINE_FEATURE(pogoJumpOverTallnut)
@@ -61,33 +64,41 @@ DEFINE_FEATURE(poleVaultingJumpTwice)
 DEFINE_FEATURE(zombieEatting)
 DEFINE_FEATURE(zombiePropertiesInit)
 DEFINE_FEATURE(thiefQuickly)
+// DEFINE_FEATURE(alterZombiesVelocity) // 僵尸行进时变化量
+DEFINE_FEATURE(alterZombiesVelocity) // 初始速度
 struct feature zombieFeatures[] = {
-    FEATURE(0x340d80, zombieHat),
+    FEATURE(0x340d80, whenZombieBorn),
     FEATURE(0x342338, paperHP),
     FEATURE(0x345c70, pogoNewLine),
     FEATURE(0x345c04, pogoNewLine),
     FEATURE(0x345bd0, pogoNewLine),
     FEATURE(0x34553c, pogoJumpOverTallnut), // 跳跳被高坚果绊倒后的效果
-    FEATURE(0x359ef8, pogoPaperDroped),     // 跳跳报纸掉落后
+    // FEATURE(0x359ef8, pogoPaperDroped),     // 跳跳报纸掉落后
     FEATURE(0x346b5c, poleVaultingJumpTwice),
+    FEATURE(0x35838c, zombieEatting),
     FEATURE(0x345084, thiefQuickly),
+    // FEATURE(0x34e97c, alterZombiesVelocity), // 僵尸行进时变化量
+    FEATURE(0x344aa4, alterZombiesVelocity), // 初始速度
     // 暂时不使用
-    // FEATURE(0x35838c, zombieEatting),
     // FEATURE(0x3409a0, zombiePropertiesInit),
     FEATURE_END,
 };
 DEFINE_FEATURE(adventureSixthLevelScene)
 DEFINE_FEATURE(adventureSixthLevel)
-DEFINE_FEATURE(replaceZombiesSeed)
+DEFINE_FEATURE(whenZombiesListInit)
 DEFINE_FEATURE(cardsSelectionInit)
 DEFINE_FEATURE(alterGardensZombiesType)
+DEFINE_FEATURE(judgeNewLevelFreshCountdown)
+DEFINE_FEATURE(whenNewWave)
 struct feature levelsFeatures[] = {
     FEATURE(0x1438c4, adventureSixthLevelScene),
-    FEATURE(0x141ad4, replaceZombiesSeed),
+    FEATURE(0x141ad4, whenZombiesListInit),
     // push {lr}
     __FEATURE(0x24cb10, static_cast<int>(0xe52de004), adventureSixthLevel),
     FEATURE(0x1cf04c, cardsSelectionInit),
     FEATURE(0x1439cc, alterGardensZombiesType),
+    FEATURE(0x144664, judgeNewLevelFreshCountdown),
+    FEATURE(0x153a24, whenNewWave),
     FEATURE_END,
 };
 DEFINE_FEATURE(dropSeedsCard)
@@ -102,16 +113,21 @@ struct features_group features[] = {
     FEATURE_GROUP("掉落物品修改", itemsFeatures),
     {nullptr},
 };
-static void whenZombieBorn(int, int, void *zombie, int hp) {
+static void CWhenZombieBorn(int, int, void *zombie, int hp) {
   int code = getI32(incr(zombie, OFF_ZOMBIE_CODE));
   setI32(hp, incr(zombie, OFF_ZOMBIE_HP));
-  if (code == PROP_SCREENDOOR_CODE || code == PROP_FLAG_CODE) {
-#warning ZOMBIES SPEED
-    setF32(0.80, incr(zombie, 0x40));
+  if (code == PROP_SCREENDOOR_CODE) {
     // 加一个铁桶
-    setI32(PROP_ZOMBIE_BUCKET_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
+    setI32(PROP_ZOMBIE_ARMOR_BUCKET_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
     // 设置一类防具血量
-    setI32(PROP_ZOMBIE_BUCKET_HP, incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
+    setI32(PROP_ZOMBIE_ARMOR_BUCKET_HP, incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
+  } else if (code == PROP_FLAG_CODE) {
+    // 加一个铁桶
+    setI32(PROP_ZOMBIE_ARMOR_FOOTBALL_HAT_CODE,
+           incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
+    // 设置一类防具血量
+    setI32(PROP_ZOMBIE_ARMOR_FOOTBALL_HAT_HP,
+           incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
     // 红白眼、高坚果概率变小
   } else if ((code == PROP_GARGANTUAR_CODE || code == PROP_RED_CODE ||
               code == PROP_TALLNUT_ZOMBIE) &&
@@ -120,14 +136,16 @@ static void whenZombieBorn(int, int, void *zombie, int hp) {
   } else if (code == PROP_POGO_CODE) {
     // 跳跳诞生时加铁桶、铁门
     // setI32(PROP_ZOMBIE_PAPER_CODE, incr(zombie, OFF_ZOMBIE_ARMOR2_CODE));
-    setI32(PROP_ZOMBIE_PAPER_HP, incr(zombie, OFF_ZOMBIE_ARMOR2_HP));
+    setI32(PROP_ZOMBIE_ARMOR_PAPER_HP, incr(zombie, OFF_ZOMBIE_ARMOR2_HP));
     // setI32(1000, incr(zombie, OFF_ZOMBIE_HP));
-    setI32(PROP_ZOMBIE_BUCKET_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
-    setI32(PROP_ZOMBIE_POGO_BUCKET_HP, incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
+    setI32(PROP_ZOMBIE_ARMOR_BUCKET_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
+    setI32(PROP_ZOMBIE_ARMOR_POGO_BUCKET_HP,
+           incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
   } else if (code == PROP_ZOMBIE_JALAPENO_CODE ||
              code == PROP_DOLPHIN_RIDER_CODE) {
-    setI32(PROP_ZOMBIE_CORNHEAD_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
-    setI32(PROP_ZOMBIE_CORNHEAD_HP, incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
+    setI32(PROP_ZOMBIE_ARMOR_CORNHEAD_CODE,
+           incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
+    setI32(PROP_ZOMBIE_ARMOR_CORNHEAD_HP, incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
   }
 }
 // XXX unused function
@@ -146,17 +164,17 @@ static int whenZombiePropertiesInit(int, void *fp, int code, void *zombie) {
 // r3，僵尸地址
 static void whenPaperZombieBorn(int, int, int paperHp, void *zombie) {
   if (oneOfThree()) {
-    // 本体1800，报纸0
-    setI32(1800, incr(zombie, OFF_ZOMBIE_HP));
+    // 本体2800，报纸0
+    setI32(2800, incr(zombie, OFF_ZOMBIE_HP));
     setI32(0, incr(zombie, OFF_ZOMBIE_ARMOR2_HP));
   } else {
     setI32(1500, incr(zombie, OFF_ZOMBIE_HP));
-    setI32(PROP_ZOMBIE_PAPER_HP, incr(zombie, OFF_ZOMBIE_ARMOR2_HP));
+    setI32(PROP_ZOMBIE_ARMOR_PAPER_HP, incr(zombie, OFF_ZOMBIE_ARMOR2_HP));
   }
 }
 static void produceHittingEffects(void *zombie, int hit, int flags) {
   switch (hit) {
-  case PROP_PLANT_ICE_PEA_HIT:
+  case PROP_PLANT_ICE_PEA_PROJECTILE_HIT:
     ops::ice(zombie, flags);
     break;
   case PROP_PLANT_FIRE_PEA_HIT:
@@ -180,7 +198,7 @@ static decltype(oneOfThree) *detectRateFunction(int code, int hit) {
     if (hit == PROP_PLANT_ICE_MELON_PROJECTILE_HIT)
       return rateOneHalf;
     if (hit == PROP_PLANT_CARBAGE_PROJECTILE_HIT ||
-        hit == PROP_PLANT_ICE_PEA_HIT)
+        hit == PROP_PLANT_ICE_PEA_PROJECTILE_HIT)
       return oneOfFifty;
     return oneOfOneHundred;
   }
@@ -206,7 +224,7 @@ static void judgeHittingEffects(int code, int hit, int flags, void *zombie) {
 // r2, 目标血量
 // r3, 僵尸地址
 // r4, 子弹伤害
-static void whenZombieHitting(int isBodyHurt, int hit, int hp, void *zombie) {
+static void CWhenZombieHitting(int, int hit, int hp, void *zombie) {
   int code = getI32(incr(zombie, OFF_ZOMBIE_CODE));
   int flags = getI32(incr(zombie, OFF_ZOMBIE_FLAGS1));
   // 未被魅惑的高坚果僵尸临死时爆炸
@@ -214,6 +232,8 @@ static void whenZombieHitting(int isBodyHurt, int hit, int hp, void *zombie) {
   if (hp <= 5 && oneOfFifteen() && !(flags & 1)) {
     switch (code) {
     case PROP_TALLNUT_ZOMBIE:
+    case PROP_CATAPULT_CODE:
+    case PROP_ZOMBONI_CODE:
       setI32(PROP_JACKBOX_CODE, incr(zombie, OFF_ZOMBIE_CODE));
       setI32(PROP_ZOMBIE_JACKBOX_BOOM, incr(zombie, OFF_ZOMBIE_ACTION));
       break;
@@ -230,34 +250,37 @@ static void whenZombieHitting(int isBodyHurt, int hit, int hp, void *zombie) {
 static void whenPoleVaultingJump(int, int, int action, void *zombie) {
   float x = getF32(incr(zombie, OFF_ZOMBIE_POS_X));
   setI32(action, incr(zombie, OFF_ZOMBIE_ACTION));
-  if (x >= 200.0)
+  if (x >= 200.0) {
     ops::advance(zombie, PROP_PER_COLUMN);
+  }
 }
+extern int generateZombiesSeed(int fieldType, std::vector<int> &&seeds);
+std::map<int, std::vector<std::vector<int>>> zombiesSeeds = {
+#include "features/seeds.inc"
+};
 // R0, 生成个数
 // R2, 写入位置偏移
 // R1, 僵尸代码
 // R3, 写入位置基址
 static void setSeed(void *codeaddr, int level, int wave, int fieldType,
                     int code) {
-  extern int generateZombiesSeed(int fieldType, std::vector<int> &&seeds);
-  static std::map<int, std::vector<std::vector<int>>> seeds = {
-#include "features/seeds.inc"
-  };
-  if (code != PROP_FLAG_CODE && seeds.find(level) != seeds.end()) {
+
+  if (code != PROP_FLAG_CODE &&
+      zombiesSeeds.find(level) != zombiesSeeds.end()) {
     switch (wave) {
     case 0 ... 3:
-      setI32(generateZombiesSeed(fieldType, std::move(seeds[level][0])),
+      setI32(generateZombiesSeed(fieldType, std::move(zombiesSeeds[level][0])),
              codeaddr);
       break;
     case 10:
     case 20:
     case 30:
     case 40:
-      setI32(generateZombiesSeed(fieldType, std::move(seeds[level][2])),
+      setI32(generateZombiesSeed(fieldType, std::move(zombiesSeeds[level][2])),
              codeaddr);
       break;
     default:
-      setI32(generateZombiesSeed(fieldType, std::move(seeds[level][1])),
+      setI32(generateZombiesSeed(fieldType, std::move(zombiesSeeds[level][1])),
              codeaddr);
       break;
     }
@@ -265,12 +288,23 @@ static void setSeed(void *codeaddr, int level, int wave, int fieldType,
     setI32(code, codeaddr);
   }
 }
-static void __takeGrave() {
-  static void (*takeGrave)(void *, int, int, void *) =
-      (void (*)(void *, int, int, void *))incr(__getCoreLib(), 0x141724);
-  for (int i = 0; i < 6; ++i) {
-    takeGrave(__getStatus(), 1, i, incrStatus(0x140));
-  }
+static void *__takeGrave(int col, int row) {
+  using takeGraveType = void *(*)(void *, int, int, void *);
+  static takeGraveType takeGrave =
+      (takeGraveType)incr(__getCoreLib(), 0x141724);
+  void *grave = takeGrave(__getStatus(), col, row, incrStatus(0x140));
+  setI32(0x64, incr(grave, OFF_VASES_VIS));
+  return grave;
+}
+static void putZombie(int code, int col, int row) {
+  /*
+    14c3b0: e5933294  ldr r3, [r3, #660]  ; 0x294
+    14c3b4: e1a00003  mov r0, r3
+    */
+  using putZombieType = void (*)(void *, int, int, int);
+  static putZombieType putZombie =
+      (putZombieType)incr(__getCoreLib(), 0x1835dc);
+  putZombie(getPtr(incrStatus(0x294)), code, col, row);
 }
 static void giveSomeSun() {
   setI32(PROP_INITIAL_SUN_FOR_HARD_LEVEL, incrStatus(OFF_SUN));
@@ -285,7 +319,9 @@ static void unlockDavesCards() {
 }
 static void alterGridsAsPool(void *status) {
   void *grid = incr(status, OFF_BATTLEGROUND_GRID_TYPE);
-  int types[] = {PROP_ROW_POOLZOMBIES, 1, 1, 1, 1, 0};
+  int types[] = {PROP_ROW_POOLZOMBIES,   PROP_ROW_GROUNDZOMBIES,
+                 PROP_ROW_GROUNDZOMBIES, PROP_ROW_GROUNDZOMBIES,
+                 PROP_ROW_GROUNDZOMBIES, PROP_ROW_NOZOMBIES};
   memcpy(incr(status, OFF_ROW_ZOMBIESTYPE), types, sizeof(types));
   // void *grid = incr(status, OFF_BATTLEGROUND_GRID_TYPE + 5 * POINTERSIZE);
   // setI32(PROP_ROW_POOLZOMBIES, incr(status, OFF_ROW_ZOMBIESTYPE + 5 *
@@ -298,8 +334,8 @@ static void alterGridsAsPool(void *status) {
 }
 // R1,原本的场景代码
 static void judgeAdventureScene(int, int, void *status, off_t sceneOff) {
-  switch (getI32(incr(status, OFF_CURRENT_ADVENTURE_LEVEL))) {
-  case 51 ... 60:
+  switch (getCurrentAdventureLevel()) {
+  case PROP_CUSTOM_LEVEL_START ... 60:
     setI32(fieldTypes::MOONNIGHT, incr(status, sceneOff));
     break;
   case 61 ... 70:
@@ -311,15 +347,80 @@ static void judgeAdventureScene(int, int, void *status, off_t sceneOff) {
     setI32(fieldTypes::MUSHROOM_GARDEN, incr(status, sceneOff));
     alterGridsAsPool(status);
     break;
+  case 81 ... 90:
+    setI32(fieldTypes::AQUARIUM, incr(status, sceneOff));
+    break;
+  case 91:
+    setI32(fieldTypes::ROOF, incr(status, sceneOff));
+    for (int col = 0; col < 9; ++col) {
+      for (int row = 0; row < 5; ++row) {
+        __takeGrave(col, row);
+      }
+    }
   }
+}
+static void loadExtGames(int level) {
+#define EXT_GAME_SCRIPT(file)                                                  \
+  {                                                                            \
+    .state = initLuaScript(), .type = luaScriptType::dostring,                 \
+    .dostring = &file                                                          \
+  }
+#define EXT_GAME_NAME(name) extgames_##name
+#define DEFINE_EXT_GAME(name) extern const char EXT_GAME_NAME(name)
+  DEFINE_EXT_GAME(1);
+  extern lua_State *initLuaScript();
+  static std::map<int, luaScript> extGameScripts = {
+      {92, EXT_GAME_SCRIPT(EXT_GAME_NAME(1))},
+  };
+  // XXX 此处借用一下
+  // 2-5初始化过这个函数
+  if (level == 15) {
+    for (int col = 0; col < 9; ++col) {
+      for (int row = 0; row < 5; ++row) {
+        __takeGrave(col, row);
+      }
+    }
+    return;
+  }
+  if (extGameScripts.find(level) != extGameScripts.end()) {
+    DEBUG_LOG("LOADING %p", extGameScripts[level].dostring);
+    runLuaScriptOnNewThread(&extGameScripts[level]);
+  }
+}
+// R1 countdown, R2 status, R3 off
+static void CJudgeNewLevelFreshCountdown(int, int countdown, void *status,
+                                         int off) {
+  int level = getCurrentAdventureLevel();
+  if (getI32(incrBase(OFF_MODE)) == 0 && level >= 5) {
+    setI32(500, incr(status, off));
+    loadExtGames(level);
+  } else {
+    setI32(countdown, incr(status, off));
+  }
+}
+static float detectZombiesVelocity(int, int, int, void *zombie) {
+  switch (getCurrentAdventureLevel()) {
+  case 5:
+    return 2.0;
+  }
+  switch (getI32(incr(zombie, OFF_ZOMBIE_CODE))) {
+  case PROP_FLAG_CODE:
+  case PROP_ZOMBIE_CORNHEAD_CODE:
+  case PROP_ZOMBIE_BUCKET_CODE:
+  case PROP_NEWSPAPER_CODE:
+  case PROP_ZOMBIE_BALLON_CODE:
+  case PROP_ZOMBIE_JALAPENO_CODE:
+    return 2.0;
+  }
+  return 1.0;
 }
 static void judgeAdventureLevel(int, int, int level, void *saves) {
   switch (getI32(incr(saves, OFF_ADVENTURE_LEVEL))) {
-  case 50:
-    setI32(51, incr(saves, OFF_ADVENTURE_LEVEL));
+  case PROP_INTERNAL_LEVEL_END:
+    setI32(PROP_CUSTOM_LEVEL_START, incr(saves, OFF_ADVENTURE_LEVEL));
     break;
-  case 80:
-    setI32(1, incr(saves, OFF_ADVENTURE_LEVEL));
+  case PROP_CUSTOM_LEVEL_END:
+    setI32(PROP_INTERNAL_LEVEL_START, incr(saves, OFF_ADVENTURE_LEVEL));
     break;
   default:
     setI32(level, incr(saves, OFF_ADVENTURE_LEVEL));
@@ -328,17 +429,26 @@ static void judgeAdventureLevel(int, int, int level, void *saves) {
 }
 static void whenCardsSelectionInit() {
   unlockDavesCards();
-  if (in_range(getI32(incrStatus(OFF_CURRENT_ADVENTURE_LEVEL)), 50, 80))
+  switch (getCurrentAdventureLevel()) {
+  case PROP_CUSTOM_LEVEL_START ... 79:
     giveSomeSun();
+    break;
+  case 80:
+    setI32(1000, incrStatus(OFF_SUN));
+    break;
+  case 81 ... PROP_CUSTOM_LEVEL_END:
+    giveSomeSun();
+    setI32(PROP_ROW_NOZOMBIES, incrStatus(OFF_ROW_ZOMBIESTYPE + 0x14));
+    break;
+  }
 }
-static void whenZombiesListInit(int count, int code, int pos, void *list) {
+static void CWhenZombiesListInit(int count, int code, int pos, void *list) {
   // R1, 波数
   // 0xc7e88ac4: mul r1, r0, r1
   // 0xc7e88ac8: add r2, r1, r2
   // 0xc7e88acc: add r2, r2, #516
   void *codeaddr = incr(list, pos << 2);
-  int wave = (pos - 516) / 50,
-      level = getI32(incrStatus(OFF_CURRENT_ADVENTURE_LEVEL)),
+  int wave = (pos - 516) / 50, level = getCurrentAdventureLevel(),
       fieldType = getI32(incrStatus(OFF_FIELD_TYPE));
 #ifdef DEBUG
   DEBUG_LOG("STATUS %p CODE %d COUNT %d POS(%d,%d), WAVE %d", list, code, count,
@@ -353,6 +463,35 @@ static void whenZombiesListInit(int count, int code, int pos, void *list) {
     break;
   }
 }
+static void __vaseLight(Communicator *, void *vase) {
+  setI32(1, incr(vase, OFF_VASES_LIGHT));
+}
+static void allocateGravePosition() {
+  int freePosition[6][5] = {0};
+}
+static void CWhenNewWave(int, int wave, void *status) {
+
+  if (getI32(incrBase(OFF_MODE)) == 0 && getCurrentAdventureLevel() > 5) {
+    int rowBase = 5;
+    int field = getI32(incrStatus(OFF_FIELD_TYPE));
+    switch (field) {
+    case fieldTypes::POOL:
+    case fieldTypes::FOG:
+      rowBase = 6;
+    }
+    int count = __rate<3>();
+    int i = 0, col = 0, row = 0;
+    if (wave > 5) {
+      do {
+        col = 4 + __rate<4>();
+        row = __rate<6>() % rowBase;
+        __takeGrave(col, row);
+        ++i;
+      } while (i <= count);
+      // eachVase(nullptr, __vaseLight);
+    }
+  }
+}
 // R2, 跳跳的动作
 // R3，僵尸地址
 static void whenPogoJump(int, int, int action, void *zombie) {
@@ -363,14 +502,57 @@ static void whenPogoJump(int, int, int action, void *zombie) {
 static void whenPogoJumpOverTallnut(int, int, int action, void *zombie) {
   // 被绊倒加铁桶
   setI32(action, incr(zombie, OFF_ZOMBIE_ACTION));
-  setI32(PROP_ZOMBIE_BUCKET_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
+  setI32(PROP_ZOMBIE_ARMOR_BUCKET_CODE, incr(zombie, OFF_ZOMBIE_ARMOR1_CODE));
   setI32(800, incr(zombie, OFF_ZOMBIE_ARMOR1_HP));
+  ops::advance(zombie, PROP_PER_COLUMN);
+}
+static void sleepWhenPaperDroped(Communicator *__zombie, void *plant) {
+  void *zombie = (void *)__zombie;
+  int py = getI32(plant, OFF_PLANT_Y) / 100;
+  int zy = getI32(zombie, OFF_ZOMBIE_ROW);
+  if (py == zy &&
+      !(getI32(incr(plant, OFF_PLANT_STATUS)) & PROP_PLANTS_FLAG_SLEEP)) {
+    DEBUG_LOG("PY %d EQUALS ZY %d", py, zy);
+    __asm__("mov r0, #1\n"
+            "strb r0, [%0, #335]\n" ::"r"(plant)
+            : "r0");
+    setI32(500, incr(plant, OFF_PLANT_LIGHT));
+  }
 }
 static void whenPogoPaperDroped(int, int, int status, void *zombie) {
-  if (getI32(incr(zombie, OFF_ZOMBIE_CODE)) == PROP_POGO_CODE)
-    setI32(0, incr(zombie, OFF_ZOMBIE_ACTION));
-  else
-    setI32(status, incr(zombie, OFF_ZOMBIE_ACTION));
+  if (getI32(incr(zombie, OFF_ZOMBIE_CODE)) == PROP_NEWSPAPER_CODE)
+    eachPlant((Communicator *)zombie, sleepWhenPaperDroped);
+  setI32(status, incr(zombie, OFF_ZOMBIE_ACTION));
+}
+static void CWhenPlantDiying(int, int, int hp, void *plant) {
+  setI32(hp, incr(plant, OFF_PLANT_HP));
+  if (hp > 10)
+    return;
+  switch (getI32(incr(plant, OFF_PLANT_CODE))) {
+  case PROP_PLANT_LITTLENUT:
+    goto beCherryBomb;
+  case PROP_PLANT_TALLNUT:
+    goto beSquash;
+  case PROP_LITTLE_MUSHROOM_CODE:
+  case PROP_SEA_MUSHRROM_CODE:
+    goto beSunMushroom;
+  default:
+    return;
+  }
+beCherryBomb:
+  setI32(PROP_CHERRY_BOMB_CODE, incr(plant, OFF_PLANT_CODE));
+  setI32(1, incr(plant, OFF_PLANT_EFFECT_REMAIN_TIME));
+  return;
+beSquash:
+  setI32(PROP_SQUASH_CODE, incr(plant, OFF_PLANT_CODE));
+  return;
+beSunMushroom:
+  if (oneOfThree()) {
+    setI32(PROP_SUN_MUSHROOM_CODE, incr(plant, OFF_PLANT_CODE));
+    setI32(1, incr(plant, OFF_PLANT_SHOOT_REMAIN_TIME));
+    setI32(3000, incr(plant, OFF_PLANT_SHOOT_NEXT_TIME));
+  }
+  return;
 }
 static void *__shottingPlant;
 static void (*__zombieCallback)(void *, float, float, float, float);
@@ -384,6 +566,18 @@ static void starfruitHurttingCallback(void *zombie, float px, float py,
     setF32(zx + PROP_PER_COLUMN, incr(zombie, OFF_ZOMBIE_POS_X));
   }
 }
+static void bloverHurttingCallback(void *zombie, float px, float py, float zx,
+                                   float zy) {
+  int prow = (int)py / 100;
+  int zrow = (int)zy / 100;
+  if (prow == zrow) {
+    int flags = getI32(incr(zombie, OFF_ZOMBIE_FLAGS1));
+    if (oneOfFifteen())
+      ops::fly(zombie, flags);
+    else
+      ops::iceLongTime(zombie, flags);
+  }
+}
 static void whenPlantHurttingCallback(Communicator *, void *zombie) {
   float px = (float)getI32(incr(__shottingPlant, OFF_PLANT_X));
   float py = (float)getI32(incr(__shottingPlant, OFF_PLANT_Y));
@@ -391,26 +585,32 @@ static void whenPlantHurttingCallback(Communicator *, void *zombie) {
   float zy = getF32(incr(zombie, OFF_ZOMBIE_POS_Y));
   __zombieCallback(zombie, px, py, zx, zy);
 }
-static void whenPlantHurtting(int, int, int remain, void *plant) {
-  setI32(remain, incr(plant, OFF_PLANT_SHOOT_REMAIN_TIME));
-  if (remain == 0 &&
-      getI32(incr(plant, OFF_PLANT_CODE)) == PROP_STARFRUIT_CODE &&
-      oneOfFifty()) {
+static void CWhenPlantHurtting(int, int, int remain, void *plant) {
+  switch (getI32(incr(plant, OFF_PLANT_CODE))) {
+  case PROP_STARFRUIT_CODE:
+    if (oneOfFifty()) {
+      __shottingPlant = plant;
+      setI32(200, incr(plant, OFF_PLANT_LIGHT));
+      __zombieCallback = starfruitHurttingCallback;
+      eachZombie(nullptr, whenPlantHurttingCallback);
+    }
+    break;
+  case PROP_PLANT_BLOVER_CODE:
     __shottingPlant = plant;
-    setI32(200, incr(plant, OFF_PLANT_LIGHT));
-    __zombieCallback = starfruitHurttingCallback;
+    __zombieCallback = bloverHurttingCallback;
     eachZombie(nullptr, whenPlantHurttingCallback);
+    break;
   }
 }
 // R2, 原本的子弹类型
 // R3，植物
-static void whenPlantShotting(int, int, int pcode, void *projectile) {
+static void CWhenPlantShotProjectile(int, int, int pcode, void *projectile) {
   // 全部需要-1
 #define MOD(name) (name - 1)
   static int projectiles[] = {
       MOD(PROP_PLANT_ICE_MELON_PROJECTILE_CODE),
       MOD(PROP_PLANT_STARFRUIT_PROJECTILE_CODE),
-      MOD(PROP_PLANT_ICE_PEA_CODE),
+      MOD(PROP_PLANT_ICE_PEA_PROJECTILE_CODE),
       MOD(PROP_PLANT_FIRE_PEA_CODE),
       MOD(PROP_PLANT_PEA_PROJECTILE_CODE),
       MOD(PROP_PLANT_CARBAGE_PROJECTILE_CODE),
@@ -429,20 +629,24 @@ static void whenPlantShotting(int, int, int pcode, void *projectile) {
 #define HELPER(name) ((uintptr_t)name)
 // 注意此处顺序与features.s中.word的顺序一致
 uintptr_t helpers[] = {
-    HELPER(whenZombieBorn),
+    HELPER(CWhenZombieBorn),
     HELPER(whenPaperZombieBorn),
-    HELPER(whenZombieHitting),
-    HELPER(whenZombiesListInit),
+    HELPER(CWhenZombieHitting),
+    HELPER(CWhenZombiesListInit),
     HELPER(whenPogoJump),
     HELPER(whenPogoJumpOverTallnut),
     HELPER(whenPogoPaperDroped),
     HELPER(whenPoleVaultingJump),
     HELPER(whenZombiePropertiesInit),
+    HELPER(detectZombiesVelocity),
     HELPER(judgeAdventureLevel),
     HELPER(judgeAdventureScene),
+    HELPER(CJudgeNewLevelFreshCountdown),
+    HELPER(CWhenNewWave),
     HELPER(whenCardsSelectionInit),
-    HELPER(whenPlantHurtting),
-    HELPER(whenPlantShotting),
+    HELPER(CWhenPlantDiying),
+    HELPER(CWhenPlantHurtting),
+    HELPER(CWhenPlantShotProjectile),
     HELPER(oneOfThree),
     HELPER(oneOfFifteen),
     HELPER(oneOfOneHundred),
@@ -466,7 +670,7 @@ static void initFeaturesCode() {
   }
 }
 // 启用隐藏小游戏
-static void enableAllHidenGames() {
+void enableAllHidenGames() {
   uint32_t hidenGames[] = {
       35, 36, 37, 38, 39, 40, 41, /*42 冰冻关卡, 43, 花园 44 牛顿的力量,
       45 坟墓危险*/ 46,
@@ -490,20 +694,39 @@ static void enableAllHidenGames() {
 }
 // 修改植物价格
 static void alterPlantsPrice() {
-  std::map<int, int> pricesMap{
-      {PROP_PLANT_LITTLENUT, PROP_PLANT_LITTLENUT_PRICE},
-      {PROP_PLANT_TALLNUT, PROP_PLANT_TALLNUT_PRICE},
-      {PROP_PLANT_MARIGOLD, PROP_PLANT_MARIGOLD_PRICE},
-      {PROP_PLANT_TORCHWOOD, PROP_PLANT_TORCHWOOD_PRICE},
-      {PROP_PLANT_STARFRUIT, PROP_PLANT_STARFRUIT_PRICE},
-      {PROP_PLANT_ICE_MELON, PROP_PLANT_ICE_MELON_PRICE},
-      {PROP_PLANT_PEA, PROP_PLANT_PEA_PRICE},
-      {PROP_PLANT_MELON, PROP_PLANT_MELON_PRICE},
+#define JUST_PRICE(price)                                                      \
+  { price, -1, -1 }
+  struct plantInfos {
+    int price;
+    int countdown;
+    int interval;
+  };
+  std::map<int, plantInfos> pricesMap{
+      {PROP_PLANT_LITTLENUT, JUST_PRICE(PROP_PLANT_LITTLENUT_PRICE)},
+      {PROP_PLANT_TALLNUT, JUST_PRICE(PROP_PLANT_TALLNUT_PRICE)},
+      {PROP_PLANT_MARIGOLD, JUST_PRICE(PROP_PLANT_MARIGOLD_PRICE)},
+      {PROP_PLANT_TORCHWOOD, JUST_PRICE(PROP_PLANT_TORCHWOOD_PRICE)},
+      {PROP_PLANT_STARFRUIT, JUST_PRICE(PROP_PLANT_STARFRUIT_PRICE)},
+      {PROP_PLANT_ICE_MELON, JUST_PRICE(PROP_PLANT_ICE_MELON_PRICE)},
+      {PROP_PLANT_PEA, JUST_PRICE(PROP_PLANT_PEA_PRICE)},
+      {PROP_PLANT_MELON, JUST_PRICE(PROP_PLANT_MELON_PRICE)},
+      {PROP_PLANT_GRAVEBUSTER_CODE, JUST_PRICE(PROP_PLANT_GRAVEBUSTER_PRICE)},
+      // {PROP_PLANT_GOLDMAGNET_CODE, JUST_PRICE(PROP_PLANT_GOLDMAGNET_PRICE)},
+      {PROP_PLANT_BLOVER_CODE,
+       {PROP_PLANT_BLOVER_PRICE, PROP_PLANT_BLOVER_COUNTDOWN, -1}},
+      {PROP_PLANT_ICE_PEA_CODE,
+       {PROP_PLANT_ICE_PEA_PRICE, -1, PROP_PLANT_ICE_PEA_INTERVAL}},
   };
   void *ptr = incr(__getCoreLib(), OFF_PLANTS_SLOT_INFO);
   for (int i = 0; i < PROP_PLANTS_COUNT; ++i) {
     if (pricesMap.find(getI32(ptr)) != pricesMap.end()) {
-      setI32(pricesMap[getI32(ptr)], incr(ptr, 0x10));
+      auto props = pricesMap[getI32(ptr)];
+      if (props.price != -1)
+        setI32(props.price, incr(ptr, 0x10));
+      if (props.countdown != -1)
+        setI32(props.countdown, incr(ptr, 0x14));
+      if (props.interval != -1)
+        setI32(props.interval, incr(ptr, 0x1c));
     }
     ptr = incr(ptr, PROP_PLANTS_SLOT_INFO_STEP);
   }
@@ -511,7 +734,8 @@ static void alterPlantsPrice() {
 // 修改植物攻击
 static void alterPlantsHit() {
   static std::map<int, int> hitsMap{
-      {PROP_PLANT_ICE_PEA_CODE, PROP_PLANT_ICE_PEA_HIT},   // 冰豆改为
+      {PROP_PLANT_ICE_PEA_PROJECTILE_CODE,
+       PROP_PLANT_ICE_PEA_PROJECTILE_HIT},                 // 冰豆改为
       {PROP_PLANT_FIRE_PEA_CODE, PROP_PLANT_FIRE_PEA_HIT}, // 火豆改为
       {PROP_PLANT_PEA_PROJECTILE_CODE, PROP_PLANT_PEA_PROJECTILE_HIT},
       {PROP_PLANT_CARBAGE_PROJECTILE_CODE, PROP_PLANT_CARBAGE_PROJECTILE_HIT},
@@ -531,7 +755,6 @@ static void alterPlantsHit() {
 }
 void loadPvzFeatures(Communicator *server) {
   initFeaturesCode();
-  enableAllHidenGames();
   alterPlantsPrice();
   alterPlantsHit();
   for (struct features_group *group = features; group->name != nullptr;

@@ -48,6 +48,9 @@ void *__getSaves() {
 bool __isGaming() {
   return __getStatus() != nullptr;
 }
+int getCurrentAdventureLevel() {
+  return getI32(incrStatus(OFF_CURRENT_ADVENTURE_LEVEL));
+}
 void *incr(void *ptr, off_t off) {
   uintptr_t uiptr = reinterpret_cast<intptr_t>(ptr);
   return reinterpret_cast<void *>(uiptr + off);

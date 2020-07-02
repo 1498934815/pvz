@@ -17,12 +17,13 @@ git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 git_repo := $(shell git config --get remote.origin.url)
 git_branch := $(shell git symbolic-ref --short -q HEAD)
 local_version := $(shell date +'%y%m%d')
+XI_version := 0.9.9_7
 
 server_src := \
 	$(call src_under,src/server) \
 	$(call src_under,src/features) \
 	$(common)
-server_flag := -shared -ldl -llog -DSERVER
+server_flag := -shared -ldl -llog -DSERVER src/prebuilts/liblua.a
 server_out := libpvz_server.so
 CC_FLAG := -Iinc -Wall -Wstrict-prototypes -std=c++0x -fPIC \
 	-static-libstdc++ \
@@ -74,6 +75,7 @@ __local_install_install:release
 		adb install -r $$i; \
 	done
 __local_install_archive:__local_install_build
-	@ zip -j out/PVZ_CHEATER_$(local_version)-$(git_hash).zip out/*.apk doc/使用必读.txt 更新日志.txt
+	@ zip -j out/PVZ_NA_XI$(XI_version)_$(local_version)-$(git_hash).zip out/*.apk doc/使用必读.txt 更新日志.txt doc/API.txt main.lua C_main.lua
+	@ echo "XI_VERSION: $(XI_version)"
 local_install:__local_install_build __local_install_install
 local_release:__local_install_archive

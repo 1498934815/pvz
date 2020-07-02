@@ -1,0 +1,14 @@
+所有脚本存放于/sdcard/Android/data/com.popcap.pvz_na/scripts/
+可持续类脚本文件名以C_开头
+getCoreLib() -- 获取核心库
+getBase() -- 获取基址
+getStatus() -- 获取状态入口
+getSaves() -- 获取用户信息入口
+getI32(目标地址) -- 获取目标地址的值
+getPlants() -- 获取所有植物(table)
+getZombies() -- 获取所有僵尸(table)
+getItems() -- 获取场上所有物品(table)
+getVases() -- 获取场上所有罐子(table)
+getProjectiles() -- 获取场上所有子弹(table)
+setI32(目标值, 目标地址) -- 将目标地址设置为目标值
+setZombiesSeeds(冒险关卡代码, 情况, 僵尸代码0, 僵尸代码1, ..., 僵尸代码N) -- 设置某冒险关的出怪。情况分为:0-开局, 1-平时, 2-大波

@@ -8,7 +8,10 @@
  * License : MIT
  */
 #include "server/PvzServer.h"
+#include "common/PvzUtils.h"
+#include "features/scripts.h"
 #include "server/Pvz.h"
+#include <libgen.h>
 #include <unistd.h>
 thread_local PvzServer *PvzServer::localInstance = nullptr;
 PvzServer::PvzServer(const char *addr, int port) : Communicator(addr, port) {
@@ -57,6 +60,15 @@ void PvzServer::handleBuiltinsCommand(msgPack *pack) {
   case BuiltinsCommand::GET_FRESH_COUNTDOWN:
     val = (intptr_t)getI32(incrStatus(OFF_FRESH_COUNTDOWN_REMAIN));
     break;
+  case BuiltinsCommand::GET_SCRIPTS_LIST:
+    for (size_t idx = 0; luaScripts[idx].name != nullptr; ++idx) {
+      sendMessage(makeMsgPack(
+          0, formatBuffer("[%d] %s::%s", idx, basename(luaScripts[idx].name),
+                          luaScripts[idx].type == luaScriptType::continuous
+                              ? "持续的"
+                              : "单次的")));
+    }
+    return;
   }
   sendMessage(makeMsgPack(val));
 }

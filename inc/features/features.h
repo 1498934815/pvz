@@ -10,7 +10,9 @@
 #ifndef INC_FEATURES_FEATURES_H
 #define INC_FEATURES_FEATURES_H
 #include "server/Pvz.h"
+#include <map>
 #include <sys/types.h>
+#include <vector>
 extern "C" {
 struct feature {
   off_t offset;
@@ -26,6 +28,9 @@ struct features_group {
 };
 extern struct features_group features[];
 extern void loadPvzFeatures(Communicator *);
+extern void enableAllHidenGames();
+extern std::map<int, std::vector<std::vector<int>>> zombiesSeeds;
+extern std::map<int, std::vector<std::vector<int>>> extGamesSeeds;
 }
 // JNI_OnUnload
 // #define FEATURES_BUFFER_BASE 0x8e5ddc
