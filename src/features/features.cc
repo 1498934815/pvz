@@ -31,28 +31,30 @@ struct feature features_region =
     FEATURE(FEATURES_BUFFER_BASE, asm_features_region);
 
 DEFINE_FEATURE(whenPlantDiying)
-DEFINE_FEATURE(meanPlant)
+DEFINE_FEATURE(whenZombieMeaningPlant)
 DEFINE_FEATURE(whenZombieHitting)
-DEFINE_FEATURE(zombieIce)
+DEFINE_FEATURE(whenZombieHittingArmor1)
 DEFINE_FEATURE(whenPlantHurtting)
 DEFINE_FEATURE(whenBloverBlowed)
 DEFINE_FEATURE(whenPlantShotProjectile)
+DEFINE_FEATURE(whenGraveBusterEaten)
 DEFINE_FEATURE(bringGrave)
 DEFINE_FEATURE(noScaredMushroom)
 struct feature plantFeatures[] = {
     FEATURE(0x255c88, whenPlantDiying),
     FEATURE(0x358490, whenPlantDiying),
     FEATURE(0x35adec, whenZombieHitting),
-    FEATURE(0x35a860, zombieIce),
+    FEATURE(0x35a860, whenZombieHittingArmor1),
     FEATURE(0x238cf0, whenPlantHurtting),
     FEATURE(0x23efdc, whenBloverBlowed),
     FEATURE(0x254b38, whenPlantShotProjectile),
     // FEATURE(0x1416d0, bringGrave),
-    FEATURE(0x23e0cc, meanPlant),
+    FEATURE(0x23e0cc, whenZombieMeaningPlant),
     // bx lr
     __FEATURE(0x23a2b4, static_cast<int>(0xe12fff1e), noScaredMushroom),
     FEATURE(0x23a4b0, noScaredMushroom),
     FEATURE(0x23a454, noScaredMushroom),
+    FEATURE(0x23ec58, whenGraveBusterEaten),
     FEATURE_END,
 };
 DEFINE_FEATURE(whenZombieBorn)
@@ -83,6 +85,8 @@ struct feature zombieFeatures[] = {
     // FEATURE(0x3409a0, zombiePropertiesInit),
     FEATURE_END,
 };
+DEFINE_FEATURE(whenGameStart)
+DEFINE_FEATURE(whenGameEnd)
 DEFINE_FEATURE(adventureSixthLevelScene)
 DEFINE_FEATURE(adventureSixthLevel)
 DEFINE_FEATURE(whenZombiesListInit)
@@ -91,6 +95,9 @@ DEFINE_FEATURE(alterGardensZombiesType)
 DEFINE_FEATURE(judgeNewLevelFreshCountdown)
 DEFINE_FEATURE(whenNewWave)
 struct feature levelsFeatures[] = {
+    // UNUSED
+    // FEATURE(0x13f088, whenGameStart),
+    FEATURE(0x1cbfd8, whenGameEnd),
     FEATURE(0x1438c4, adventureSixthLevelScene),
     FEATURE(0x141ad4, whenZombiesListInit),
     // push {lr}
@@ -237,12 +244,6 @@ static void CWhenZombieHitting(int, int hit, int hp, void *zombie) {
       setI32(PROP_JACKBOX_CODE, incr(zombie, OFF_ZOMBIE_CODE));
       setI32(PROP_ZOMBIE_JACKBOX_BOOM, incr(zombie, OFF_ZOMBIE_ACTION));
       break;
-#if 0
-    case PROP_NEWSPAPER_CODE:
-#warning HERE, MACRO
-      setI32(22, incr(zombie, OFF_ZOMBIE_CODE));
-      break;
-#endif
     }
   }
   judgeHittingEffects(code, hit, flags, zombie);
@@ -258,53 +259,38 @@ extern int generateZombiesSeed(int fieldType, std::vector<int> &&seeds);
 std::map<int, std::vector<std::vector<int>>> zombiesSeeds = {
 #include "features/seeds.inc"
 };
+std::map<int, std::vector<std::vector<int>>> extGamesSeeds = {
+#include "features/extseeds.inc"
+};
 // R0, 生成个数
 // R2, 写入位置偏移
 // R1, 僵尸代码
 // R3, 写入位置基址
-static void setSeed(void *codeaddr, int level, int wave, int fieldType,
+static void setSeed(std::map<int, std::vector<std::vector<int>>> &seeds,
+                    void *codeaddr, int level, int wave, int fieldType,
                     int code) {
 
-  if (code != PROP_FLAG_CODE &&
-      zombiesSeeds.find(level) != zombiesSeeds.end()) {
+  if (code != PROP_FLAG_CODE && seeds.find(level) != seeds.end()) {
     switch (wave) {
     case 0 ... 3:
-      setI32(generateZombiesSeed(fieldType, std::move(zombiesSeeds[level][0])),
+      setI32(generateZombiesSeed(fieldType, std::move(seeds[level][0])),
              codeaddr);
       break;
     case 10:
     case 20:
     case 30:
     case 40:
-      setI32(generateZombiesSeed(fieldType, std::move(zombiesSeeds[level][2])),
+      setI32(generateZombiesSeed(fieldType, std::move(seeds[level][2])),
              codeaddr);
       break;
     default:
-      setI32(generateZombiesSeed(fieldType, std::move(zombiesSeeds[level][1])),
+      setI32(generateZombiesSeed(fieldType, std::move(seeds[level][1])),
              codeaddr);
       break;
     }
   } else {
     setI32(code, codeaddr);
   }
-}
-static void *__takeGrave(int col, int row) {
-  using takeGraveType = void *(*)(void *, int, int, void *);
-  static takeGraveType takeGrave =
-      (takeGraveType)incr(__getCoreLib(), 0x141724);
-  void *grave = takeGrave(__getStatus(), col, row, incrStatus(0x140));
-  setI32(0x64, incr(grave, OFF_VASES_VIS));
-  return grave;
-}
-static void putZombie(int code, int col, int row) {
-  /*
-    14c3b0: e5933294  ldr r3, [r3, #660]  ; 0x294
-    14c3b4: e1a00003  mov r0, r3
-    */
-  using putZombieType = void (*)(void *, int, int, int);
-  static putZombieType putZombie =
-      (putZombieType)incr(__getCoreLib(), 0x1835dc);
-  putZombie(getPtr(incrStatus(0x294)), code, col, row);
 }
 static void giveSomeSun() {
   setI32(PROP_INITIAL_SUN_FOR_HARD_LEVEL, incrStatus(OFF_SUN));
@@ -354,11 +340,21 @@ static void judgeAdventureScene(int, int, void *status, off_t sceneOff) {
     setI32(fieldTypes::ROOF, incr(status, sceneOff));
     for (int col = 0; col < 9; ++col) {
       for (int row = 0; row < 5; ++row) {
-        __takeGrave(col, row);
+        putGrave(col, row);
       }
     }
+    break;
+  case 92:
+    setI32(fieldTypes::POOL, incr(status, sceneOff));
+    break;
+    /*
+  case 93:
+    setI32(fieldTypes::FOG, incr(status, sceneOff));
+    break;
+    */
   }
 }
+static luaScript *__runningExtGame = nullptr;
 static void loadExtGames(int level) {
 #define EXT_GAME_SCRIPT(file)                                                  \
   {                                                                            \
@@ -368,23 +364,35 @@ static void loadExtGames(int level) {
 #define EXT_GAME_NAME(name) extgames_##name
 #define DEFINE_EXT_GAME(name) extern const char EXT_GAME_NAME(name)
   DEFINE_EXT_GAME(1);
+  DEFINE_EXT_GAME(2);
   extern lua_State *initLuaScript();
   static std::map<int, luaScript> extGameScripts = {
       {92, EXT_GAME_SCRIPT(EXT_GAME_NAME(1))},
+      // {93, EXT_GAME_SCRIPT(EXT_GAME_NAME(2))},
   };
   // XXX 此处借用一下
   // 2-5初始化过这个函数
   if (level == 15) {
     for (int col = 0; col < 9; ++col) {
       for (int row = 0; row < 5; ++row) {
-        __takeGrave(col, row);
+        putGrave(col, row);
       }
     }
     return;
   }
   if (extGameScripts.find(level) != extGameScripts.end()) {
     DEBUG_LOG("LOADING %p", extGameScripts[level].dostring);
-    runLuaScriptOnNewThread(&extGameScripts[level]);
+    __runningExtGame = &extGameScripts[level];
+    runLuaScriptOnNewThread(__runningExtGame);
+  }
+}
+static void CWhenGameStart(int, int, int, void *status) {
+  // XXX UNUSED FUNCTION
+}
+static void CWhenGameEnd(int, int, int, int) {
+  if (__runningExtGame != nullptr) {
+    waitLuaScript(__runningExtGame);
+    __runningExtGame = nullptr;
   }
 }
 // R1 countdown, R2 status, R3 off
@@ -436,9 +444,12 @@ static void whenCardsSelectionInit() {
   case 80:
     setI32(1000, incrStatus(OFF_SUN));
     break;
-  case 81 ... PROP_CUSTOM_LEVEL_END:
+  case 81 ... 90:
     giveSomeSun();
     setI32(PROP_ROW_NOZOMBIES, incrStatus(OFF_ROW_ZOMBIESTYPE + 0x14));
+    break;
+  case 91 ... PROP_CUSTOM_LEVEL_END:
+    giveSomeSun();
     break;
   }
 }
@@ -449,25 +460,20 @@ static void CWhenZombiesListInit(int count, int code, int pos, void *list) {
   // 0xc7e88acc: add r2, r2, #516
   void *codeaddr = incr(list, pos << 2);
   int wave = (pos - 516) / 50, level = getCurrentAdventureLevel(),
-      fieldType = getI32(incrStatus(OFF_FIELD_TYPE));
+      fieldType = getI32(incrStatus(OFF_FIELD_TYPE)),
+      mode = getI32(incrBase(OFF_MODE));
 #ifdef DEBUG
   DEBUG_LOG("STATUS %p CODE %d COUNT %d POS(%d,%d), WAVE %d", list, code, count,
             pos, pos << 2, wave);
 #endif
-  switch (getI32(incrBase(OFF_MODE))) {
+  switch (mode) {
   case 0:
-    setSeed(codeaddr, level, wave, fieldType, code);
+    setSeed(zombiesSeeds, codeaddr, level, wave, fieldType, code);
     break;
   default:
-    setI32(code, codeaddr);
+    setSeed(extGamesSeeds, codeaddr, mode, wave, fieldType, code);
     break;
   }
-}
-static void __vaseLight(Communicator *, void *vase) {
-  setI32(1, incr(vase, OFF_VASES_LIGHT));
-}
-static void allocateGravePosition() {
-  int freePosition[6][5] = {0};
 }
 static void CWhenNewWave(int, int wave, void *status) {
 
@@ -485,7 +491,7 @@ static void CWhenNewWave(int, int wave, void *status) {
       do {
         col = 4 + __rate<4>();
         row = __rate<6>() % rowBase;
-        __takeGrave(col, row);
+        putGrave(col, row);
         ++i;
       } while (i <= count);
       // eachVase(nullptr, __vaseLight);
@@ -523,6 +529,23 @@ static void whenPogoPaperDroped(int, int, int status, void *zombie) {
   if (getI32(incr(zombie, OFF_ZOMBIE_CODE)) == PROP_NEWSPAPER_CODE)
     eachPlant((Communicator *)zombie, sleepWhenPaperDroped);
   setI32(status, incr(zombie, OFF_ZOMBIE_ACTION));
+}
+static void CWhenZombieMeaningPlant(int, int, int, void *plant) {
+  switch (getI32(incr(plant, OFF_PLANT_CODE))) {
+  case PROP_PLANT_TALLNUT:
+    if (oneOfThree())
+      goto beIceShroom;
+  }
+  __asm__("mov r2, #1\n"
+          "strb r2, [%0, #334]"
+          :
+          : "r"(plant)
+          : "r2");
+  return;
+beIceShroom:
+  setI32(PROP_PLANT_ICE_SHROOM_CODE, incr(plant, OFF_PLANT_CODE));
+  setI32(1, incr(plant, OFF_PLANT_EFFECT_REMAIN_TIME));
+  return;
 }
 static void CWhenPlantDiying(int, int, int hp, void *plant) {
   setI32(hp, incr(plant, OFF_PLANT_HP));
@@ -568,8 +591,10 @@ static void starfruitHurttingCallback(void *zombie, float px, float py,
 }
 static void bloverHurttingCallback(void *zombie, float px, float py, float zx,
                                    float zy) {
-  int prow = (int)py / 100;
-  int zrow = (int)zy / 100;
+  if (getI32(incr(zombie, OFF_ZOMBIE_CODE)) == PROP_ZOMBIE_BALLON_CODE)
+    return;
+  int prow = getI32(incr(__shottingPlant, OFF_PLANT_ROW));
+  int zrow = getI32(incr(zombie, OFF_ZOMBIE_ROW));
   if (prow == zrow) {
     int flags = getI32(incr(zombie, OFF_ZOMBIE_FLAGS1));
     if (oneOfFifteen())
@@ -626,6 +651,13 @@ static void CWhenPlantShotProjectile(int, int, int pcode, void *projectile) {
   }
   setI32(pcode, incr(projectile, OFF_PROJECTILE_CODE));
 }
+static void CWhenGraveBusterEaten(int, int, int remain, void *plant) {
+  if (remain < 1 &&
+      getI32(incr(plant, OFF_PLANT_CODE)) == PROP_PLANT_GRAVEBUSTER_CODE) {
+    putPlant(PROP_CHERRY_BOMB_CODE, getI32(incr(plant, OFF_PLANT_COL)),
+             getI32(incr(plant, OFF_PLANT_ROW)));
+  }
+}
 #define HELPER(name) ((uintptr_t)name)
 // 注意此处顺序与features.s中.word的顺序一致
 uintptr_t helpers[] = {
@@ -643,10 +675,14 @@ uintptr_t helpers[] = {
     HELPER(judgeAdventureScene),
     HELPER(CJudgeNewLevelFreshCountdown),
     HELPER(CWhenNewWave),
+    HELPER(CWhenGameStart),
+    HELPER(CWhenGameEnd),
     HELPER(whenCardsSelectionInit),
     HELPER(CWhenPlantDiying),
+    HELPER(CWhenZombieMeaningPlant),
     HELPER(CWhenPlantHurtting),
     HELPER(CWhenPlantShotProjectile),
+    HELPER(CWhenGraveBusterEaten),
     HELPER(oneOfThree),
     HELPER(oneOfFifteen),
     HELPER(oneOfOneHundred),
@@ -658,11 +694,12 @@ static void allocateBuffer(struct feature *feature) {
                     POINTER_DIFFERENCE(feature->code, features_region.code);
 }
 static void initFeaturesCode() {
-  extern struct feature features_region;
   static bool initialized = false;
   if (!initialized) {
     memcpy(incr(__getCoreLib(), features_region.offset), features_region.code,
            POINTER_DIFFERENCE(asm_features_region_end, asm_features_region));
+    DEBUG_LOG("FEATURES REGION %d",
+              POINTER_DIFFERENCE(asm_features_region_end, asm_features_region));
     for (unsigned i = 0; helpers[i] != 0; ++i)
       setU32(helpers[i],
              incr(__getCoreLib(), features_region.offset + POINTERSIZE * i));
@@ -682,7 +719,6 @@ void enableAllHidenGames() {
   for (int i = 0; i < gamesCount;) {
     for (int j = PROP_GAMES_COUNT_PER_PACK; j != 0 && i != gamesCount; --j) {
       if (getI32(ptr) == 0) {
-        DEBUG_LOG("WRITING %d -> %p", hidenGames[i], ptr);
         setI32(hidenGames[i], ptr);
         ++i;
       }
@@ -778,7 +814,7 @@ void loadPvzFeatures(Communicator *server) {
 #if DEBUG
           ptrdiff_t decode = ((0xffffff & blCode) << 2) | 0xff000000;
           DEBUG_LOG("CODEPTR %p codeptr %p code %x delta %x/%d decode %x\n",
-                    codeptr, feature->code, blCode, diff, diff, decode);
+          codeptr, feature->code, blCode, diff, diff, decode);
           DEBUG_LOG("TO %p", buffer);
 #endif
           if (feature->extracode != 0)

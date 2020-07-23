@@ -50,7 +50,6 @@
     }                                                                          \
     int l = lua_tointeger(state, 1);                                           \
     int r = lua_tointeger(state, 2);                                           \
-    DEBUG_LOG("L %d R %p", l, (void *)r);                                      \
     name(l, (void *)r);                                                        \
     return 0;                                                                  \
   }
@@ -60,7 +59,6 @@ static void collectObjects(Communicator *_com, void *object) {
   ++*n;
   lua_pushinteger(state, *n);
   lua_pushinteger(state, (lua_Integer)object);
-  DEBUG_LOG("N %d O %p", *n, object);
   lua_settable(state, -3);
 }
 #define DEFINE_GET_OBJECTS(rname, name)                                        \
@@ -93,6 +91,38 @@ int LUA_NAME(setZombiesSeeds)(lua_State *state) {
   }
   return 0;
 }
+int LUA_NAME(putGrave)(lua_State *state) {
+  int n = lua_gettop(state);
+  if (n != 2) {
+    lua_atpanic(state, LUA_NAME(putGrave));
+  }
+  int col = lua_tointeger(state, 1);
+  int row = lua_tointeger(state, 2);
+  lua_pushinteger(state, (lua_Integer)putGrave(col, row));
+  return 1;
+}
+int LUA_NAME(putPlant)(lua_State *state) {
+  int n = lua_gettop(state);
+  if (n != 3) {
+    lua_atpanic(state, LUA_NAME(putPlant));
+  }
+  int code = lua_tointeger(state, 1);
+  int col = lua_tointeger(state, 2);
+  int row = lua_tointeger(state, 3);
+  lua_pushinteger(state, (lua_Integer)putPlant(code, col, row));
+  return 1;
+}
+int LUA_NAME(putZombie)(lua_State *state) {
+  int n = lua_gettop(state);
+  if (n != 3) {
+    lua_atpanic(state, LUA_NAME(putZombie));
+  }
+  int code = lua_tointeger(state, 1);
+  int col = lua_tointeger(state, 2);
+  int row = lua_tointeger(state, 3);
+  putZombie(code, col, row);
+  return 0;
+}
 DEFINE_GET_0(__getCoreLib, getCoreLib)
 DEFINE_GET_0(__getStatus, getStatus)
 DEFINE_GET_0(__getBase, getBase)
@@ -123,11 +153,14 @@ lua_State *initLuaScript() {
   REG_LUA_FUNCTION(getVases);
   REG_LUA_FUNCTION(setI32);
   REG_LUA_FUNCTION(setZombiesSeeds);
+  REG_LUA_FUNCTION(putGrave);
+  REG_LUA_FUNCTION(putPlant);
+  REG_LUA_FUNCTION(putZombie);
   return state;
 }
 int runLuaScript(luaScript *luaScript) {
   int ret;
-  if (luaScript->type | luaScriptType::dostring)
+  if (luaScript->type & luaScriptType::dostring)
     ret = luaL_dostring(luaScript->state, luaScript->dostring);
   else
     ret = luaL_dofile(luaScript->state, luaScript->name);
@@ -141,6 +174,9 @@ void runLuaScriptOnNewThread(luaScript *luaScript) {
   pthread_create(&luaScript->tid, nullptr, (void *(*)(void *))runLuaScript,
                  (void *)luaScript);
   pthread_detach(luaScript->tid);
+}
+void waitLuaScript(luaScript *luaScript) {
+  pthread_join(luaScript->tid, nullptr);
 }
 #define LUA_SCRIPT_MAX 64
 luaScript luaScripts[LUA_SCRIPT_MAX] = {};

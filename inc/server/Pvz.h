@@ -23,7 +23,9 @@ void *incr(void *, off_t);
 void *incrBase(off_t);
 void *incrStatus(off_t);
 void *incrSaves(off_t);
-
+void *putGrave(int, int);
+void *putPlant(int, int, int);
+void putZombie(int, int, int);
 inline void __writeMem(void *ptr, void *src, size_t size) {
   memcpy(ptr, src, size);
 }
@@ -167,6 +169,8 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define OFF_PLANT_HP 0x4c
 #define OFF_PLANT_X 0x8
 #define OFF_PLANT_Y 0xc
+#define OFF_PLANT_ROW 0x1c
+#define OFF_PLANT_COL 0x34
 #define OFF_PLANT_STATUS 0x14c
 #define OFF_PLANT_EFFECT_REMAIN_TIME 0x5c
 // 墓碑吞噬者
@@ -260,6 +264,7 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define PROP_PLANT_CAT_PROJECTILE_CODE 9
 #define PROP_PLANT_CORNBIT_PROJECTILE_CODE 11
 #define PROP_PLANT_BUTTER_PROJECTILE_CODE 13
+#define PROP_PLANT_ICE_SHROOM_CODE 14
 // 植物血量
 #define PROP_PLANT_SUNFLOWER_HP 600
 // 植物价格
@@ -297,7 +302,7 @@ void eachObject(Communicator *, off_t, off_t, object_callback);
 #define PROP_INTERNAL_LEVEL_START 1
 #define PROP_INTERNAL_LEVEL_END 50
 #define PROP_CUSTOM_LEVEL_START 51
-#define PROP_CUSTOM_LEVEL_END 91
+#define PROP_CUSTOM_LEVEL_END 94
 #define PROP_CUSTOM_GAMES_START 91
 #define PROP_PER_COLUMN 80.0
 #define PROP_GRID_TYPE_POOL 3

@@ -14,55 +14,28 @@ DEFINE_EXTERNAL_FUNCTION judgeAdventureLevel
 DEFINE_EXTERNAL_FUNCTION judgeAdventureScene
 DEFINE_EXTERNAL_FUNCTION CJudgeNewLevelFreshCountdown
 DEFINE_EXTERNAL_FUNCTION CWhenNewWave
+DEFINE_EXTERNAL_FUNCTION CWhenGameStart
+DEFINE_EXTERNAL_FUNCTION CWhenGameEnd
 DEFINE_EXTERNAL_FUNCTION whenCardsSelectionInit
-DEFINE_EXTERNAL_FUNCTION whenPlantDiyingEffects
+DEFINE_EXTERNAL_FUNCTION CWhenPlantDiying
+DEFINE_EXTERNAL_FUNCTION CWhenZombieMeaningPlant
 DEFINE_EXTERNAL_FUNCTION CWhenPlantHurtting
 DEFINE_EXTERNAL_FUNCTION CWhenPlantShotProjectile
+DEFINE_EXTERNAL_FUNCTION CWhenGraveBusterEaten
 DEFINE_EXTERNAL_FUNCTION oneOfThree // 存放1/3的rand函数指针
 DEFINE_EXTERNAL_FUNCTION oneOfFifteen // 存放1/3的rand函数指针
 DEFINE_EXTERNAL_FUNCTION oneOfOneHundred // 存放rand函数的指针
 // 植物被咬死时效果
 DEFINE_FEATURE whenPlantDiying
-  FUNCTIONCALLGUARD whenPlantDiyingEffects
+  FUNCTIONCALLGUARD CWhenPlantDiying
   FUNCTIONEXIT
-tallnut:
-  mov r2, #17
-  str r2, [r3, #0x30]
-  b ret
-littlemushroom:
-  callCFunction oneOfThree
-  cmp r0, #1
-  bne restoreR0
-  restoreRegisters
-  b ret
 restoreR0:
   restoreRegisters
 ret:
   bx lr
-tallnut1:
-  callCFunction oneOfThree
-  cmp r0, #1
-  bne restoreR0
-  restoreRegisters
-  mov r2, #14
-  str r2, [r3, #0x30]
-  mov r2, #1
-  str r2, [r3, #0x5c]
-  b ret
-DEFINE_FEATURE meanPlant
-  push {r2}
-  ldr r2, [r3, #0x30]
-  cmp r2, #23
-  beq tallnut1
-  cmp r2, #8
-  beq littlemushroom
-  cmp r2, #3
-  beq littlemushroom
-  cmp r2, #24 // 水兵菇
-  beq littlemushroom
-  pop {r2}
-  strb  r2, [r3, #334]
-  b ret
+DEFINE_FEATURE whenZombieMeaningPlant
+  FUNCTIONCALLGUARD CWhenZombieMeaningPlant
+  FUNCTIONEXIT
 // 第六大关时场景换为月夜
 DEFINE_FEATURE adventureSixthLevel
   callCFunction judgeAdventureLevel
@@ -102,15 +75,15 @@ DEFINE_FEATURE paperHP
 DEFINE_FEATURE whenZombieHitting
   push {r0, r1}
   str r2, [r3, #212] // 僵尸当前血量
-  ldr	r1, [r11, #-52]
+  ldr	r1, [fp, #-52]
   callCFunction CWhenZombieHitting // whenZombieHitting
   restoreRegisters
   pop {r0, r1}
   b ret
-DEFINE_FEATURE zombieIce
+DEFINE_FEATURE whenZombieHittingArmor1
   push {r0, r1}
   str r2, [r3, #220] // 僵尸一级防具
-  ldr	r1, [r11, #-44]
+  ldr	r1, [fp, #-44]
   callCFunction CWhenZombieHitting // CWhenZombieHitting
   restoreRegisters
   pop {r0, r1}
@@ -188,8 +161,11 @@ DEFINE_FEATURE alterGardensZombiesType
   add r1, r3, #0x5600
   add r1, r1, #0xac
   ldr r1, [r1]
+  // 7-1到8-10都是一路水路
   cmp r1, #60
-  blt out
+  ble out
+  cmp r1, #80
+  bgt out
   mov r2, #2
   out:
   pop {r1}
@@ -241,4 +217,16 @@ DEFINE_FEATURE whenBloverBlowed
   mov r3, #0
   mov sp, fp
   pop {fp, pc}
+DEFINE_FEATURE whenGameStart
+  str	r2, [r3, #1992]	// 0x7c8
+  FUNCTIONCALLGUARD CWhenGameStart
+  FUNCTIONEXIT
+DEFINE_FEATURE whenGameEnd
+  str	r2, [r3, #1992]	// 0x7c8
+  FUNCTIONCALLGUARD CWhenGameEnd
+  FUNCTIONEXIT
+DEFINE_FEATURE whenGraveBusterEaten
+  str r2, [r3, #96]
+  FUNCTIONCALLGUARD CWhenGraveBusterEaten
+  FUNCTIONEXIT
 DEFINE_FEATURE_END asm_features_region_end

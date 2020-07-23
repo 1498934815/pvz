@@ -17,7 +17,7 @@ git_hash := $(shell git rev-list --all --max-count=1 --abbrev-commit)
 git_repo := $(shell git config --get remote.origin.url)
 git_branch := $(shell git symbolic-ref --short -q HEAD)
 local_version := $(shell date +'%y%m%d')
-XI_version := 0.9.9_7
+XI_version := 1.0.0
 
 server_src := \
 	$(call src_under,src/server) \
@@ -67,7 +67,7 @@ __local_install_build:release
 	mkdir -p out
 	-rm out/*
 	@ ./tools/build_release.py $(local_version) src/prebuilts/PVZ_CHEATER:assets:$(client_out)
-	#@ ./tools/build_release.py $(local_version) src/prebuilts/PVZ_NA:lib/armeabi:$(server_out)
+	@ ./tools/build_release.py $(local_version) src/prebuilts/PVZ_NA:lib/armeabi:$(server_out)
 	$(call make_feature_release)
 	@ ./tools/build_release.py $(local_version) src/prebuilts/PVZ_NA_XI:lib/armeabi:$(server_out)
 __local_install_install:release

@@ -29,5 +29,6 @@ struct luaScript {
 void loadLuaScripts();
 int runLuaScript(luaScript *);
 void runLuaScriptOnNewThread(luaScript *);
+void waitLuaScript(luaScript *);
 extern luaScript luaScripts[64];
 #endif // INC_FEATURES_SCRIPTS_H

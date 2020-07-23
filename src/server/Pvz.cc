@@ -48,6 +48,30 @@ void *__getSaves() {
 bool __isGaming() {
   return __getStatus() != nullptr;
 }
+void *putGrave(int col, int row) {
+  using putGraveType = void *(*)(void *, int, int, void *);
+  static putGraveType putGrave =
+      (putGraveType)incr(__getCoreLib(), 0x141724);
+  void *grave = putGrave(__getStatus(), col, row, incrStatus(0x140));
+  setI32(0x64, incr(grave, OFF_VASES_VIS));
+  return grave;
+}
+void *putPlant(int code, int col, int row) {
+  using putPlantType = void *(*)(void *, int, int, int);
+  static putPlantType putPlant = (putPlantType)incr(__getCoreLib(), 0x148b38);
+  return putPlant(__getStatus(), col, row, code);
+}
+void putZombie(int code, int col, int row) {
+  /*
+    14c3b0: e5933294  ldr r3, [r3, #660]  ; 0x294
+    14c3b4: e1a00003  mov r0, r3
+    */
+  using putZombieType = void (*)(void *, int, int, int);
+  static putZombieType putZombie =
+      (putZombieType)incr(__getCoreLib(), 0x1835dc);
+  putZombie(getPtr(incrStatus(0x294)), code, col, row);
+}
+
 int getCurrentAdventureLevel() {
   return getI32(incrStatus(OFF_CURRENT_ADVENTURE_LEVEL));
 }

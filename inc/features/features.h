@@ -35,5 +35,5 @@ extern std::map<int, std::vector<std::vector<int>>> extGamesSeeds;
 // JNI_OnUnload
 // #define FEATURES_BUFFER_BASE 0x8e5ddc
 // 0076c21c T __gnu_Unwind_RaiseException
-#define FEATURES_BUFFER_BASE 0x76c21c
+#define FEATURES_BUFFER_BASE 0x76c418
 #endif // INC_FEATURES_FEATURES_H
