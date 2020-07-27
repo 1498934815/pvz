@@ -11,6 +11,8 @@
 #define INC_FEATURES_SCRIPTS_H
 #include "lua/lua.h"
 #include <pthread.h>
+
+#define LUA_SCRIPTS_PATH "/sdcard/Android/data/com.popcap.pvz_na/scripts/"
 enum luaScriptType {
   oneshot = 1,
   continuous = 2,

@@ -21,7 +21,6 @@
 #include <pthread.h>
 #include <string.h>
 #include <vector>
-#define path "/sdcard/Android/data/com.popcap.pvz_na/scripts/"
 #define LUA_NAME(name) lua_##name
 #define DEFINE_GET_0(name, rname)                                              \
   static int LUA_NAME(rname)(lua_State * state) {                              \
@@ -181,7 +180,7 @@ void waitLuaScript(luaScript *luaScript) {
 #define LUA_SCRIPT_MAX 64
 luaScript luaScripts[LUA_SCRIPT_MAX] = {};
 void loadLuaScripts() {
-  DIR *dir = opendir(path);
+  DIR *dir = opendir(LUA_SCRIPTS_PATH);
   if (dir == nullptr) {
     DEBUG_LOG("NO SCRIPTS DIRECTORY");
     return;
@@ -191,7 +190,7 @@ void loadLuaScripts() {
   std::vector<pthread_t> threads;
   while ((ent = readdir(dir)) != nullptr) {
     if (ent->d_type & DT_REG && fnmatch("*.lua", ent->d_name, 0) == 0) {
-      const char *name = strdup(formatBuffer("%s%s", path, ent->d_name));
+      const char *name = strdup(formatBuffer("%s%s", LUA_SCRIPTS_PATH, ent->d_name));
       luaScripts[count].name = name;
       luaScripts[count].state = initLuaScript();
       if (strncmp(ent->d_name, "C_", 2) == 0) {
